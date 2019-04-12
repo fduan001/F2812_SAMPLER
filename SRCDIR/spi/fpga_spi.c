@@ -1,15 +1,8 @@
-#include "fpga.h"
 #include "spi.h"
 #include "fpga_spi.h"
-#include "taskLib.h"
-#include "config.h"
-#include "timer.h"
-
-#include "cmd_console.h"
-
 
 //fpga spi bit
-#define FPGA_SPI_BASE  (CONFIG_SYS_CTRL_FPGA_BASE + 0x60)
+#define FPGA_SPI_BASE  (0x80000 + 0x60)
 #define FPGA_SPI1_RESET_BIT    7
 #define FPGA_SPI2_RESET_BIT    8
 #define FPGA_SPI3_RESET_BIT    9

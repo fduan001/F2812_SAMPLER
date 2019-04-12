@@ -1,10 +1,8 @@
-#include "fpga.h"
-#include "fpga_spi.h"
-#include "cmd.h"
-#include "cmd_console.h"
-#include "strto.h"
-#include "display.h"
-
+#include "shellconsole.h"
+#include "boarddrv.h"
+#include "command.h"
+#include "util.h"
+#include "platform_os.h"
 
 #ifndef NULL
 #define NULL   (void*)0
@@ -14,7 +12,7 @@
 #define DISP_LINE_LEN	16
 #endif
 
-static int do_fpga_spi_cs(cmd_tbl_t *cmdtp, int argc, char * const argv[])
+static int do_fpga_spi_cs(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	int rc = 0;
 	int channel;
@@ -36,7 +34,7 @@ static int do_fpga_spi_cs(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	return CMD_RET_SUCCESS;
 }
 
-static int do_fpga_spi_read(cmd_tbl_t *cmdtp, int argc, char * const argv[])
+static int do_fpga_spi_read(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	int rc = 0;
 	int channel;
@@ -72,7 +70,7 @@ static int do_fpga_spi_read(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	return CMD_RET_SUCCESS;
 }
 
-static int do_fpga_spi_write(cmd_tbl_t *cmdtp, int argc, char * const argv[])
+static int do_fpga_spi_write(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	int rc = 0;
 	int channel;
@@ -100,12 +98,12 @@ static int do_fpga_spi_write(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 }
 
 static cmd_tbl_t cmd_fpga_spi_sub[] = {
-	{"cs", 6, do_fpga_spi_cs, "", ""},
-	{"read", 6, do_fpga_spi_read, "", ""},
-	{"write", 6, do_fpga_spi_write, "", ""},
+	{"cs", 6, 1, do_fpga_spi_cs, "", ""},
+	{"read", 6, 1, do_fpga_spi_read, "", ""},
+	{"write", 6, 1, do_fpga_spi_write, "", ""},
 };
 
-static int do_fpga_spi(cmd_tbl_t * cmdtp, int argc, char * const argv[])
+static int do_fpga_spi(cmd_tbl_t * cmdtp, s32 flag, int argc, char * const argv[])
 {
 	cmd_tbl_t *c;
 
@@ -121,20 +119,28 @@ static int do_fpga_spi(cmd_tbl_t * cmdtp, int argc, char * const argv[])
 	c = find_cmd_tbl(argv[0], &cmd_fpga_spi_sub[0], ARRAY_SIZE(cmd_fpga_spi_sub));
 
 	if (c)
-		return c->cmd(cmdtp, argc, argv);
+		return c->cmd(cmdtp, 0, argc, argv);
 	else
 		return CMD_RET_USAGE;
 }
 
-static char fpga_spi_help_text[] = \
-	"fpga_spi cs channel option\n" \
-	"fpga_spi read channel length\n" \
-	"fpga_spi write channel source length\n";
-
-int fpga_spi_cmd_init(void)
+#pragma DATA_SECTION   (fpga_spi_cmd, "shell_lib");
+far cmd_tbl_t fpga_spi_cmd[] =
 {
-	ADD_CMD(fpga_spi, 6, do_fpga_spi,
-		"FPGA SPI sub-system",
-		fpga_spi_help_text);
+	{
+		"fpga_spi", CONFIG_SYS_MAXARGS, 1,	do_fpga_spi,
+		"fpga_spi ops  args",
+		"fpga_spi cs channel option\n"
+		"fpga_spi read channel length\n"
+		"fpga_spi write channel source length\n"
+	},
+};
+
+int FpgaSpiCmdInit(void)
+{
+    s8 index;
+
+    for (index = 0; index < sizeof(fpga_spi_cmd) / sizeof(cmd_tbl_t); index++)
+        RegisterCommand(fpga_spi_cmd[index]);
 	return 0;
 }

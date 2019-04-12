@@ -23,6 +23,7 @@
 //#define  TEST_CPUCNT
 //#define TEST_HARDTIMER
 
+extern  int FpgaSpiCmdInit(void);
 
 /******************************
    option 2
@@ -136,6 +137,7 @@ void ShellTask()
     WatchdogKick();
 
     MidCmdInitialize();
+    FpgaSpiCmdInit();
     WatchdogKick();
     WatchdogCmdInit();
     WatchdogKick();

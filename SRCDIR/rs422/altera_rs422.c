@@ -1,16 +1,9 @@
-
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-
-#include "config.h"
-#include "fpga.h"
+#include "shellconsole.h"
+#include "boarddrv.h"
+#include "command.h"
+#include "util.h"
+#include "platform_os.h"
 #include "altera_rs422.h"
-#include "semLib.h"
-#include "taskLib.h"
-#include "libgpio.h"
-#include "gpio_pin_def.h"
-#include "cmd_console.h"
 
 typedef int BOOL;
 

@@ -67,7 +67,11 @@ s32 cmd_usage(cmd_tbl_t *cmdtp);
 s32 cmd_get_data_size(s8 *arg, s32 default_size);
 u8 RegisterCommand (cmd_tbl_t commanditem);
 
-
+enum command_ret_t {
+	CMD_RET_SUCCESS,	/* 0 = Success */
+	CMD_RET_FAILURE,	/* 1 = Failure */
+	CMD_RET_USAGE = -1,	/* Failure, please report 'usage' error */
+};
 
 
 

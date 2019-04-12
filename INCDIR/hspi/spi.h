@@ -12,7 +12,7 @@ typedef struct
     UINT16  divider;
     UINT16  slavesel;
    // UINT16  reserve[4];
-} __attribute__ ((packed))  S_SPI_CTRL_TYPE ;
+} S_SPI_CTRL_TYPE ;
 
 #define rxdat    txdat
 
@@ -27,7 +27,7 @@ typedef struct
     UINT8   wiremode;
 
 
-} __attribute__ ((packed))  S_SPI_CFG_TYPE ;
+} S_SPI_CFG_TYPE ;
 
 #define SPI_LSB_ORDER   (1)
 #define SPI_MSB_ORDER  (0)
