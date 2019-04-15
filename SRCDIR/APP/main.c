@@ -33,8 +33,11 @@ extern  int FpgaSpiCmdInit(void);
 // #define  TEST_KEYINT
 #define  KEYINT  35
 
-#define   DDCINT    36
-#define   MBIINT    35
+#define   XINT_ISR1    35
+#define   XINT_ISR2    36
+
+extern void XINT_Isr1(void);
+extern void XINT_Isr2(void);
 
 void MemoryTest(UINT32 startAddr, UINT32 endAddr) 
 {
@@ -142,12 +145,12 @@ void ShellTask()
     WatchdogCmdInit();
     WatchdogKick();
 
-	//Osal_InstallPIEIsr(RTIsr, DDCINT); /* register DDC interrupt for 1553B */
-	//Osal_InstallPIEIsr(MBI_Isr, MBIINT); /* register MBI interrupt for HOST ACCESS DPRAM */
+	Osal_InstallPIEIsr(XINT_Isr1, XINT_ISR1); /* register DDC interrupt for 1553B */
+	Osal_InstallPIEIsr(XINT_Isr2, XINT_ISR2); /* register MBI interrupt for HOST ACCESS DPRAM */
 
 	// enable the interrupts
-	//Osal_EnableIsr(MBIINT);
-	//Osal_EnableIsr(DDCINT);
+	Osal_EnableIsr(XINT_ISR2);
+	Osal_EnableIsr(XINT_ISR1);
 
 	WatchdogKick();
 	shell_loop();

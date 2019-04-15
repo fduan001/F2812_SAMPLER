@@ -1,10 +1,6 @@
 #ifndef SPI_H
 #define SPI_H
 
-typedef unsigned int    UINT32;
-typedef unsigned short  UINT16;
-typedef unsigned char  UINT8;
-
 typedef struct
 {
     UINT16  txdat;

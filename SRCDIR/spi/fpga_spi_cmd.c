@@ -3,6 +3,7 @@
 #include "command.h"
 #include "util.h"
 #include "platform_os.h"
+#include "fpga_spi.h"
 
 #ifndef NULL
 #define NULL   (void*)0

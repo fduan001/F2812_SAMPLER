@@ -1,8 +1,9 @@
+#include "shellconsole.h"
+#include "boarddrv.h"
+#include "command.h"
+#include "util.h"
+#include "platform_os.h"
 #include "altera_rs422.h"
-#include "cmd.h"
-#include "cmd_console.h"
-#include "strto.h"
-#include "display.h"
 
 #ifndef NULL
 #define NULL   (void*)0
@@ -224,7 +225,7 @@ static cmd_tbl_t cmd_rs422_sub[] = {
 	{"test", 1, do_rs422_test, "", ""},
 };
 
-static int do_rs422(cmd_tbl_t * cmdtp, int argc, char * const argv[])
+static int do_rs422(cmd_tbl_t * cmdtp, s32 flag, int argc, char * const argv[])
 {
 	cmd_tbl_t *c;
 
@@ -240,7 +241,7 @@ static int do_rs422(cmd_tbl_t * cmdtp, int argc, char * const argv[])
 	c = find_cmd_tbl(argv[0], &cmd_rs422_sub[0], ARRAY_SIZE(cmd_rs422_sub));
 
 	if (c)
-		return c->cmd(cmdtp, argc, argv);
+		return c->cmd(cmdtp, flag, argc, argv);
 	else
 		return CMD_RET_USAGE;
 }
@@ -254,8 +255,5 @@ static char rs422_help_text[] = \
 
 int rs422_cmd_init(void)
 {
-	ADD_CMD(rs422, 8, do_rs422,
-		"rs422 sub-system",
-		rs422_help_text);
 	return 0;
 }

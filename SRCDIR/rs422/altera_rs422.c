@@ -4,6 +4,7 @@
 #include "util.h"
 #include "platform_os.h"
 #include "altera_rs422.h"
+#include "fpga.h"
 
 typedef int BOOL;
 
@@ -16,8 +17,22 @@ typedef int BOOL;
 #endif
 
 #define RX_LEN   2048
+#define RS422_NUM    5
+
+#define   RS422_CHIP1_RESET_BIT   4
+#define   RS422_CHIP2_RESET_BIT   5
+#define   RS422_CHIP3_RESET_BIT   6
+#define   RS422_CHIP4_RESET_BIT   7
+#define   RS422_CHIP5_RESET_BIT   8
+
+#define  RS422_CHIP1_INT_BIT      0
+#define  RS422_CHIP2_INT_BIT      0
+#define  RS422_CHIP3_INT_BIT      0
+#define  RS422_CHIP4_INT_BIT      0
+#define  RS422_CHIP5_INT_BIT      0
 
 #define   RS422_IRQNO    GPIO_IRQ1
+#define   RS422_BASE_ADDR    (0x8000 + 0x60)
 
 #define UART_REG(reg, pchan) \
  (*(volatile unsigned short *)(((unsigned int)(pchan->baseAddr)) + (reg * 1)))
@@ -30,11 +45,7 @@ typedef struct{
 	unsigned char RXBuffer[RX_LEN]; // [# of buffers][RX_LEN bytes]
 	unsigned int  msgrd,msgwr;	
 	
-#ifdef C6748
-	sys_sem_t   *rx_semSync;
-#else
-	SEM_ID   rx_semSync;
-#endif
+	HANDLE   rx_semSync;
 	
 	unsigned int baseAddr;
 	unsigned char reset_bit;
@@ -45,13 +56,21 @@ typedef struct{
 int uartintUserCnt = 0;
 UART_BUFF  altera_uart_buff[RS422_NUM];
 
-unsigned char UART_RESET_BIT[RS422_NUM]={RS422_CHIP1_RESET_BIT,RS422_CHIP2_RESET_BIT};
-unsigned char UART_INT_BIT[RS422_NUM]={RS422_CHIP1_INT_BIT,RS422_CHIP2_INT_BIT};
+unsigned char UART_RESET_BIT[RS422_NUM]={
+		RS422_CHIP1_RESET_BIT,
+		RS422_CHIP2_RESET_BIT,
+		RS422_CHIP3_RESET_BIT,
+		RS422_CHIP4_RESET_BIT,
+		RS422_CHIP5_RESET_BIT
+};
 
-#ifndef C6748
-IMPORT void sysUsDelay(UINT32 delay);
-IMPORT void sysMsDelay(UINT32 delay);
-#endif
+unsigned char UART_INT_BIT[RS422_NUM]={
+		RS422_CHIP1_INT_BIT,
+		RS422_CHIP2_INT_BIT,
+		RS422_CHIP3_INT_BIT,
+		RS422_CHIP4_INT_BIT,
+		RS422_CHIP5_INT_BIT
+};
 
 void uartReset(unsigned char chipNo);
 int uartTransBytes(UART_BUFF *  pdevFd, char *pBuf, int nBytes);
@@ -61,9 +80,9 @@ int uartRecvBytes(UART_BUFF *  pdevFd, char *pBuf, int nBytes);
 
 void DebugSysReg(void)
 {
-    PRINTF("0x%08x = 0x%04x\r\n",SYS_FPGA_RESET_REG,FPGA_REG16_R(SYS_FPGA_RESET_REG));
-    PRINTF("0x%08x = 0x%04x\r\n",SYS_FPGA_INTF_REG,FPGA_REG16_R(SYS_FPGA_INTF_REG));
-    PRINTF("0x%08x = 0x%04x\r\n",SYS_FPGA_INTMASK_REG,FPGA_REG16_R(SYS_FPGA_INTMASK_REG));
+    PRINTF("0x%08x = 0x%04x\r\n",  FPGA_PERIPHERAL_RST_REG,  FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG));
+    PRINTF("0x%08x = 0x%04x\r\n",  FPGA_XINT1_STATUS_REG,   FPGA_REG16_R(FPGA_XINT1_STATUS_REG));
+    PRINTF("0x%08x = 0x%04x\r\n",  FPGA_XINT1_MASK_REG,   FPGA_REG16_R(FPGA_XINT1_MASK_REG));
 }
 void DebugUartReg(UART_BUFF *pdevFd)
 {
@@ -88,13 +107,12 @@ void DebugUartRegInfo(unsigned char chipNo)
 }
 
 
- void altera_uart_isr(void)
+ void altera_uart_isr(UINT8 bit_pos)
  {
 	 UART_BUFF *pdevFd = NULL;
 	 int channel = 0;
-	 unsigned int isr = 0;	 
 	 
-	 FPGA_REG16_W(SYS_FPGA_INTMASK_REG, (FPGA_REG16_R(SYS_FPGA_INTMASK_REG) | (0x01 << RS422_IRQMASK_BIT)));   // IRQ1
+	 FPGA_REG16_W(FPGA_XINT1_MASK_REG, (FPGA_REG16_R(FPGA_XINT1_MASK_REG) | (0x01 << bit_pos)));
 	 
 	 for(channel = 0;channel < RS422_NUM ;channel++)
 	 {
@@ -103,7 +121,7 @@ void DebugUartRegInfo(unsigned char chipNo)
 	      if(pdevFd == NULL || pdevFd->isOpen != TRUE)
 	        continue;
 	      
-	      if((FPGA_REG16_R(SYS_FPGA_INTF_REG) & (1 << pdevFd->int_bit)) == 0)
+	      if((FPGA_REG16_R(FPGA_XINT1_STATUS_REG) & (1 << pdevFd->int_bit)) == 0)
 	    	  continue;
 	      
 	     // logMsg("%s \r\n","altera_uart_isr",0,0,0,0,0); 
@@ -117,7 +135,7 @@ void DebugUartRegInfo(unsigned char chipNo)
 
 	 }
 	 
-     FPGA_REG16_W(SYS_FPGA_INTMASK_REG, (FPGA_REG16_R(SYS_FPGA_INTMASK_REG) & (~( 1 << RS422_IRQMASK_BIT))));   // IRQ1 
+     FPGA_REG16_W(FPGA_XINT1_MASK_REG, (FPGA_REG16_R(FPGA_XINT1_MASK_REG) & (~( 1 << bit_pos))));
 	 
 	 return;
  }
@@ -126,6 +144,8 @@ void DebugUartRegInfo(unsigned char chipNo)
 int altera_uart_open(unsigned char chipNo,char party,unsigned char stop,unsigned char data_bit,unsigned int baud)
 {
 	int ret = OK;
+	int irqnum = 0;
+
     UART_BUFF *pdevFd = (UART_BUFF *)&(altera_uart_buff[chipNo]);
 	 
     if(chipNo >= RS422_NUM)
@@ -143,12 +163,8 @@ int altera_uart_open(unsigned char chipNo,char party,unsigned char stop,unsigned
     if(altera_uart_setbaud(chipNo,baud) != OK)
     	return(ERROR);
     
-#ifdef C6748
-    pdevFd->rx_semSync = sys_sem_create();
- #else
-    pdevFd->rx_semSync = semBCreate(SEM_Q_FIFO, SEM_EMPTY);
-#endif
-    
+    pdevFd->rx_semSync = Osal_SemCreateBinary(0);
+
      if(pdevFd->rx_semSync == NULL)
      {
          return ERROR;
@@ -160,23 +176,17 @@ int altera_uart_open(unsigned char chipNo,char party,unsigned char stop,unsigned
 
     if(uartintUserCnt == 0)
      {
-#ifdef C6748
-     	if( registerGpioIsrHandler(RS422_IRQNO, altera_uart_isr, NULL) != 0 ) 
-#else
-        if(intConnect(INUM_TO_IVEC(RS422_IRQNO),(VOIDFUNCPTR)altera_uart_isr, NULL) != OK)
-#endif
+    	if( RegisterIsr(irqnum, altera_uart_isr) != 0 )
          {
-       	   PRINTF("altera uart install error......[irq = %d]\r\n",RS422_IRQNO);
+       	   PRINTF("altera uart irq install error......[irq = %d]\r\n",  irqnum);
          }   
          else
          {
         	 uartintUserCnt++;
              if(uartintUserCnt == 1)
              {
-#ifndef C6748
-               intEnable(RS422_IRQNO);
-#endif
-               FPGA_REG16_W(SYS_FPGA_INTMASK_REG, (FPGA_REG16_R(SYS_FPGA_INTMASK_REG) & (~( 1 << RS422_IRQMASK_BIT))));   // IRQ1
+            	 IsrEnable(irqnum);
+                 FPGA_REG16_W(FPGA_XINT1_MASK_REG, (FPGA_REG16_R(FPGA_XINT1_MASK_REG) & (~( 1 << irqnum))));
              }
          }
      }else uartintUserCnt++;   
@@ -195,6 +205,8 @@ int altera_uart_open(unsigned char chipNo,char party,unsigned char stop,unsigned
 int altera_uart_close(unsigned char chipNo)
 {
     int ret = OK;
+    int irq_num = 0;
+
     UART_BUFF *pdevFd = (UART_BUFF *)&(altera_uart_buff[chipNo]);
    
       if(chipNo >= RS422_NUM)
@@ -218,15 +230,7 @@ int altera_uart_close(unsigned char chipNo)
     	
   	 if(uartintUserCnt == 1) 	
   	 {
-  		FPGA_REG16_W(SYS_FPGA_INTMASK_REG, (FPGA_REG16_R(SYS_FPGA_INTMASK_REG) | (0x01 << RS422_IRQMASK_BIT)));   // IRQ1
-	#ifndef C6748
-		intDisable(RS422_IRQNO);
-  
-  		 if(intDisconnect(INUM_TO_IVEC(RS422_IRQNO),(VOIDFUNCPTR)altera_uart_isr, NULL) != OK)
-  	     {
-		    	 PRINTF("altera uart uninstall error......[irq = %d]\r\n",RS422_IRQNO);
-  	     }
-  	#endif        
+  		FPGA_REG16_W(FPGA_XINT1_MASK_REG, (FPGA_REG16_R(FPGA_XINT1_MASK_REG) | (0x01 << irq_num)));
   	 }
    	 if(uartintUserCnt > 0)
   		uartintUserCnt--;
@@ -249,11 +253,7 @@ int altera_uart_read(unsigned char chipNo,char * buf,unsigned int nBytes)
     if(pdevFd->isOpen != TRUE)
     	return(ERROR);
 
-#ifdef C6748
-    if( sys_sem_wait(pdevFd->rx_semSync) != 0 )
-#else
-    if(ERROR==semTake(pdevFd->rx_semSync,WAIT_FOREVER))
-#endif
+    if(ERROR==Osal_SemPend(pdevFd->rx_semSync, ~(0)))
     {	
  		return(ERROR);
      }
@@ -310,7 +310,7 @@ int altera_uart_init(unsigned char chipNo)
     
     memset(pdevFd,0,sizeof(UART_BUFF));      
 
-    pdevFd->baseAddr = RS422_BASE_ADDR+chipNo * 16;
+    pdevFd->baseAddr = RS422_BASE_ADDR + chipNo * 16;
     pdevFd->reset_bit = UART_RESET_BIT[chipNo];
     pdevFd->int_bit = UART_INT_BIT[chipNo];
 
@@ -487,13 +487,13 @@ void uartReset(unsigned char chipNo)
 	
 	UART_BUFF *pdevFd = (UART_BUFF *)&(altera_uart_buff[chipNo]);
 	 
-    FPGA_REG16_W(SYS_FPGA_RESET_REG, FPGA_REG16_R(SYS_FPGA_RESET_REG) | (1 << pdevFd->reset_bit)); // MR = HI;
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) | (1 << pdevFd->reset_bit)); // MR = HI;
   	sysUsDelay(10); 
     
-  	FPGA_REG16_W(SYS_FPGA_RESET_REG, FPGA_REG16_R(SYS_FPGA_RESET_REG) & (~(1 << pdevFd->reset_bit))); // MR = LO;
+  	FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) & (~(1 << pdevFd->reset_bit))); // MR = LO;
   	sysMsDelay(10);
    
-    FPGA_REG16_W(SYS_FPGA_RESET_REG, FPGA_REG16_R(SYS_FPGA_RESET_REG) | (1 << pdevFd->reset_bit)); // MR = HI;
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) | (1 << pdevFd->reset_bit)); // MR = HI;
    	sysUsDelay(10);   
    	return;
 }

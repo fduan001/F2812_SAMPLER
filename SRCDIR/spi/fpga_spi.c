@@ -1,5 +1,7 @@
+#include "F2812_datatype.h"
 #include "spi.h"
 #include "fpga_spi.h"
+#include "fpga.h"
 
 //fpga spi bit
 #define FPGA_SPI_BASE  (0x80000 + 0x60)
@@ -26,10 +28,6 @@
 #define FPGA_SPI_CTL_GO_BSY_BIT8    (8)
 
 #define FPGA_SPI_TIMEOUT   10 /* 10 ms */
-
-#define FPGABITMASK(x,y)      (   (   (  ((UINT16)1 << (((UINT16)x)-((UINT16)y)+(UINT16)1) ) - (UINT16)1 )   )   <<  ((UINT16)y)   )    // Sets a bitmask of 1s from [x:y]
-#define FPGA_READ_BITFIELD(z,x,y)   (((UINT16)z) & FPGABITMASK(x,y)) >> (y)                                                             // Reads the value of register z[x:y]
-#define FPGA_SET_BITFIELD(z,f,x,y)  (((UINT16)z) & ~FPGABITMASK(x,y)) | ( (((UINT16)f) << (y)) & FPGABITMASK(x,y) ) 
 
 unsigned char SYSSPI_RESET_BIT[] = {
 		FPGA_SPI1_RESET_BIT,FPGA_SPI2_RESET_BIT,FPGA_SPI3_RESET_BIT,FPGA_SPI4_RESET_BIT, \
@@ -111,18 +109,18 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
     spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + (channel ) * 16);
     //check the go_bsy=0?  
     
-    regdata = FPGA_REG16_R(SYS_FPGA_RESET_REG);
+    regdata = FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG);
     regdata = (regdata | ((1 << SYSSPI_RESET_BIT[channel] )));
    
-    FPGA_REG16_W(SYS_FPGA_RESET_REG, regdata); // HI
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, regdata); // HI
     __msleep__(1);
  	
  	regdata = (regdata & (~(1 << SYSSPI_RESET_BIT[channel])));
- 	FPGA_REG16_W(SYS_FPGA_RESET_REG, regdata);  // LO
+ 	FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, regdata);  // LO
   	__msleep__(1);
 
  	regdata = (regdata | ((1 << SYSSPI_RESET_BIT[channel])));  
-    FPGA_REG16_W(SYS_FPGA_RESET_REG, regdata);   // HI
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, regdata);   // HI
   	__msleep__(1);   
     
     do
