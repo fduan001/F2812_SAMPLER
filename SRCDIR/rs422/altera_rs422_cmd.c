@@ -5,6 +5,10 @@
 #include "platform_os.h"
 #include "altera_rs422.h"
 
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(x)  (sizeof(x)/sizeof(x[0]))
+#endif
+
 #ifndef NULL
 #define NULL   (void*)0
 #endif
@@ -64,7 +68,8 @@ static int do_rs422_read(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	int rc = 0;
 	int chip;
 	unsigned int bytes;
-	char *buff = NULL;
+	char buff[100];
+	int i = 0;
 
 	if (argc != 3)
 	{
@@ -75,22 +80,23 @@ static int do_rs422_read(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	chip = simple_strtoul(argv[1], NULL, 10);
 	bytes = simple_strtoul(argv[2], NULL, 10);
 
-	buff = smm_alloc(bytes);
-	if( buff == NULL ) {
-		PRINTF("memory is not ENOUGH, OOPS(%u)!\n", bytes);
+	if( bytes > 100 ) {
+		PRINTF("bytes out of range\n");
 		return CMD_RET_FAILURE;
 	}
-
 	rc = altera_uart_read(chip, buff, bytes);
 	if( rc != 0 ) {
-		smm_free(buff);
 		PRINTF("altera_uart_read failed\n");
 		return CMD_RET_FAILURE;
 	}
 
-	printf_buffer(0, buff, 1, bytes, DISP_LINE_LEN);
+	for( i = 0; i < bytes; ++i) {
+		PRINTF("0x%02x ", buff[i]);
+		if( ((i + 1) % 8) == 0 ) {
+			PRINTF("\n");
+		}
+	}
 
-	smm_free(buff);
 	return CMD_RET_SUCCESS;
 }
 
@@ -156,14 +162,14 @@ static int do_rs422_test(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	    cbuf[i] = i+0x30;
 	    	 //cbuf[i] = (i % 2 == 0) ? 0x5a : 0xa5;
 	}
-	sysMsDelay(100);
+	Osal_TaskSleep(100);
 	     
 	PRINTF("----Send RS422 Frame on chip1-----\r\n");
 	    // for(index = 0;index <= 0x100;index++)
 	     {
 	     PRINTF("send index = %d\r\n",index); 	 
 	     altera_uart_write(0,cbuf,UT_LEN);
-	     sysMsDelay(1000);
+	     Osal_TaskSleep(1000);
 	     } 
 	     activeNo = 1;
 	     PRINTF("send ok......\r\n"); 	 
@@ -209,7 +215,7 @@ static int do_rs422_test(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	    	 }
 
 	    	 
-	    	 sysMsDelay(200);
+	    	 Osal_TaskSleep(200);
 	    	 
 	    	 
 	     }
@@ -218,11 +224,11 @@ static int do_rs422_test(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 }
 
 static cmd_tbl_t cmd_rs422_sub[] = {
-	{"init", 8, do_rs422_init, "", ""},
-	{"show", 2, do_rs422_show, "", ""},
-	{"read", 6, do_rs422_read, "", ""},
-	{"write", 6, do_rs422_write, "", ""},
-	{"test", 1, do_rs422_test, "", ""},
+	{"init", 8, 1, do_rs422_init, "", ""},
+	{"show", 2, 1, do_rs422_show, "", ""},
+	{"read", 6, 1, do_rs422_read, "", ""},
+	{"write", 6, 1, do_rs422_write, "", ""},
+	{"test", 1, 1, do_rs422_test, "", ""},
 };
 
 static int do_rs422(cmd_tbl_t * cmdtp, s32 flag, int argc, char * const argv[])
@@ -246,14 +252,24 @@ static int do_rs422(cmd_tbl_t * cmdtp, s32 flag, int argc, char * const argv[])
 		return CMD_RET_USAGE;
 }
 
-static char rs422_help_text[] = \
-	"rs422 init chip \n" \
-	"rs422 show chip \n" \
-	"rs422 test \n" \
-	"rs422 read chip bytes\n" \
-	"rs422 write chip source bytes\n";
+#pragma DATA_SECTION   (rs422cmd,"shell_lib");
+far cmd_tbl_t rs422cmd[] =
+{
+	{
+		"rs422", CONFIG_SYS_MAXARGS, 1,	do_rs422,
+		"rs422 debug commands",
+		"rs422 init chip \n" \
+		"rs422 show chip \n" \
+		"rs422 test \n" \
+		"rs422 read chip bytes\n" \
+		"rs422 write chip source bytes\n"
+	},
+};
 
 int rs422_cmd_init(void)
 {
+    s8 index;
+    for (index = 0; index < sizeof(cmd_rs422_sub) / sizeof(cmd_tbl_t); index++)
+        RegisterCommand(cmd_rs422_sub[index]);
 	return 0;
 }

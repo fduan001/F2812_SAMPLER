@@ -23,6 +23,8 @@
 //#define  TEST_CPUCNT
 //#define TEST_HARDTIMER
 
+extern int rs422_cmd_init(void);
+extern void FpgaCmdInitialzie();
 extern  int FpgaSpiCmdInit(void);
 
 /******************************
@@ -66,7 +68,6 @@ void MemoryTest(UINT32 startAddr, UINT32 endAddr)
 
 void StackTest()
 {
-	UINT8 index=10;
 #ifdef TASK_TEST
 	while(1)
 	{

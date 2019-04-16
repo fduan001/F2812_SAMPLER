@@ -38,7 +38,7 @@ UINT16 PlatformGetTimer ()
 
 void InitPeripherals(void)
 {
-    // Initialize External Interface To default State:   
+    // Initialize External Interface To default State:   
        InitXintf();	
     // Initialize gpio    
        InitGpio();	
@@ -90,6 +90,6 @@ void BoardInit()
     InitPeripherals();
     InitXint();
 
-    I2cCmdInitialzie();
+    //I2cCmdInitialzie();
 	FpgaCmdInitialzie();
 }

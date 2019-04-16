@@ -2,6 +2,7 @@
 #include "spi.h"
 #include "fpga_spi.h"
 #include "fpga.h"
+#include "shellconsole.h"
 
 //fpga spi bit
 #define FPGA_SPI_BASE  (0x80000 + 0x60)
@@ -36,7 +37,7 @@ unsigned char SYSSPI_RESET_BIT[] = {
 
 static inline void __msleep__(unsigned int ms)
 {
-	sysMsDelay(ms);
+	Osal_TaskSleep(ms);
 }
 
 /******************************************************************************

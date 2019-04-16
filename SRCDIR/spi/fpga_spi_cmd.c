@@ -5,6 +5,10 @@
 #include "platform_os.h"
 #include "fpga_spi.h"
 
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(x)  (sizeof(x)/sizeof(x[0]))
+#endif
+
 #ifndef NULL
 #define NULL   (void*)0
 #endif
@@ -40,7 +44,8 @@ static int do_fpga_spi_read(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const a
 	int rc = 0;
 	int channel;
 	unsigned int length;
-	unsigned char  *buffer;
+	unsigned char buffer[100];
+	int i = 0;
 
 	if (argc != 3)
 	{
@@ -51,22 +56,22 @@ static int do_fpga_spi_read(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const a
 	channel = simple_strtoul(argv[1], NULL, 10);
 	length = simple_strtoul(argv[2], NULL, 16);
 
-	buffer = (unsigned char*)smm_alloc(length);
-	if( !buffer ) {
-		PRINTF("memory is not ENOUGH, OOPS(%u)!\n", length);
+	if( length > 100 ) {
+		PRINTF("length is invalid, out of range=%d\n", length);
 		return CMD_RET_FAILURE;
 	}
-
 	rc = FpgaSpiRead(channel, buffer, length);
 	if( rc != 0 ) {
-		smm_free(buffer);
 		PRINTF("FpgaSpiRead failed, rc=%d\n", rc);
 		return CMD_RET_FAILURE;
 	} else {
-		printf_buffer(0, buffer, 1, length, DISP_LINE_LEN);
+		for( i = 0; i < length; ++i) {
+			PRINTF("0x%02x ", buffer[i]);
+			if( ((i + 1) % 8) == 0 ) {
+				PRINTF("\n");
+			}
+		}
 	}
-
-	smm_free(buffer);
 
 	return CMD_RET_SUCCESS;
 }
@@ -120,7 +125,7 @@ static int do_fpga_spi(cmd_tbl_t * cmdtp, s32 flag, int argc, char * const argv[
 	c = find_cmd_tbl(argv[0], &cmd_fpga_spi_sub[0], ARRAY_SIZE(cmd_fpga_spi_sub));
 
 	if (c)
-		return c->cmd(cmdtp, 0, argc, argv);
+		return c->cmd(cmdtp, flag, argc, argv);
 	else
 		return CMD_RET_USAGE;
 }

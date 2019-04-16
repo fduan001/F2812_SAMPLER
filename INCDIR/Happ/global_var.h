@@ -27,6 +27,6 @@ extern UINT8 testfar2[];
 
 extern far UINT8 testnear [];
 
-extern far HANDLE clkhandle,timerhandle,semhandle;
+extern far HANDLE clkhandle,timerhandle,semhandle;
 
 #endif

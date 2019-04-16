@@ -262,7 +262,7 @@ void UartPrintf(const char *fmt, ...)
 
    Osal_EnterGlobalCriticalSection();
     va_list 	arg_ptr;
-    UINT8 	i, length;
+    UINT8 	    length;
 
     va_start( arg_ptr, fmt );
     length = vsprintf( (char *)g_uartprintbuffer, (char *) fmt, arg_ptr );

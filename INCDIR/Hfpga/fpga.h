@@ -123,6 +123,9 @@
 #define FPGA_RS422_TRX5_LCR_REG                              (FPGA_BASE_ADDR + 0xA3)
 #define FPGA_RS422_TRX5_LSR_REG                              (FPGA_BASE_ADDR + 0xA5)
 
+
+typedef void (*ISR_HANDLER)(void*);
+
 #define FPGA_REG16_W(addr,b)    (*(volatile unsigned short*)((unsigned int)(addr)) = b)
 #define FPGA_REG16_R(addr) 	    (*(volatile unsigned short*)((unsigned int)(addr)))
 
@@ -139,6 +142,7 @@ void WriteFpgaRegister( UINT32 regaddr, UINT16 regvalue);
 UINT16 ReadFpgaRegister( UINT32 regaddr );
 void WriteFpgaRegisterBit(UINT32 regaddr, UINT8 bitpos, UINT8 bitvalue);
 UINT8 ReadFpgaRegisterBit(UINT32 regaddr, UINT8 bitpos, UINT8 bitvalue);
+int RegisterIsr(int bit_pos, ISR_HANDLER isr);
 
 #ifdef __cplusplus
 }
