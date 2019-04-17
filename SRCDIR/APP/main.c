@@ -27,6 +27,8 @@ extern int EepromCmdInit(void);
 extern int rs422_cmd_init(void);
 extern void FpgaCmdInitialzie();
 extern  int FpgaSpiCmdInit(void);
+extern void AD567XCmdInitialize();
+extern void ADS124S08CmdInitialize();
 
 /******************************
    option 2
@@ -145,6 +147,8 @@ void ShellTask()
     EepromCmdInit();
     MidCmdInitialize();
     FpgaSpiCmdInit();
+    AD567XCmdInitialize();
+    ADS124S08CmdInitialize();
     WatchdogKick();
     WatchdogCmdInit();
     WatchdogKick();
