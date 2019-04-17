@@ -58,14 +58,14 @@
 #define FPGA_FLOW_TUNNEL4_RESULT_L_REG                 (FPGA_BASE_ADDR + 0x3A)
 
 /* temperature measument */
-#define FPGA_SPI_ADS1248_TX_DATA_REG                    (FPGA_BASE_ADDR + 0x40
-#define FPGA_SPI_ADS1248_RX_DATA_REG                    (FPGA_BASE_ADDR + 0x40
-#define FPGA_SPI_ADS1248_CTRL_REG                       (FPGA_BASE_ADDR + 0x41
-#define FPGA_SPI_ADS1248_CLK_REG                        (FPGA_BASE_ADDR + 0x42
-#define FPGA_SPI_ADS1248_SS_REG                         (FPGA_BASE_ADDR + 0x43
+#define FPGA_SPI_ADS1248_TX_DATA_REG                    (FPGA_BASE_ADDR + 0x40)
+#define FPGA_SPI_ADS1248_RX_DATA_REG                    (FPGA_BASE_ADDR + 0x40)
+#define FPGA_SPI_ADS1248_CTRL_REG                       (FPGA_BASE_ADDR + 0x41)
+#define FPGA_SPI_ADS1248_CLK_REG                        (FPGA_BASE_ADDR + 0x42)
+#define FPGA_SPI_ADS1248_SS_REG                         (FPGA_BASE_ADDR + 0x43)
 
-#define FPGA_TEMP_MEAS_CTRL_REG                         (FPGA_BASE_ADDR + 0x50
-#define FPGA_TEMP_MEAS_STATUS_REG                       (FPGA_BASE_ADDR + 0x51
+#define FPGA_TEMP_MEAS_CTRL_REG                         (FPGA_BASE_ADDR + 0x50)
+#define FPGA_TEMP_MEAS_STATUS_REG                       (FPGA_BASE_ADDR + 0x51)
 
 /* RS422 */
 #define FPGA_RS422_TRX1_RX_REG                               (FPGA_BASE_ADDR + 0x60)
