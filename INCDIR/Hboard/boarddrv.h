@@ -19,7 +19,6 @@
 #ifndef BOARD_DRV_H
 #define BOARD_DRV_H
 #include "F2812_datatype.h"
-#include "rtc.h"
 
 #define BSP_OK 0
 #define BSP_FAIL 1

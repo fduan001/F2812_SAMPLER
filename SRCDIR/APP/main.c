@@ -22,7 +22,7 @@
 
 //#define  TEST_CPUCNT
 //#define TEST_HARDTIMER
-
+extern void I2CCmdInitialize();
 extern int rs422_cmd_init(void);
 extern void FpgaCmdInitialzie();
 extern  int FpgaSpiCmdInit(void);
@@ -140,6 +140,7 @@ void ShellTask()
     set_shellprompt(CONFIG_BOARD_PROMPT);
     WatchdogKick();
 
+    I2CCmdInitialize();
     MidCmdInitialize();
     FpgaSpiCmdInit();
     WatchdogKick();

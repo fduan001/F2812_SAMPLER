@@ -166,7 +166,7 @@ void ADS124S08_WriteReg(UINT8 regnum, UINT8 data)
 {
 	UINT8 ulDataTx[3];
 	if( regnum >=  NUM_REGISTERS) {
-		return 0xFF;
+		return ;
 	}
 	ulDataTx[0] = REGWR_OPCODE_MASK + (regnum & 0x1f);
 	ulDataTx[1] = 0x00;

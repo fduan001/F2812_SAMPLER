@@ -492,11 +492,24 @@ INT16 GpioI2cProbe(UINT8 chip)
     return 0;
 }
 
+int eeprom_write_enable (unsigned dev_addr, int state) {
+	EALLOW;
+	if( state ) {
+		GpioDataRegs.GPACLEAR.bit.GPIOA15 = 1;
+	} else {
+		GpioDataRegs.GPASET.bit.GPIOA15 = 1;
+	}
+	EDIS;
+	return 0;
+}
+
 void GpioI2cInit(UINT16 speed, UINT16 slaveadd)
 {
 	EALLOW;
 	GpioMuxRegs.GPAMUX.bit.C1TRIP_GPIOA13 = 0;
 	GpioMuxRegs.GPAMUX.bit.C2TRIP_GPIOA14 = 0;
+	GpioMuxRegs.GPAMUX.bit.C3TRIP_GPIOA15 = 0;
+	GpioMuxRegs.GPADIR.bit.GPIOA15 = GPIO_DIR_OUTPUT;
 	GpioI2cSetSdaDir(GPIO_OUTPUT);
 	GpioI2cSetSclDir(GPIO_OUTPUT);
 	EDIS;
