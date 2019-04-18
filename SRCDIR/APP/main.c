@@ -29,6 +29,8 @@ extern void FpgaCmdInitialzie();
 extern  int FpgaSpiCmdInit(void);
 extern void AD567XCmdInitialize();
 extern void ADS124S08CmdInitialize();
+extern void FuelCmdInitialzie();
+extern void FlowCmdInitialzie();
 
 /******************************
    option 2
@@ -149,6 +151,8 @@ void ShellTask()
     FpgaSpiCmdInit();
     AD567XCmdInitialize();
     ADS124S08CmdInitialize();
+    FuelCmdInitialzie();
+    FlowCmdInitialzie();
     WatchdogKick();
     WatchdogCmdInit();
     WatchdogKick();

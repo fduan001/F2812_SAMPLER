@@ -24,19 +24,19 @@
 #define FPGA_IO_STATUS_REG                              (FPGA_BASE_ADDR + 0xA)
 #define FPGA_IO_SELF_TEST_REG                           (FPGA_BASE_ADDR + 0xB)
 
-/* gas mearsument */
-#define FPGA_GAS_SWITCH_REG                        (FPGA_BASE_ADDR + 0x10)
-#define FPGA_GAS_MEAS_REG                          (FPGA_BASE_ADDR + 0x11)
-#define FPGA_GAS_STATUS_REG                        (FPGA_BASE_ADDR + 0x12)
+/* FUEL mearsument */
+#define FPGA_FUEL_SWITCH_REG                        (FPGA_BASE_ADDR + 0x10)
+#define FPGA_FUEL_MEAS_REG                          (FPGA_BASE_ADDR + 0x11)
+#define FPGA_FUEL_STATUS_REG                        (FPGA_BASE_ADDR + 0x12)
 
-#define FPGA_GAS_TUNNEL1_RESULT_H_REG              (FPGA_BASE_ADDR + 0x13)
-#define FPGA_GAS_TUNNEL1_RESULT_L_REG              (FPGA_BASE_ADDR + 0x14)
-#define FPGA_GAS_TUNNEL2_RESULT_H_REG              (FPGA_BASE_ADDR + 0x15)
-#define FPGA_GAS_TUNNEL2_RESULT_L_REG              (FPGA_BASE_ADDR + 0x16)
-#define FPGA_GAS_TUNNEL3_RESULT_H_REG              (FPGA_BASE_ADDR + 0x17)
-#define FPGA_GAS_TUNNEL3_RESULT_L_REG              (FPGA_BASE_ADDR + 0x18)
-#define FPGA_GAS_TUNNEL4_RESULT_H_REG              (FPGA_BASE_ADDR + 0x19)
-#define FPGA_GAS_TUNNEL4_RESULT_L_REG              (FPGA_BASE_ADDR + 0x1A)
+#define FPGA_FUEL_TUNNEL1_RESULT_H_REG              (FPGA_BASE_ADDR + 0x13)
+#define FPGA_FUEL_TUNNEL1_RESULT_L_REG              (FPGA_BASE_ADDR + 0x14)
+#define FPGA_FUEL_TUNNEL2_RESULT_H_REG              (FPGA_BASE_ADDR + 0x15)
+#define FPGA_FUEL_TUNNEL2_RESULT_L_REG              (FPGA_BASE_ADDR + 0x16)
+#define FPGA_FUEL_TUNNEL3_RESULT_H_REG              (FPGA_BASE_ADDR + 0x17)
+#define FPGA_FUEL_TUNNEL3_RESULT_L_REG              (FPGA_BASE_ADDR + 0x18)
+#define FPGA_FUEL_TUNNEL4_RESULT_H_REG              (FPGA_BASE_ADDR + 0x19)
+#define FPGA_FUEL_TUNNEL4_RESULT_L_REG              (FPGA_BASE_ADDR + 0x1A)
 
 /* flow measurment */
 #define FPGA_SPI_AS5684_TX_DATA_REG                    (FPGA_BASE_ADDR + 0x20)
@@ -45,9 +45,9 @@
 #define FPGA_SPI_AS5684_CLK_REG                        (FPGA_BASE_ADDR + 0x22)
 #define FPGA_SPI_AS5684_SS_REG                         (FPGA_BASE_ADDR + 0x23)
 
-#define FPGA_FLOW_MEAS_SWITCH_REG                      (FPGA_BASE_ADDR + 0x30)
-#define FPGA_FLOW_MEAS_CTRL_REG                        (FPGA_BASE_ADDR + 0x31)
-#define FPGA_FLOW_MEAS_STATUS_REG                      (FPGA_BASE_ADDR + 0x32)
+#define FPGA_FLOW_SWITCH_REG                           (FPGA_BASE_ADDR + 0x30)
+#define FPGA_FLOW_MEAS_REG                             (FPGA_BASE_ADDR + 0x31)
+#define FPGA_FLOW_STATUS_REG                           (FPGA_BASE_ADDR + 0x32)
 #define FPGA_FLOW_TUNNEL1_RESULT_H_REG                 (FPGA_BASE_ADDR + 0x33)
 #define FPGA_FLOW_TUNNEL1_RESULT_L_REG                 (FPGA_BASE_ADDR + 0x34)
 #define FPGA_FLOW_TUNNEL2_RESULT_H_REG                 (FPGA_BASE_ADDR + 0x35)
