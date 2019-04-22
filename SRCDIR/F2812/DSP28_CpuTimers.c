@@ -168,7 +168,7 @@ void SetCpuUsTimer2()
 //delay unit is us
 void UDelay(UINT16 delay)
 {
-	UINT32 timercnt1,timercnt2;
+	UINT32 timercnt1;
 	UINT32 diffvalue=0;
     timercnt1=0;
 	//if time is 0 ,skip it,wait the TIM reload
@@ -185,7 +185,7 @@ void UDelay(UINT16 delay)
 void PlatformDelay (UINT16 usec)
 {
 
-	UINT32 timercnt1,timercnt2;
+	UINT32 timercnt1;
 	UINT32 diffvalue=0;
 	timercnt1=0;
 	//if time is 0 ,skip it,wait the TIM reload

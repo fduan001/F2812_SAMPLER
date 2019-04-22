@@ -3,8 +3,6 @@
 #include "fpga.h"
 #include "flow_measure.h"
 
-static u8 g_data_valid = 0;
-
 typedef struct FLOW_MEAS_DATA_T
 {
 	u8 valid;
@@ -96,7 +94,7 @@ void FlowIntrHandler(UINT8 bit_pos) {
 
 	/* write b'1 to clear the flag */
 	FPGA_REG16_W(FPGA_FLOW_STATUS_REG, sts);
-	return 0;
+	return ;
 }
 
 int FlowMeasSelfTest(void) {

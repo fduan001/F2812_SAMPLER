@@ -26,7 +26,7 @@ s32 do_fpgatest ( cmd_tbl_t *cmdtp, s32 flag, s32 argc, s8 *const argv[])
 {
 
     u16  repeat,index;
-    u16   readdata, wregdata, tmpdata;
+    u16   readdata, wregdata;
     u32   regaddr;
     /*check input arg number*/
     if (argc < 3)

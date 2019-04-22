@@ -3,7 +3,7 @@
 #include "command.h"
 #include "util.h"
 #include "platform_os.h"
-#include "altera_rs422.h"
+#include "rs422.h"
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(x)  (sizeof(x)/sizeof(x[0]))
@@ -17,7 +17,7 @@
 #define DISP_LINE_LEN	16
 #endif
 
-static int do_rs422_init(cmd_tbl_t *cmdtp, int argc, char * const argv[])
+static int do_rs422_init(cmd_tbl_t *cmdtp, s32 flag,  int argc, char * const argv[])
 {
 	int  rc = 0;
 	unsigned char chip;
@@ -38,16 +38,16 @@ static int do_rs422_init(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	data_bit = simple_strtoul(argv[4], NULL, 10);
 	baud = simple_strtoul(argv[5], NULL, 10);
 
-	rc = altera_uart_open(chip, party, stop, data_bit, baud);
+	rc = RS422Open(chip, party, stop, data_bit, baud);
 	if( rc != 0 ) {
-		PRINTF("altera_uart_open failed, rc=%d\n", rc);
+		PRINTF("RS422Open failed, rc=%d\n", rc);
 		return CMD_RET_FAILURE;
 	}
 
 	return CMD_RET_SUCCESS;
 }
 
-static int do_rs422_show(cmd_tbl_t *cmdtp, int argc, char * const argv[])
+static int do_rs422_show(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	unsigned char chip;
 
@@ -63,7 +63,7 @@ static int do_rs422_show(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	return CMD_RET_SUCCESS;
 }
 
-static int do_rs422_read(cmd_tbl_t *cmdtp, int argc, char * const argv[])
+static int do_rs422_read(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	int rc = 0;
 	int chip;
@@ -84,9 +84,9 @@ static int do_rs422_read(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 		PRINTF("bytes out of range\n");
 		return CMD_RET_FAILURE;
 	}
-	rc = altera_uart_read(chip, buff, bytes);
+	rc = RS422Read(chip, buff, bytes);
 	if( rc != 0 ) {
-		PRINTF("altera_uart_read failed\n");
+		PRINTF("RS422Read failed\n");
 		return CMD_RET_FAILURE;
 	}
 
@@ -100,7 +100,7 @@ static int do_rs422_read(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	return CMD_RET_SUCCESS;
 }
 
-static int do_rs422_write(cmd_tbl_t *cmdtp, int argc, char * const argv[])
+static int do_rs422_write(cmd_tbl_t *cmdtp, s32 flag,  int argc, char * const argv[])
 {
 	int rc = 0;
 	int chip;
@@ -117,9 +117,9 @@ static int do_rs422_write(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	source = simple_strtoul(argv[2], NULL, 16);
 	bytes = simple_strtoul(argv[3], NULL, 10);
 
-	rc = altera_uart_write(chip, source, bytes);
+	rc = RS422Write(chip, (char*)source, bytes);
 	if( rc != 0 ) {
-		PRINTF("altera_uart_write failed\n");
+		PRINTF("RS422Write failed\n");
 		return CMD_RET_FAILURE;
 	}
 
@@ -129,7 +129,7 @@ static int do_rs422_write(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 
 #define  UT_LEN   16
 
-static int do_rs422_test(cmd_tbl_t *cmdtp, int argc, char * const argv[])
+static int do_rs422_test(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	int  rc = 0;
 	unsigned char cbuf[64];
@@ -143,15 +143,15 @@ static int do_rs422_test(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 		return cmd_usage(cmdtp);
 	}
 
-	rc = altera_uart_open(0, 'e', 1, 8, 115200);
+	rc = RS422Open(0, 'e', 1, 8, 19200);
 	if( rc != 0 ) {
-		PRINTF("altera_uart_open failed, rc=%d\n", rc);
+		PRINTF("RS422Open failed, rc=%d\n", rc);
 		return CMD_RET_FAILURE;
 	}
 
-	rc = altera_uart_open(1, 'e', 1, 8, 115200);
+	rc = RS422Open(1, 'e', 1, 8, 19200);
 	if( rc != 0 ) {
-		PRINTF("altera_uart_open failed, rc=%d\n", rc);
+		PRINTF("RS422Open failed, rc=%d\n", rc);
 		return CMD_RET_FAILURE;
 	}
 
@@ -168,7 +168,7 @@ static int do_rs422_test(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	    // for(index = 0;index <= 0x100;index++)
 	     {
 	     PRINTF("send index = %d\r\n",index); 	 
-	     altera_uart_write(0,cbuf,UT_LEN);
+	     RS422Write(0,  (char*)cbuf,  UT_LEN);
 	     Osal_TaskSleep(1000);
 	     } 
 	     activeNo = 1;
@@ -179,7 +179,7 @@ static int do_rs422_test(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	    	 memset(cbuf,0,sizeof(cbuf));
 	    	 if(activeNo == 1)
 	    	 {
-		    	 if(altera_uart_read(1,cbuf,UT_LEN) == UT_LEN)
+		    	 if(RS422Read(1, (char*)cbuf, UT_LEN) == UT_LEN)
 		    	 {
 		    		 PRINTF("----Chip2 Recv RS422 Frame -----\r\n");
 
@@ -189,7 +189,7 @@ static int do_rs422_test(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 		    	    	 cbuf[i]++;
 		    	     }
 		    	     
-		    	     altera_uart_write(1,cbuf,UT_LEN);
+		    	     RS422Write(1, (char*)cbuf, UT_LEN);
 		    	     PRINTF("----Send RS422 Frame on chip2-----\r\n");
 		    	     activeNo = 0;
 		     		 
@@ -197,7 +197,7 @@ static int do_rs422_test(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 	    	 }
 	    	 else
 	    	 {
-	    		 if(altera_uart_read(0,cbuf,UT_LEN) == UT_LEN)
+	    		 if(RS422Read(0, (char*)cbuf, UT_LEN) == UT_LEN)
 		    	 {
 		    		 PRINTF("----Chip1 Recv RS422 Frame -----\r\n");
 	    		 
@@ -207,7 +207,7 @@ static int do_rs422_test(cmd_tbl_t *cmdtp, int argc, char * const argv[])
 		    	    	 cbuf[i]++;
 		    	     }
 		    	     
-		    	     altera_uart_write(0,cbuf,UT_LEN);
+		    	     RS422Write(0, (char*)cbuf, UT_LEN);
 		    	     PRINTF("----Send RS422 Frame on chip1-----\r\n");
 		    	     activeNo = 1;
 		     		 
@@ -252,8 +252,8 @@ static int do_rs422(cmd_tbl_t * cmdtp, s32 flag, int argc, char * const argv[])
 		return CMD_RET_USAGE;
 }
 
-#pragma DATA_SECTION   (rs422cmd,"shell_lib");
-far cmd_tbl_t rs422cmd[] =
+#pragma DATA_SECTION   (rs422_cmd,"shell_lib");
+far cmd_tbl_t rs422_cmd[] =
 {
 	{
 		"rs422", CONFIG_SYS_MAXARGS, 1,	do_rs422,
@@ -269,7 +269,7 @@ far cmd_tbl_t rs422cmd[] =
 int rs422_cmd_init(void)
 {
     s8 index;
-    for (index = 0; index < sizeof(cmd_rs422_sub) / sizeof(cmd_tbl_t); index++)
-        RegisterCommand(cmd_rs422_sub[index]);
+    for (index = 0; index < sizeof(rs422_cmd) / sizeof(cmd_tbl_t); index++)
+        RegisterCommand(rs422_cmd[index]);
 	return 0;
 }

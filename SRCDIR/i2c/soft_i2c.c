@@ -22,6 +22,7 @@
 #include "boarddrv.h"
 #include "command.h"
 #include "util.h"
+#include "shellconsole.h"
 
 #define DELAY_TIME        1 
 
@@ -51,7 +52,7 @@
 #define READL(r)             (*(volatile UINT16 *)(r))
 #define WRITEL(v, r)         (*(volatile UINT16 *)(r) = (v))
 
-#define SOFT_I2C_LOG
+#define SOFT_I2C_LOG   PRINTF
 
  
 // #pragma GCC push_options
@@ -316,7 +317,7 @@ INT16 GpioI2cReadBytes(UINT8 chip, UINT16 addr, UINT8 alen, UINT8 *buffer, UINT1
 
     if( GpioI2cWriteByte((chip << 1)) != 0 )
 	{
-		SOFT_I2C_LOG("write chip failed\n");
+		PRINTF("write chip failed\n");
 		GpioI2cClrScl();
 		PlatformDelay(5);
 		GpioI2cEnableWrite();

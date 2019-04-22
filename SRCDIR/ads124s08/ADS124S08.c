@@ -113,7 +113,6 @@ int ADS124S08_Init(void)
  */
 UINT8 ADS124S08_ReadReg(UINT8 regnum)
 {
-	int i;
 
 	if( regnum >=  NUM_REGISTERS) {
 		return 0xFF;
@@ -263,11 +262,8 @@ void ADS124S08_DeassertClock(void)
  */
 int ADS124S08_ReadDate(UINT8 *dStatus, UINT8 *dData, UINT8 *dCRC)
 {
-	UINT8 ulDataTx = 0x0;
-	UINT8 ulDataRx;
 	UINT8 xcrc;
 	UINT8 xstatus;
-	UINT8 iData;
 	clearChipSelect();
 
 	ADS124S08_SendCmd(RDATA_OPCODE_MASK);

@@ -3,7 +3,7 @@
 #include "command.h"
 #include "util.h"
 #include "platform_os.h"
-#include "altera_rs422.h"
+#include "rs422.h"
 #include "fpga.h"
 
 typedef int BOOL;
@@ -107,7 +107,7 @@ void DebugUartRegInfo(unsigned char chipNo)
 }
 
 
-void altera_uart_isr(UINT8 bit_pos)
+void RS422Isr(UINT8 bit_pos)
 {
     UART_BUFF *pdevFd = NULL;
     int channel = 0;
@@ -138,7 +138,7 @@ void altera_uart_isr(UINT8 bit_pos)
 }
 
 
-int altera_uart_open(unsigned char chipNo,char party,unsigned char stop,unsigned char data_bit,unsigned int baud)
+int RS422Open(unsigned char chipNo,char party,unsigned char stop,unsigned char data_bit,unsigned int baud)
 {
     int ret = OK;
     int irqnum = 0;
@@ -151,13 +151,13 @@ int altera_uart_open(unsigned char chipNo,char party,unsigned char stop,unsigned
     if(pdevFd->isOpen == TRUE)
         return(ERROR);
 
-    altera_uart_init(chipNo);
+    RS422Init(chipNo);
 
-    if(altera_uart_setopt(chipNo,party,stop,data_bit) != OK)
+    if(RS422SetOpt(chipNo,party,stop,data_bit) != OK)
         return(ERROR);
 
 
-    if(altera_uart_setbaud(chipNo,baud) != OK)
+    if(RS422SetBaud(chipNo,baud) != OK)
         return(ERROR);
 
     pdevFd->rx_semSync = Osal_SemCreateBinary(0);
@@ -173,7 +173,7 @@ int altera_uart_open(unsigned char chipNo,char party,unsigned char stop,unsigned
 
     if(uartintUserCnt == 0)
     {
-        if( RegisterIsr(irqnum, altera_uart_isr) != 0 )
+        if( RegisterIsr(irqnum, RS422Isr) != 0 )
         {
             PRINTF("altera uart irq install error......[irq = %d]\r\n",  irqnum);
         }   
@@ -188,7 +188,7 @@ int altera_uart_open(unsigned char chipNo,char party,unsigned char stop,unsigned
     }else uartintUserCnt++;   
 
     if(ret) {
-        PRINTF("altera_uart_open success....\r\n");
+        PRINTF("RS422Open success....\r\n");
     }
 
     DebugSysReg();
@@ -198,7 +198,7 @@ int altera_uart_open(unsigned char chipNo,char party,unsigned char stop,unsigned
     return ret;
 }
 
-int altera_uart_close(unsigned char chipNo)
+int RS422Close(unsigned char chipNo)
 {
     int ret = OK;
     int irq_num = 0;
@@ -234,7 +234,7 @@ int altera_uart_close(unsigned char chipNo)
     return ret;
 }
 
-int altera_uart_read(unsigned char chipNo,char * buf,unsigned int nBytes)
+int RS422Read(unsigned char chipNo,char * buf,unsigned int nBytes)
 {
     unsigned int readNum = 0;
     UART_BUFF *pdevFd = (UART_BUFF *)&(altera_uart_buff[chipNo]);
@@ -270,7 +270,7 @@ int altera_uart_read(unsigned char chipNo,char * buf,unsigned int nBytes)
     return readNum;
 }
 
-int altera_uart_write(unsigned char chipNo,char * buf,unsigned int nBytes)
+int RS422Write(unsigned char chipNo,char * buf,unsigned int nBytes)
 {
     UART_BUFF *pdevFd = (UART_BUFF *)&(altera_uart_buff[chipNo]);
 
@@ -287,7 +287,7 @@ int altera_uart_write(unsigned char chipNo,char * buf,unsigned int nBytes)
     return nBytes;   
 }
 
-int altera_uart_init(unsigned char chipNo)
+int RS422Init(unsigned char chipNo)
 {
     int ret = OK;
 
@@ -311,7 +311,7 @@ int altera_uart_init(unsigned char chipNo)
     return ret;
 }
 
-int altera_uart_setopt(unsigned char chipNo,char party,unsigned char stop_bit,unsigned char data_bit)
+int RS422SetOpt(unsigned char chipNo,char party,unsigned char stop_bit,unsigned char data_bit)
 {
     int ret = OK;
     unsigned char lcr;
@@ -347,7 +347,7 @@ int altera_uart_setopt(unsigned char chipNo,char party,unsigned char stop_bit,un
     return ret;
 }
 
-int altera_uart_setbaud(unsigned char chipNo,unsigned int baud)
+int RS422SetBaud(unsigned char chipNo,unsigned int baud)
 {
     int ret = OK;
     unsigned short dll,dlh;
@@ -394,7 +394,7 @@ int uartRecvBytes(UART_BUFF *  pdevFd, char *pBuf, int nBytes)
             tptr = 0;
         }
 
-        if(tptr !=pdevFd->msgrd)//确保先写后读，如果写指针即将覆盖未读信息，则不再向缓冲区中写入
+        if(tptr !=pdevFd->msgrd) // ensure write before read, if write pointer to be overwritten, never write to the buffer
         {  
 
             pdevFd->RXBuffer[pdevFd->msgwr] = *ptr ;
@@ -406,7 +406,7 @@ int uartRecvBytes(UART_BUFF *  pdevFd, char *pBuf, int nBytes)
 
 
 
-            if(pdevFd->msgwr == RX_LEN)//如果写指针已经已经越界，则回头
+            if(pdevFd->msgwr == RX_LEN) // if overwritten, reset the counter
             {
                 pdevFd->msgwr = 0;
             }
@@ -431,7 +431,7 @@ void uartRecvHandle(UART_BUFF * pDev)
         data = (unsigned short)UART_REG(RBR,pdevFd) ;
         buf[0] = (data >> 0) & 0xff;
 
-        if(uartRecvBytes(pdevFd,&buf[0],sizeof(buf[0])) != 0)
+        if(uartRecvBytes(pdevFd,(char*)&buf[0],sizeof(buf[0])) != 0)
         {
             Osal_SemPost(pdevFd->rx_semSync);
         }

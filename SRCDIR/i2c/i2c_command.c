@@ -68,7 +68,7 @@ s32 do_i2c ( cmd_tbl_t *cmdtp, s32 flag, s32 argc, s8 *const argv[])
     	len = simple_strtoul(argv[5], NULL, 10);
     	mem_addr = simple_strtoul(argv[6], NULL, 16);
 
-    	if( GpioI2cWriteBytes(chip, addr, alen, mem_addr, len) == 0 ) {
+    	if( GpioI2cWriteBytes(chip, addr, alen, (unsigned char*)mem_addr, len) == 0 ) {
     		shellprintf("GpioI2cWriteBytes write complete\n");
     	} else {
     		shellprintf("GpioI2cWriteBytes failed %x %x %u %x %u\n",

@@ -267,7 +267,7 @@ void UartPrintf(const char *fmt, ...)
     va_start( arg_ptr, fmt );
     length = vsprintf( (char *)g_uartprintbuffer, (char *) fmt, arg_ptr );
     va_end( arg_ptr );	
-    UartPutbuffer(g_uartprintbuffer);
+    UartPutbuffer((unsigned char*)g_uartprintbuffer);
     Osal_ExitGlobalCriticalSection();
 }
 #endif

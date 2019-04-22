@@ -76,7 +76,7 @@ void ADS124S08_DeassertClock(void);
 
 	if( strcmp(ops, "rdata") == 0 ) {
 		ADS124S08_ReadDate(&buffer[0], &buffer[1], &buffer[4]);
-		for( i = 0; i , 5; ++i ) {
+		for( i = 0; i < 5; ++i ) {
 			PRINTF("0x%02x ", buffer[i]);
 		}
 		PRINTF("\n");

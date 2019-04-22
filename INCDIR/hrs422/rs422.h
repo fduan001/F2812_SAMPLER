@@ -1,5 +1,5 @@
-#ifndef ALTERA_RS422_H
-#define ALTERA_RS422_H
+#ifndef RS422_H
+#define RS422_H
 
 #define   SYS_CLK  100000000
 
@@ -64,13 +64,14 @@
 #define  LSR_TRANS_EMTPY   0x40
 #define  LSR_RECV_FIFO_ERROR 0x80
 
-int altera_uart_open(unsigned char chipNo,char party,unsigned char stop,unsigned char data_bit,unsigned int baud);
-int altera_uart_close(unsigned char chipNo);
-int altera_uart_read(unsigned char chipNo,char * buf,unsigned int nBytes);
-int altera_uart_write(unsigned char chipNo,char * buf,unsigned int nBytes);
+int RS422Open(unsigned char chipNo,char party,unsigned char stop,unsigned char data_bit,unsigned int baud);
+int RS422Close(unsigned char chipNo);
+int RS422Read(unsigned char chipNo,char * buf,unsigned int nBytes);
+int RS422Write(unsigned char chipNo,char * buf,unsigned int nBytes);
 
-int altera_uart_init(unsigned char chipNo);
-int altera_uart_setopt(unsigned char chipNo,char party,unsigned char stop_bit,unsigned char data_bit);
-int altera_uart_setbaud(unsigned char chipNo,unsigned int baud);
+int RS422Init(unsigned char chipNo);
+int RS422SetOpt(unsigned char chipNo,char party,unsigned char stop_bit,unsigned char data_bit);
+int RS422SetBaud(unsigned char chipNo,unsigned int baud);
 
 #endif
+
