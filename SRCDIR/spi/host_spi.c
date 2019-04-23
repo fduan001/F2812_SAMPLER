@@ -19,7 +19,7 @@ void HostSpiInit(void) {
 
     SpiaRegs.SPICTL.all = SPICTL_CFG;
 
-    SpiaRegs.SPIBRR = SPIBRR_CFG;//128分频
+    SpiaRegs.SPIBRR = SPIBRR_CFG;//
 
     SpiaRegs.SPICCR.all = (0x80 | SPICCR_CFG);
 	/* initialize the GPIO settings */
