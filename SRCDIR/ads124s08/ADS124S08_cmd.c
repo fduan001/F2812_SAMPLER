@@ -23,20 +23,6 @@ s32 do_ads124s08 ( cmd_tbl_t *cmdtp, s32 flag, s32 argc, s8 *const argv[])
 		return 1;
 	}
 
-#if 0 
-int ADS124S08_Init(void);
-UINT8 ADS124S08_ReadReg(UINT8 regnum);
-void ADS124S08_ReadRegs(UINT8 regnum, UINT8 *data, UINT8 count);
-void ADS124S08_WriteReg(UINT8 regnum, UINT8 data);
-void ADS124S08_WriteRegs(UINT8 regnum, UINT8 *data, UINT8 count);
-void ADS124S08_RestartSync(void);
-void ADS124S08_SendCmd(UINT8 op_code);
-int ADS124S08_ReadDate(UINT8 *dStatus, UINT8 *dData, UINT8 *dCRC);
-void ADS124S08_AssertStart(void);
-void ADS124S08_DeassertStart(void);
-void ADS124S08_AssertClock(void);
-void ADS124S08_DeassertClock(void);
-#endif
 	ops = argv[1];
 
 	if( strcmp(ops, "init") == 0) {
