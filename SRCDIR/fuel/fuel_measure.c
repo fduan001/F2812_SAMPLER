@@ -3,8 +3,6 @@
 #include "fpga.h"
 #include "fuel_measure.h"
 
-static u8 g_data_valid = 0;
-
 typedef struct FUEL_MEAS_DATA_T
 {
 	u8 valid;
@@ -96,7 +94,7 @@ void FuelIntrHandler(UINT8 bit_pos) {
 
 	/* write b'1 to clear the flag */
 	FPGA_REG16_W(FPGA_FUEL_STATUS_REG, sts);
-	return 0;
+	return ;
 }
 
 int FuelMeasSelfTest(void) {

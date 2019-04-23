@@ -8,7 +8,7 @@
 #define ARRAY_SIZE(x)  (sizeof(x)/sizeof(x[0]))
 #endif
 
-static int do_eeprom_read(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
+int do_eeprom_read(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	unsigned int devaddr;
 	unsigned int offset;
@@ -43,7 +43,7 @@ static int do_eeprom_read(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const arg
 	return CMD_RET_SUCCESS;
 }
 
-static int do_eeprom_write(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
+int do_eeprom_write(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	unsigned int devaddr;
 	unsigned int offset;
@@ -75,7 +75,7 @@ static cmd_tbl_t cmd_eeprom_sub[] = {
 	{"write", 6, 1, do_eeprom_write, "", ""},
 };
 
-static int do_eeprom(cmd_tbl_t * cmdtp, s32 flag, int argc, char * const argv[])
+int do_eeprom(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	cmd_tbl_t *c;
 

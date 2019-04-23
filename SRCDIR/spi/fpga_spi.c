@@ -361,7 +361,7 @@ INT32 FpgaSpiRead(UINT8 channel , UINT8 *readbuffer, UINT8 readlen)
 {
     S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue, timeout = FPGA_SPI_TIMEOUT;
-    UINT8   index, sendlen;
+    UINT8   index;
     spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 16);
     //first check the go_bsy=0?
     do

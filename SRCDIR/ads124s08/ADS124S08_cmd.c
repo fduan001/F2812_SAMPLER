@@ -62,7 +62,7 @@ s32 do_ads124s08 ( cmd_tbl_t *cmdtp, s32 flag, s32 argc, s8 *const argv[])
 
 	if( strcmp(ops, "rdata") == 0 ) {
 		ADS124S08_ReadDate(&buffer[0], &buffer[1], &buffer[4]);
-		for( i = 0; i , 5; ++i ) {
+		for( i = 0; i < 5; ++i ) {
 			PRINTF("0x%02x ", buffer[i]);
 		}
 		PRINTF("\n");

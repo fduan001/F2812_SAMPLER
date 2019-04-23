@@ -17,9 +17,8 @@
 #define DISP_LINE_LEN	16
 #endif
 
-static int do_fpga_spi_cs(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
+int do_fpga_spi_cs(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
-	int rc = 0;
 	int channel;
 	unsigned int option;
 
@@ -39,7 +38,7 @@ static int do_fpga_spi_cs(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const arg
 	return CMD_RET_SUCCESS;
 }
 
-static int do_fpga_spi_read(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
+int do_fpga_spi_read(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	int rc = 0;
 	int channel;
@@ -76,7 +75,7 @@ static int do_fpga_spi_read(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const a
 	return CMD_RET_SUCCESS;
 }
 
-static int do_fpga_spi_write(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
+int do_fpga_spi_write(cmd_tbl_t *cmdtp, s32 flag, int argc, char * const argv[])
 {
 	int rc = 0;
 	int channel;
@@ -109,7 +108,7 @@ static cmd_tbl_t cmd_fpga_spi_sub[] = {
 	{"write", 6, 1, do_fpga_spi_write, "", ""},
 };
 
-static int do_fpga_spi(cmd_tbl_t * cmdtp, s32 flag, int argc, char * const argv[])
+int do_fpga_spi(cmd_tbl_t * cmdtp, s32 flag, int argc, char * const argv[])
 {
 	cmd_tbl_t *c;
 
