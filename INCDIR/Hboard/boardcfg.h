@@ -53,7 +53,7 @@
 /* SPI config */
 #define SPI_PIN_MUX  (0xf)
 /* loopback=0,16bit, clock polarity =0*/
-#define SPICCR_CFG   (0x0f)
+#define SPICCR_CFG   (0x07)
 /**************************************
     clock phase =1
     clock parity =0
@@ -82,7 +82,7 @@ received is D15, the most significant bit (MSB)
 *********************************************************/
 /* clock phase =1 */
 #define SPICTL_CFG   (0xe)
-#define SPIBRR_CFG   (0x03) /*4 divide * 37.5/4 <10MHZ/
+#define SPIBRR_CFG   (0x23) /*4 divide * 37.5/36 ~1MHZ/
 
 
 /* GPIO configuration */
