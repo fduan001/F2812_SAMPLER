@@ -22,6 +22,7 @@
 
 //#define  TEST_CPUCNT
 //#define TEST_HARDTIMER
+extern void GpioInit(void);
 extern int RS422CmdInit(void);
 extern void FpgaCmdInitialzie();
 extern  int FpgaSpiCmdInit(void);
@@ -144,6 +145,7 @@ void ShellTask()
     set_shellprompt(CONFIG_BOARD_PROMPT);
     WatchdogKick();
 
+    GpioInit();
     FRAMCmdInitialize();
     MidCmdInitialize();
     FpgaSpiCmdInit();

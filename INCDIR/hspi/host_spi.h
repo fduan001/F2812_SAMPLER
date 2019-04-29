@@ -18,4 +18,10 @@ typedef struct spi_msg_t {
 	UINT8 *rx_buf;
 } spi_msg_t;
 
+void HostSpiInit(void);
+void HostSpiAssertCS(void);
+void HostSpiDeassertCS(void);
+int HostSpiXfer(UINT8* tx_buf, UINT16 tx_len, 
+	UINT8* rx_buf, UINT16 rx_len) ;
+
 #endif
