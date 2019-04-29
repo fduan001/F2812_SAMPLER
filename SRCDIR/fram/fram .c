@@ -8,7 +8,7 @@
 #define FRAM_READ        0x03    // Read command
 #define FRAM_RDSR        0x05    // Read Status Register
 
-int FRAMSpiInit(void) {
+int FRAMInit(void) {
 	return 0;
 }
 

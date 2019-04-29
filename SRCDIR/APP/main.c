@@ -29,6 +29,7 @@ extern void AD567XCmdInitialize();
 extern void ADS124S08CmdInitialize();
 extern void FuelCmdInitialzie();
 extern void FlowCmdInitialzie();
+extern void FRAMCmdInitialize();
 
 /******************************
    option 2
@@ -143,6 +144,7 @@ void ShellTask()
     set_shellprompt(CONFIG_BOARD_PROMPT);
     WatchdogKick();
 
+    FRAMCmdInitialize();
     MidCmdInitialize();
     FpgaSpiCmdInit();
     AD567XCmdInitialize();
