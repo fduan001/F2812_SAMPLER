@@ -81,7 +81,7 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 	if( spi_msg->rx_len > 0 ) {
 		spi_msg->rx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->rx_len; ++i ) {
-			SpiaRegs.SPITXBUF = 0xFF; /* dummy byte */
+			SpiaRegs.SPITXBUF = 0x00; /* dummy byte */
 			while(SpiaRegs.SPIFFRX.bit.RXFFST !=1) {};
 			spi_msg->rx_buf[i] = SpiaRegs.SPIRXBUF;
 		}
