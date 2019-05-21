@@ -8,11 +8,11 @@
 #define NULL   (void*)0
 #endif
 
-s32 do_fram ( cmd_tbl_t *cmdtp, s32 flag, s32 argc, s8 *const argv[])
+INT32 do_fram ( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 {
 	char *ops;
-	u16 addr = 0;
-	u8 val = 0;
+	UINT16 addr = 0;
+	UINT8 val = 0;
 
     /*check input arg number*/
 	if (argc < 2)
@@ -59,7 +59,7 @@ far cmd_tbl_t fram_cmd[] =
 
 void FRAMCmdInitialize()
 {
-	s8 index;
+	INT8 index;
 
 	for (index = 0; index < sizeof(fram_cmd) / sizeof(cmd_tbl_t); index++)
 		RegisterCommand(fram_cmd[index]);

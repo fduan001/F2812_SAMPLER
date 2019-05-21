@@ -4,10 +4,10 @@
 #include "util.h"
 #include "flow_measure.h"
 
-s32 do_flow( cmd_tbl_t *cmdtp, s32 flag, s32 argc, s8 *const argv[])
+INT32 do_flow( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 {
 	char *ops = NULL;
-	u8 chan = 0;
+	UINT8 chan = 0;
 
 	if( argc < 2 ) {
 		shellprintf ("Usage:\n%s\n", cmdtp->usage);
@@ -62,7 +62,7 @@ far cmd_tbl_t flow_cmd[] =
 
 void FlowCmdInitialzie()
 {
-    s8 index;
+    INT8 index;
     for (index = 0; index < sizeof(flow_cmd) / sizeof(cmd_tbl_t); index++)
         RegisterCommand(flow_cmd[index]);
 }

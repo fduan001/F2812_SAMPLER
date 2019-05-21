@@ -5,7 +5,7 @@
 
 typedef struct FUEL_MEAS_DATA_T
 {
-	u8 valid;
+	UINT8 valid;
 	UINT16 datah;
 	UINT16 datal;
 } fuel_meas_data_t;
@@ -98,7 +98,7 @@ void FuelIntrHandler(UINT8 bit_pos) {
 }
 
 int FuelMeasSelfTest(void) {
-	u8 i = 0;
+	UINT8 i = 0;
 	UINT16 val = 0;
 	UINT16 data[2];
 	UINT16 count = 0;
