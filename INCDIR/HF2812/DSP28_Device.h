@@ -85,7 +85,7 @@ extern cregister volatile unsigned int IER;
 #if 0
 typedef int  		int16;
 typedef long 		int32;
-typedef unsigned int  	Uint16;
+typedef UINT32  	Uint16;
 typedef unsigned long 	Uint32;
 #endif
 //---------------------------------------------------------------------------

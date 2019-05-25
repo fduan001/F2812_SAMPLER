@@ -128,7 +128,7 @@ void TimerFunc(UINT32 cnt)
 #endif
 
 #ifdef TEST_KEYINT
-unsigned  int  *LedADDR  = (unsigned int *)0x2800;
+unsigned  int  *LedADDR  = (UINT32 *)0x2800;
 UINT16	Temp;
 void KeyIntFunc(UINT32 key)
 {

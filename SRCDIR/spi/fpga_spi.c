@@ -30,12 +30,12 @@
 
 #define FPGA_SPI_TIMEOUT   10 /* 10 ms */
 
-unsigned char SYSSPI_RESET_BIT[] = {
+UINT8 SYSSPI_RESET_BIT[] = {
   FPGA_SPI1_RESET_BIT,FPGA_SPI2_RESET_BIT,FPGA_SPI3_RESET_BIT,FPGA_SPI4_RESET_BIT, \
   FPGA_SPI5_RESET_BIT,FPGA_SPI6_RESET_BIT,FPGA_SPI7_RESET_BIT,FPGA_SPI8_RESET_BIT
 };
 
-static inline void __msleep__(unsigned int ms)
+static inline void __msleep__(UINT32 ms)
 {
 	Osal_TaskSleep(ms);
 }

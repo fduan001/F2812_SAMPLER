@@ -16,9 +16,9 @@
 #define _X	0x40	/* hex digit */
 #define _SP	0x80	/* hard space (0x20) */
 
-extern unsigned char _ctype[];
+extern UINT8 _ctype[];
 
-#define __ismask(x) (_ctype[(int)(unsigned char)(x)])
+#define __ismask(x) (_ctype[(int)(UINT8)(x)])
 
 #define isalnum(c)	((__ismask(c)&(_U|_L|_D)) != 0)
 #define isalpha(c)	((__ismask(c)&(_U|_L)) != 0)
@@ -32,8 +32,8 @@ extern unsigned char _ctype[];
 #define isupper(c)	((__ismask(c)&(_U)) != 0)
 #define isxdigit(c)	((__ismask(c)&(_D|_X)) != 0)
 
-#define isascii(c) (((unsigned char)(c))<=0x7f)
-#define toascii(c) (((unsigned char)(c))&0x7f)
+#define isascii(c) (((UINT8)(c))<=0x7f)
+#define toascii(c) (((UINT8)(c))&0x7f)
 
 #endif
 
@@ -55,25 +55,9 @@ typedef void                  *VOID_STAR;      /* kept for compatibility */
 
 typedef volatile unsigned long	vu_long;
 typedef unsigned char		uchar;
-typedef unsigned long phys_addr_t;
 
 #endif 
-#if 0
-typedef unsigned long long int u64;
-typedef long long int          s64;
-typedef unsigned int           UINT32;
-typedef unsigned short         UINT16;
-typedef unsigned char          UINT8;
-typedef          int           INT32;
-typedef          short         INT16;
-typedef          char          INT8; /* would have been better with signed */
-typedef void                  *VOID_STAR;      /* kept for compatibility */
-typedef          INT8            ascii;          /* kept for compatibility */
-//typedef unsigned int  size_t;
-typedef volatile unsigned long	vu_long;
-typedef unsigned char		uchar;
-typedef unsigned long phys_addr_t;
-#endif
+
 
 static inline unsigned char __tolower(unsigned char c)
 {
@@ -91,24 +75,5 @@ static  inline unsigned char __toupper(unsigned char c)
 
 #define shelltolower(c) __tolower(c)
 #define shelltoupper(c) __toupper(c)
-
-/* bsd */
-typedef unsigned char		u_char;
-typedef unsigned short		u_short;
-typedef unsigned int		u_int;
-typedef unsigned long		u_long;
-
-/* sysv */
-typedef unsigned char		unchar;
-typedef unsigned short		ushort;
-typedef unsigned int		uint;
-typedef unsigned long		ulong;
-
-/* for gunzip */
-typedef ushort          huft_code;
-typedef uchar           huft_bits;
-
-
-
 
 #endif

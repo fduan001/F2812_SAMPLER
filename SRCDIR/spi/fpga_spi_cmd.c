@@ -20,7 +20,7 @@
 INT32 do_fpga_spi_cs(cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, char * const argv[])
 {
 	int channel;
-	unsigned int option;
+	UINT32 option;
 
 	if (argc != 3)
 	{
@@ -42,8 +42,8 @@ INT32 do_fpga_spi_read(cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, char * const ar
 {
 	int rc = 0;
 	int channel;
-	unsigned int length;
-	unsigned char buffer[100];
+	UINT32 length;
+	UINT8 buffer[100];
 	int i = 0;
 
 	if (argc != 3)
@@ -77,10 +77,10 @@ INT32 do_fpga_spi_read(cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, char * const ar
 
 INT32 do_fpga_spi_write(cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, char * const argv[])
 {
-	int rc = 0;
-	int channel;
-	unsigned int source;
-	unsigned int length;
+	INT32 rc = 0;
+	UINT8 channel;
+	UINT32 source;
+	UINT32 length;
 
 	if (argc != 4)
 	{
@@ -92,7 +92,7 @@ INT32 do_fpga_spi_write(cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, char * const a
 	source = simple_strtoul(argv[2], NULL, 16);
 	length = simple_strtoul(argv[3], NULL, 16);
 
-	rc = FpgaSpiWrite(channel, (unsigned char*)source, length);
+	rc = FpgaSpiWrite(channel, (UINT8*)source, length);
 	if( rc != 0 ) {
 		PRINTF("FpgaSpiWrite failed, rc=%d\n", rc);
 		return CMD_RET_FAILURE;

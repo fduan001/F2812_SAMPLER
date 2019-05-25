@@ -311,7 +311,7 @@ static char *number(char *buf, unsigned NUM_TYPE num, int base, int size, int pr
         if (base == 16) shift = 4;
         do
         {
-            tmp[i++] = (digits[((unsigned char)num) & mask] | locase);
+            tmp[i++] = (digits[((UINT8)num) & mask] | locase);
             num >>= shift;
         }
         while (num);
@@ -612,7 +612,7 @@ repeat:
             if (!(flags & LEFT))
                 while (--field_width > 0)
                     *str++ = ' ';
-            *str++ = (unsigned char) va_arg(args, int);
+            *str++ = (UINT8) va_arg(args, int);
             while (--field_width > 0)
                 *str++ = ' ';
             continue;
@@ -690,13 +690,13 @@ repeat:
         }
         else if (qualifier == 'h')
         {
-            num = (unsigned short) va_arg(args, int);
+            num = (UINT16) va_arg(args, int);
             if (flags & SIGN)
                 num = (signed short) num;
         }
         else
         {
-            num = va_arg(args, unsigned int);
+            num = va_arg(args, UINT32);
             if (flags & SIGN)
                 num = (signed int) num;
         }

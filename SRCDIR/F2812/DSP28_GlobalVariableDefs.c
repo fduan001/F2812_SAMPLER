@@ -22,7 +22,7 @@
 //---------------------------------------------------------------------------
 // Define Global Peripheral Variables:
 //
-
+#include "F2812_datatype.h"
 #include "DSP28_Device.h"
 
 #pragma DATA_SECTION(AdcRegs,"AdcRegsFile");

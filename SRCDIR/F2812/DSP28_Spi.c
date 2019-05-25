@@ -16,11 +16,9 @@
 //  0.56| 20 May 2002 | L.H. | No change
 //  0.57| 27 May 2002 | L.H. | No change
 //###########################################################################
-
-#include "DSP28_Device.h"
-
-#include "boardcfg.h"
 #include "F2812_datatype.h"
+#include "DSP28_Device.h"
+#include "boardcfg.h"
 
 //---------------------------------------------------------------------------
 // InitSPI:
@@ -90,7 +88,7 @@ void SpiWriteData(UINT16 data)
 UINT16 SpiReadData(void)
 {
     while(1 != Spi_RxReady());
-    return (unsigned short)(SpiaRegs.SPIRXBUF);
+    return (UINT16)(SpiaRegs.SPIRXBUF);
 }
 
 

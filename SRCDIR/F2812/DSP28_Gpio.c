@@ -16,10 +16,9 @@
 //  0.56| 20 May 2002 | L.H. | No change
 //  0.57| 27 May 2002 | L.H. | No change
 //###########################################################################
-
+#include "F2812_datatype.h"
 #include "DSP28_Device.h"
 #include "boardcfg.h"
-#include "F2812_datatype.h"
 
 //---------------------------------------------------------------------------
 // InitGpio:
@@ -107,7 +106,7 @@ void GpioPortWrite(UINT8 portid , UINT16 portdata)
 
 UINT16 GpioPortRead(UINT8 portid )
 {
-    unsigned short regvalue;
+    UINT16 regvalue;
     switch(portid)
     {
     case 'A':

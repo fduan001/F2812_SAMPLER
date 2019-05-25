@@ -78,7 +78,7 @@ UINT16 SpiReadData(void);
 
 //delay 
 UINT32 GetTimer2Cnt ();
-void Delay500ms(unsigned int delaycnt);
+void Delay500ms(UINT32 delaycnt);
 void UDelay(UINT16 delay);
 void SetCpuUsTimer2();
 void PlatformDelay (UINT16 usec);

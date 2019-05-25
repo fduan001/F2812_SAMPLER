@@ -20,12 +20,12 @@
 static INT32 do_rs422_init(cmd_tbl_t *cmdtp, INT32 flag,  INT32 argc, char * const argv[])
 {
 	int  rc = 0;
-	unsigned char chip;
+	UINT8 chip;
 #if 0
 	char party;
-	unsigned char stop;
-	unsigned char data_bit;
-	unsigned int baud;
+	UINT8 stop;
+	UINT8 data_bit;
+	UINT32 baud;
 #endif
 
 #if 0

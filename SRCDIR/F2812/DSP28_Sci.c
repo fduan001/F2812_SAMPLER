@@ -15,8 +15,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "DSP28_Device.h"
 #include "F2812_datatype.h"
+#include "DSP28_Device.h"
 #include "boardcfg.h"
 #include "boarddrv.h"
 
@@ -172,7 +172,7 @@ void UartCharPut_B(UINT8 byteTx)
 /**
  * \brief   This function reads a byte entered on the serial console.
  *
- * \return  Returns the entered byte typecasted as an unsigned character.
+ * \return  Returns the entered byte typecasted as an UINT8acter.
  */
 
 UINT8 UartGetc(void)
@@ -181,7 +181,7 @@ UINT8 UartGetc(void)
 	return(getchar());
 #else
     while(1 != SciaRx_Ready());
-    return (unsigned char)(SciaRegs.SCIRXBUF.all);
+    return (UINT8)(SciaRegs.SCIRXBUF.all);
 #endif
 }
 
@@ -192,7 +192,7 @@ UINT8 UartGetc_B(void)
 	return(getchar());
 #else
     while(1 != ScibRx_Ready());
-    return (unsigned char)(ScibRegs.SCIRXBUF.all);
+    return (UINT8)(ScibRegs.SCIRXBUF.all);
 #endif
 }
 
@@ -267,7 +267,7 @@ void UartPrintf(const char *fmt, ...)
     va_start( arg_ptr, fmt );
     length = vsprintf( (char *)g_uartprintbuffer, (char *) fmt, arg_ptr );
     va_end( arg_ptr );	
-    UartPutbuffer((unsigned char*)g_uartprintbuffer);
+    UartPutbuffer((UINT8*)g_uartprintbuffer);
     Osal_ExitGlobalCriticalSection();
 }
 #endif

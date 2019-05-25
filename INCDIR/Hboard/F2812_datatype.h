@@ -29,19 +29,6 @@ typedef void          *HANDLE;
 #define		NULL	0
 #endif
 
-#ifndef UINT32
-#define		UINT32	unsigned long
-#endif
-
-#ifndef UINT16
-#define		UINT16	unsigned int
-#endif
-#if 1
-#ifndef UINT8
-#define		UINT8	unsigned char
-#endif
-#endif
-
 #ifndef _SIZE_T
 #define _SIZE_T
 typedef unsigned int size_t;
@@ -62,7 +49,11 @@ typedef unsigned int size_t;
 #endif
 #endif
 
+typedef unsigned char UINT8;
+typedef unsigned long UINT32;
+typedef unsigned short UINT16;
 typedef unsigned long phys_addr_t;
+typedef unsigned long ulong;
 
 #endif /* _TPYES_H */
 

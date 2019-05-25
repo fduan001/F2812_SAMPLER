@@ -135,30 +135,30 @@
 /******************************************************************************/
 
 /*! Initializes the device. */
-unsigned char AD568X_Init(unsigned char ad568x);
+UINT8 AD568X_Init(UINT8 ad568x);
 
 /*! Resets the device(clears the outputs to either zero scale or midscale). */
-void AD568X_Reset(unsigned char resetOutput);
+void AD568X_Reset(UINT8 resetOutput);
 
 /*! Puts the device in a specific power mode. */
-void AD568X_PowerMode(unsigned char channel, unsigned char pwrMode);
+void AD568X_PowerMode(UINT8 channel, UINT8 pwrMode);
 
 /*! Select internal or external voltage reference. */
-void AD568X_InternalVoltageReference(unsigned char vRefMode);
+void AD568X_InternalVoltageReference(UINT8 vRefMode);
 
 /*!  Writes a 24-bit data-word to the Input Register of the device. */
 void AD568X_SetInputRegister(unsigned long registerValue);
 
 /*! Write data to the Input Register or to DAC Register of a channel. */
-void AD568X_WriteFunction(unsigned char writeCommand, 
-                          unsigned char channel, 
-                          unsigned short data);
+void AD568X_WriteFunction(UINT8 writeCommand, 
+                          UINT8 channel, 
+                          UINT16 data);
 
 /*! Reads back the binary value written to one of the channels. */
-unsigned short AD568X_ReadBack(unsigned char dacChannelAddr);
+UINT16 AD568X_ReadBack(UINT8 dacChannelAddr);
 
 /*! Selects the output voltage of the selected channel. */
-float AD568X_SetVoltage(unsigned char channel, 
+float AD568X_SetVoltage(UINT8 channel, 
                         float outputVoltage, 
                         float vRef);
 

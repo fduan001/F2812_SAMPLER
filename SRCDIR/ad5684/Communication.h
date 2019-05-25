@@ -51,40 +51,40 @@
 /******************************************************************************/
 
 /*! Initializes the I2C communication peripheral. */
-unsigned char I2C_Init(unsigned long clockFreq);
+UINT8 I2C_Init(unsigned long clockFreq);
 
 /*! Writes data to a slave device. */
-unsigned char I2C_Write(unsigned char slaveAddress,
-                        unsigned char* dataBuffer,
-                        unsigned char bytesNumber,
-                        unsigned char stopBit);
+UINT8 I2C_Write(UINT8 slaveAddress,
+                        UINT8* dataBuffer,
+                        UINT8 bytesNumber,
+                        UINT8 stopBit);
 
 /*! Reads data from a slave device. */
-unsigned char I2C_Read(unsigned char slaveAddress,
-                       unsigned char* dataBuffer,
-                       unsigned char bytesNumber,
-                       unsigned char stopBit);
+UINT8 I2C_Read(UINT8 slaveAddress,
+                       UINT8* dataBuffer,
+                       UINT8 bytesNumber,
+                       UINT8 stopBit);
 
 /*! Initializes the SPI communication peripheral. */
-unsigned char SPI_Init(unsigned char lsbFirst,
+UINT8 SPI_Init(UINT8 lsbFirst,
                        unsigned long clockFreq,
-                       unsigned char clockPol,
-                       unsigned char clockEdg);
+                       UINT8 clockPol,
+                       UINT8 clockEdg);
 
 /*! Initializes the SPI communication peripheral. */
-unsigned char SPI_Init(unsigned char lsbFirst,
+UINT8 SPI_Init(UINT8 lsbFirst,
                        unsigned long clockFreq,
-                       unsigned char clockPol,
-                       unsigned char clockEdg);
+                       UINT8 clockPol,
+                       UINT8 clockEdg);
 
 /*! Reads data from SPI. */
-unsigned char SPI_Read(unsigned char slaveDeviceId,
-                       unsigned char* data,
-                       unsigned char bytesNumber);
+UINT8 SPI_Read(UINT8 slaveDeviceId,
+                       UINT8* data,
+                       UINT8 bytesNumber);
 
 /*! Writes data to SPI. */
-unsigned char SPI_Write(unsigned char slaveDeviceId,
-                        unsigned char* data,
-                        unsigned char bytesNumber);
+UINT8 SPI_Write(UINT8 slaveDeviceId,
+                        UINT8* data,
+                        UINT8 bytesNumber);
 
 #endif // _COMMUNICATION_H

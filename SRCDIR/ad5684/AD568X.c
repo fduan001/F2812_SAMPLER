@@ -43,6 +43,7 @@
 /******************************************************************************/
 /***************************** Include Files **********************************/
 /******************************************************************************/
+#include "F2812_datatype.h"
 #include "AD568X.h"		// AD568X definitions.
 
 /******************************************************************************/
@@ -53,8 +54,8 @@
 /******************************************************************************/
 /************************ Variables Definitions *******************************/
 /******************************************************************************/
-unsigned char currentPowerRegValue = 0; 
-unsigned char deviceBitsNumber     = 0;
+UINT8 currentPowerRegValue = 0; 
+UINT8 deviceBitsNumber     = 0;
 
 /******************************************************************************/
 /************************ Functions Definitions *******************************/
@@ -74,9 +75,9 @@ unsigned char deviceBitsNumber     = 0;
  *					Example: 0x0 - SPI peripheral was not initialized.
  *				  			 0x1 - SPI peripheral is initialized.
 *******************************************************************************/
-unsigned char AD568X_Init(unsigned char ad568x)
+UINT8 AD568X_Init(UINT8 ad568x)
 {
-    unsigned char status = 0;
+    UINT8 status = 0;
     
 #if 0
     /* GPIO configuration. */
@@ -126,7 +127,7 @@ unsigned char AD568X_Init(unsigned char ad568x)
  *
  * @return none.
 *******************************************************************************/
-void AD568X_PowerMode(unsigned char channel, unsigned char pwrMode)
+void AD568X_PowerMode(UINT8 channel, UINT8 pwrMode)
 {    
     switch(channel)
     {
@@ -162,7 +163,7 @@ void AD568X_PowerMode(unsigned char channel, unsigned char pwrMode)
  *
  * @return none.
 *******************************************************************************/
-void AD568X_Reset(unsigned char resetOutput)
+void AD568X_Reset(UINT8 resetOutput)
 {
 #if 0
     if(resetOutput)
@@ -186,8 +187,8 @@ void AD568X_Reset(unsigned char resetOutput)
 *******************************************************************************/
 void AD568X_SetInputRegister(unsigned long registerValue)
 {
-    unsigned char registerWord[3] = {0, 0, 0};
-    unsigned char* dataPointer    = (unsigned char*)&registerValue;
+    UINT8 registerWord[3] = {0, 0, 0};
+    UINT8* dataPointer    = (UINT8*)&registerValue;
 
     registerWord[0] = dataPointer[2];
     registerWord[1] = dataPointer[1];
@@ -205,7 +206,7 @@ void AD568X_SetInputRegister(unsigned long registerValue)
  *
  * @return none.
 *******************************************************************************/
-void AD568X_InternalVoltageReference(unsigned char vRefMode)
+void AD568X_InternalVoltageReference(UINT8 vRefMode)
 {
     AD568X_SetInputRegister(AD568X_CMD(AD568X_CMD_INT_REF_SETUP) | 
                             vRefMode);
@@ -227,11 +228,11 @@ void AD568X_InternalVoltageReference(unsigned char vRefMode)
  *
  * @return none.
 *******************************************************************************/
-void AD568X_WriteFunction(unsigned char writeCommand, 
-                          unsigned char channel, 
-                          unsigned short data)
+void AD568X_WriteFunction(UINT8 writeCommand, 
+                          UINT8 channel, 
+                          UINT16 data)
 {
-    unsigned char shiftValue = 0;
+    UINT8 shiftValue = 0;
     
     /* Different types of devices have different data bits positions. */
     shiftValue = 16 - deviceBitsNumber;
@@ -251,11 +252,11 @@ void AD568X_WriteFunction(unsigned char writeCommand,
  *
  * @return 12-bit value of the selected channel.
 *******************************************************************************/
-unsigned short AD568X_ReadBack(unsigned char dacChannelAddr)
+UINT16 AD568X_ReadBack(UINT8 dacChannelAddr)
 {
     unsigned long channelValue = 0;
-    unsigned char shiftValue   = 0;
-    unsigned char rxBuffer[3]  = {0, 0, 0};
+    UINT8 shiftValue   = 0;
+    UINT8 rxBuffer[3]  = {0, 0, 0};
     
     /* Different types of devices have different data bits positions. */
     shiftValue = 16 - deviceBitsNumber;
@@ -284,11 +285,11 @@ unsigned short AD568X_ReadBack(unsigned char dacChannelAddr)
  *
  * @return The actual value of the output voltage.
 *******************************************************************************/
-float AD568X_SetVoltage(unsigned char channel, 
+float AD568X_SetVoltage(UINT8 channel, 
                         float outputVoltage, 
                         float vRef)
 {
-    unsigned short binaryValue   = 0;
+    UINT16 binaryValue   = 0;
     float          actualVoltage = 0;
     
     if(vRef == 0)
@@ -300,7 +301,7 @@ float AD568X_SetVoltage(unsigned char channel,
 #endif
     vRef *= 2;
 
-    binaryValue = (unsigned short)(outputVoltage * (1 << deviceBitsNumber) / 
+    binaryValue = (UINT16)(outputVoltage * (1 << deviceBitsNumber) / 
                                   vRef);
     AD568X_WriteFunction(AD568X_CMD_WR_UPDT_DAC_N, channel, binaryValue);
     actualVoltage = (float)(vRef * binaryValue) / (1 << deviceBitsNumber);

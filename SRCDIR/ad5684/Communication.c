@@ -74,7 +74,7 @@ S_SPI_CFG_TYPE  ad568x_spicfg =
  *                  Example: 1 - if initialization was successful;
  *                           0 - if initialization was unsuccessful.
 *******************************************************************************/
-unsigned char I2C_Init(unsigned long clockFreq)
+UINT8 I2C_Init(unsigned long clockFreq)
 {
     // Add your code here.
 }
@@ -91,10 +91,10 @@ unsigned char I2C_Init(unsigned long clockFreq)
  *
  * @return status - Number of written bytes.
 *******************************************************************************/
-unsigned char I2C_Write(unsigned char slaveAddress,
-  unsigned char* dataBuffer,
-  unsigned char bytesNumber,
-  unsigned char stopBit)
+UINT8 I2C_Write(UINT8 slaveAddress,
+  UINT8* dataBuffer,
+  UINT8 bytesNumber,
+  UINT8 stopBit)
 {
     // Add your code here.
 }
@@ -111,10 +111,10 @@ unsigned char I2C_Write(unsigned char slaveAddress,
  *
  * @return status - Number of read bytes.
 *******************************************************************************/
-unsigned char I2C_Read(unsigned char slaveAddress,
- unsigned char* dataBuffer,
- unsigned char bytesNumber,
- unsigned char stopBit)
+UINT8 I2C_Read(UINT8 slaveAddress,
+ UINT8* dataBuffer,
+ UINT8 bytesNumber,
+ UINT8 stopBit)
 {
     // Add your code here.
 }
@@ -142,10 +142,10 @@ unsigned char I2C_Read(unsigned char slaveAddress,
  *                  Example: 1 - if initialization was successful;
  *                           0 - if initialization was unsuccessful.
 *******************************************************************************/
-unsigned char SPI_Init(unsigned char lsbFirst,
+UINT8 SPI_Init(UINT8 lsbFirst,
  unsigned long clockFreq,
- unsigned char clockPol,
- unsigned char clockEdg)
+ UINT8 clockPol,
+ UINT8 clockEdg)
 {
     // Add your code here.
 	FpgaSpiConfig(AD568X_SPI_CHANNEL, ad568x_spicfg);
@@ -162,9 +162,9 @@ unsigned char SPI_Init(unsigned char lsbFirst,
  *
  * @return Number of read bytes.
 *******************************************************************************/
-unsigned char SPI_Read(unsigned char slaveDeviceId,
- unsigned char* data,
- unsigned char bytesNumber)
+UINT8 SPI_Read(UINT8 slaveDeviceId,
+ UINT8* data,
+ UINT8 bytesNumber)
 {
     // Add your code here.
 }
@@ -178,9 +178,9 @@ unsigned char SPI_Read(unsigned char slaveDeviceId,
  *
  * @return Number of written bytes.
 *******************************************************************************/
-unsigned char SPI_Write(unsigned char slaveDeviceId,
-  unsigned char* data,
-  unsigned char bytesNumber)
+UINT8 SPI_Write(UINT8 slaveDeviceId,
+  UINT8* data,
+  UINT8 bytesNumber)
 {
     // Add your code here.
     int ret = 0;

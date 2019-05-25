@@ -186,8 +186,8 @@ struct  SPI_REGS
 extern volatile struct SPI_REGS SpiaRegs;
 extern volatile struct SPI_REGS SpibRegs;
 
-extern unsigned int Spi_VarRx[100];
-extern unsigned int i, j;
+extern UINT32 Spi_VarRx[100];
+extern UINT32 i, j;
 
 #endif  // end of DSP28_SPI_H definition
 

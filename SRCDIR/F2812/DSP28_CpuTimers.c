@@ -17,8 +17,8 @@
 //  0.57| 27 May 2002 | L.H. | No change
 //###########################################################################
 
-#include "DSP28_Device.h"
 #include "F2812_datatype.h"
+#include "DSP28_Device.h"
 #include "DSP28_CpuTimers.h"
 #include "boardcfg.h"
 

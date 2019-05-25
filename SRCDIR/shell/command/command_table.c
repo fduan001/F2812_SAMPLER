@@ -105,7 +105,7 @@ cmd_tbl_t endcmmand =
 GateMutex_Params cmdtbl_mutex_prms;
 Error_Block cmdtbl_mutex_eb;
 GateMutex_Handle  cmdtbl_mutex_handle;
-uint16_t cmdtbl_mutex_key;
+UINT3216_t cmdtbl_mutex_key;
 
 #define BSP_CMDTBL_MUTEX_LOCK      c66xi2c_mutex_key=GateMutex_enter (cmdtbl_mutex_handle)
 #define BSP_CMDTBL_MUTEX_UNLOCK    GateMutex_leave(cmdtbl_mutex_handle,cmdtbl_mutex_key)

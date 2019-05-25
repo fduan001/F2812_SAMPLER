@@ -62,9 +62,9 @@ INT32 do_mem_mw ( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
         if (size == 4)
             *((ulong *)addr) = (ulong )writeval;
         else if (size == 2)
-            *((ushort *)addr) = (ushort)writeval;
+            *((UINT16 *)addr) = (UINT16)writeval;
         else
-            *((u_char *)addr) = (u_char)writeval;
+            *((UINT8 *)addr) = (UINT8)writeval;
         // addr += size;
         addr += 1;
     }
@@ -188,11 +188,11 @@ mod_mem(cmd_tbl_t *cmdtp, INT32 incrflag, INT32 flag, INT32 argc, INT8 *const ar
     {
         shellprintf("%08lx:", addr);
         if (size == 4)
-            shellprintf(" %08x", *((uint *)addr));
+            shellprintf(" %08x", *((UINT32 *)addr));
         else if (size == 2)
-            shellprintf(" %04x", *((ushort *)addr));
+            shellprintf(" %04x", *((UINT16 *)addr));
         else
-            shellprintf(" %02x", *((u_char *)addr));
+            shellprintf(" %02x", *((UINT8 *)addr));
 
         nbytes = readline (" ? ");
         if (nbytes == 0 || (nbytes == 1 && console_buffer[0] == '-'))
@@ -228,11 +228,11 @@ mod_mem(cmd_tbl_t *cmdtp, INT32 incrflag, INT32 flag, INT32 argc, INT8 *const ar
                 reset_cmd_timeout();
 #endif
                 if (size == 4)
-                    *((uint *)addr) = i;
+                    *((UINT32 *)addr) = i;
                 else if (size == 2)
-                    *((ushort *)addr) = i;
+                    *((UINT16 *)addr) = i;
                 else
-                    *((u_char *)addr) = i;
+                    *((UINT8 *)addr) = i;
                 if (incrflag) {
                     // addr += size;
                     addr += 1;
@@ -585,7 +585,7 @@ INT32 do_mem_mtest (cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[]
         iteration_limit = 0;
 
 #if defined(CONFIG_SYS_ALT_MEMTEST)
-    shellprintf ("Testing %08x ... %08x:\n", (uint)start, (uint)end);
+    shellprintf ("Testing %08x ... %08x:\n", (UINT32)start, (UINT32)end);
     PRINTF("%s:%d: start 0x%p end 0x%p\n",
            __FUNCTION__, __LINE__, start, end);
 
