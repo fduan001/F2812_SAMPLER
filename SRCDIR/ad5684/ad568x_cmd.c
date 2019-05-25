@@ -7,14 +7,14 @@
 #define NULL   (void*)0
 #endif
 
-s32 do_ad568x ( cmd_tbl_t *cmdtp, s32 flag, s32 argc, s8 *const argv[])
+INT32 do_ad568x ( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 {
 	char *ops;
-	u8 mode = 0;
-	u8 chan = 0;
-	u32 val = 0;
-	u32 ovol = 0;
-	u32 vref = 0;
+	UINT8 mode = 0;
+	UINT8 chan = 0;
+	UINT32 val = 0;
+	UINT32 ovol = 0;
+	UINT32 vref = 0;
 
     /*check input arg number*/
 	if (argc < 2)
@@ -102,7 +102,7 @@ far cmd_tbl_t ad568x_cmd[] =
 
 void AD567XCmdInitialize()
 {
-	s8 index;
+	INT8 index;
 
 	for (index = 0; index < sizeof(ad568x_cmd) / sizeof(cmd_tbl_t); index++)
 		RegisterCommand(ad568x_cmd[index]);

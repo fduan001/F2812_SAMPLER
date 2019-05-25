@@ -22,15 +22,15 @@
 
 //#define  TEST_CPUCNT
 //#define TEST_HARDTIMER
-extern void I2CCmdInitialize();
-extern int EepromCmdInit(void);
-extern int rs422_cmd_init(void);
+extern void GpioInit(void);
+extern int RS422CmdInit(void);
 extern void FpgaCmdInitialzie();
 extern  int FpgaSpiCmdInit(void);
 extern void AD567XCmdInitialize();
 extern void ADS124S08CmdInitialize();
 extern void FuelCmdInitialzie();
 extern void FlowCmdInitialzie();
+extern void FRAMCmdInitialize();
 
 /******************************
    option 2
@@ -145,8 +145,8 @@ void ShellTask()
     set_shellprompt(CONFIG_BOARD_PROMPT);
     WatchdogKick();
 
-    I2CCmdInitialize();
-    EepromCmdInit();
+    GpioInit();
+    FRAMCmdInitialize();
     MidCmdInitialize();
     FpgaSpiCmdInit();
     AD567XCmdInitialize();

@@ -5,6 +5,9 @@
 
 #define HOST_SPI_MAX_XFER_BYTES           16 /* 16 words per fifo */
 
+extern void GpioSpiAssertCS(void);
+extern void GpioSpiDeassertCS(void);
+
 void HostSpiInit(void) {
 	UINT16 regval;
 
@@ -28,11 +31,12 @@ void HostSpiInit(void) {
 }
 
 void HostSpiAssertCS(void) {
+	GpioSpiAssertCS();
 
 }
 
 void HostSpiDeassertCS(void) {
-
+	GpioSpiDeassertCS();
 }
 
 void HostSpiReset(void) {
@@ -77,7 +81,7 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 	if( spi_msg->rx_len > 0 ) {
 		spi_msg->rx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->rx_len; ++i ) {
-			SpiaRegs.SPITXBUF = 0xFF; /* dummy byte */
+			SpiaRegs.SPITXBUF = 0x00; /* dummy byte */
 			while(SpiaRegs.SPIFFRX.bit.RXFFST !=1) {};
 			spi_msg->rx_buf[i] = SpiaRegs.SPIRXBUF;
 		}
@@ -137,9 +141,7 @@ int HostSpiSetupXfer(spi_msg_t *spi_msg) {
 }
 
 int HostSpiXferMsg(spi_msg_t *spi_msg) {
-	HostSpiAssertCS();
 	HostSpiSetupXfer(spi_msg);
-	HostSpiDeassertCS();
 	return 0;
 }
 

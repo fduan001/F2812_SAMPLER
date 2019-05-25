@@ -36,5 +36,33 @@ void GpioInit(void) {
 	GpioDataRegs.GPBCLEAR.bit.GPIOB0 = 1;
 	GpioDataRegs.GPBCLEAR.bit.GPIOB1 = 1;
 	GpioDataRegs.GPBCLEAR.bit.GPIOB2 = 1;
+
+	GpioMuxRegs.GPAMUX.bit.C1TRIP_GPIOA13 = 0;
+	GpioMuxRegs.GPAMUX.bit.C2TRIP_GPIOA14 = 0;
+
+	GpioMuxRegs.GPADIR.bit.GPIOA13 = GPIO_DIR_OUTPUT;
+	GpioMuxRegs.GPADIR.bit.GPIOA14 = GPIO_DIR_OUTPUT;
+
+	GpioMuxRegs.GPFMUX.bit.SPISTEA_GPIOF3 = 0;
+	GpioMuxRegs.GPFDIR.bit.GPIOF3 = GPIO_DIR_OUTPUT;
+
+	GpioDataRegs.GPFSET.bit.GPIOF3 = 1;
+
 	EDIS;
+}
+
+void FRAMWriteEnable(UINT8 onoff) {
+	if( onoff ) {
+		GpioDataRegs.GPACLEAR.bit.GPIOA13 = 1;
+	} else {
+		GpioDataRegs.GPACLEAR.bit.GPIOA13 = 1;
+	}
+}
+
+void GpioSpiAssertCS(void) {
+	GpioDataRegs.GPFCLEAR.bit.GPIOF3 = 1;
+}
+
+void GpioSpiDeassertCS(void) {
+	GpioDataRegs.GPFSET.bit.GPIOF3 = 1;
 }

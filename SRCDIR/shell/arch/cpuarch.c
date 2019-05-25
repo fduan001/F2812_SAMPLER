@@ -64,14 +64,8 @@ UINT32 get_timer (UINT32 base)
 #endif
 }
 
-
-
-
-
-
 void udelay(UINT32 usec)
 {
-
     UDELAY( usec);
 }
 
@@ -85,12 +79,7 @@ void enable_interrupts (void)
 
 }
 
-
-
-
-
-
-void *map_physmem(phys_addr_t paddr, UINT32 len, UINT32 flags)
+void *map_physmem(UINT32 paddr, UINT32 len, UINT32 flags)
 {
     return (void *)paddr;
 }

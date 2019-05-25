@@ -486,7 +486,6 @@ INT32 parse_line (INT8 *line, INT8 *argv[])
 {
     INT32 nargs = 0;
 
-
     while (nargs < CONFIG_SYS_MAXARGS)
     {
 

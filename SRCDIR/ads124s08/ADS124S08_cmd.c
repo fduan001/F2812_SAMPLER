@@ -8,13 +8,13 @@
 #define NULL   (void*)0
 #endif
 
-s32 do_ads124s08 ( cmd_tbl_t *cmdtp, s32 flag, s32 argc, s8 *const argv[])
+INT32 do_ads124s08 ( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 {
 	char *ops;
-	u8 regnum = 0;
-	u8 val = 0;
-	u8 buffer[5];
-	s8 i = 0;
+	UINT8 regnum = 0;
+	UINT8 val = 0;
+	UINT8 buffer[5];
+	INT8 i = 0;
 
     /*check input arg number*/
 	if (argc < 2)
@@ -95,7 +95,7 @@ far cmd_tbl_t ads124s08_cmd[] =
 
 void ADS124S08CmdInitialize()
 {
-	s8 index;
+	INT8 index;
 
 	for (index = 0; index < sizeof(ads124s08_cmd) / sizeof(cmd_tbl_t); index++)
 		RegisterCommand(ads124s08_cmd[index]);

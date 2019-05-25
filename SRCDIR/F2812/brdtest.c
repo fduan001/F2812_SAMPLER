@@ -3,7 +3,7 @@
 #include "boardcfg.h"
 
 #if 0
-void Test_Hs3282(unsigned short var1, unsigned short var2);
+void Test_HINT3282(unsigned short var1, unsigned short var2);
 void Test_GpioOutput(unsigned short var1, unsigned short var2);
 void Test_GpioInput(unsigned short var1, unsigned short var2) ;
 void Test_Led(unsigned short var1, unsigned short var2);
@@ -26,7 +26,7 @@ static S_TESTFUNC Test_Functions[] =
     {Test_GpioOutput,  "e:exit; a:out 1; b:out 0;h:help ",    "welcome entering Test GpioOutput sub menu "},
     {Test_GpioInput,     "e:exit; a:show input valu;h:help",     "welcome entering Test GpioInput sub menu "},
     {Test_Led, "e:exit; a:led on; b:led off;c: spi write test;h:help  ",    "welcome entering Test Led sub menu "},
-    {Test_Hs3282, "e:exit; a:send test data;b: read rev1 ;c:read rev2;d: polling channel 1;f:rev 16times;h:help  ", "welcome entering Test Hs3282 sub menu "},
+    {Test_HINT3282, "e:exit; a:send test data;b: read rev1 ;c:read rev2;d: polling channel 1;f:rev 16times;h:help  ", "welcome entering Test HINT3282 sub menu "},
     {Test_Watchdog, "e:exit; a: kick WD 1000 times; b:enable WD; c:disable WD;d:disable isr kick watchdog;h:help  ", "welcome entering Test Watchdog sub menu "},
 
 };
@@ -36,7 +36,7 @@ char *myconst2 = "aaaabbbb";
 int  myglbval = 0x55aa;
 int  kickwd_flag = 1;
 
-int  hs3282rev_low[16], hs3282rev_high[16];
+int  hINT3282rev_low[16], hINT3282rev_high[16];
 
 void PrintMainhelp()
 {
@@ -44,7 +44,7 @@ void PrintMainhelp()
     UartPrintf("    --- 1 : Test for GPIO output\n");
     UartPrintf("    --- 2 : Test for GPIO input\n");
     UartPrintf("    --- 3 : Test for LED\n");
-    UartPrintf("    --- 4 : Test for Hs3282\n");
+    UartPrintf("    --- 4 : Test for HINT3282\n");
     UartPrintf("    --- 5 : Test for watchdog\n");
 }
 #if 1
@@ -189,7 +189,7 @@ void Test_Led(unsigned short var1, unsigned short var2)
 
 }
 
-void Test_Hs3282(unsigned short var1, unsigned short var2)
+void Test_HINT3282(unsigned short var1, unsigned short var2)
 {
     unsigned char keyvalue, i;
     unsigned short portvalue;
@@ -211,21 +211,21 @@ void Test_Hs3282(unsigned short var1, unsigned short var2)
             UartPrintf("HS3282 send data 100 times \n");
             for(i = 0; i <= 100; i++)
             {
-                Hs3282SendData(HS3282_TX_DAT1, HS3282_TX_DAT2);
+                HINT3282SendData(HS3282_TX_DAT1, HS3282_TX_DAT2);
             }
-            UartPrintf("test Hs3282 send data finish \n");
+            UartPrintf("test HINT3282 send data finish \n");
             break;
             //read 429 rev 1 data
         case 'b':
             UartPrintf("HS3282 receive channel 1 data \n");
-            Hs3292RevData(0, &wordl, &wordh);
+            HINT3292RevData(0, &wordl, &wordh);
             UartPrintf("receive channel1 wordlow=0x%x wordhigh=0x%x \n", wordl, wordh);
             break;
 
             //read 429 rev 2 data
         case 'c':
             UartPrintf("HS3282 receive channel 2 data \n");
-            Hs3292RevData(1, &wordl, &wordh);
+            HINT3292RevData(1, &wordl, &wordh);
             UartPrintf("receive channel2 wordlow=0x%x wordhigh=0x%x \n", wordl, wordh);
             break;
 
@@ -234,7 +234,7 @@ void Test_Hs3282(unsigned short var1, unsigned short var2)
             UartPrintf("polling HS3282 receive channel 1 data forever,never exit \n");
             while(1)
             {
-                Hs3292RevData(0, &wordl, &wordh);
+                HINT3292RevData(0, &wordl, &wordh);
                 UartPrintf("receive channel 1 wordlow=0x%x wordhigh=0x%x \n", wordl, wordh);
             }
             break;
@@ -243,19 +243,19 @@ void Test_Hs3282(unsigned short var1, unsigned short var2)
             UartPrintf("receive HS3282 receive channel 1 data 16 times\n");
             for(i = 0; i <= 15; i++)
             {
-                hs3282rev_low[i] = 0;
-                hs3282rev_high[i] = 0;
+                hINT3282rev_low[i] = 0;
+                hINT3282rev_high[i] = 0;
             }
 
             for(i = 0; i <= 15; i++)
             {
-                Hs3292RevData(0, &wordl, &wordh);
-                hs3282rev_low[i] = wordl;
-                hs3282rev_high[i] = wordh;
+                HINT3292RevData(0, &wordl, &wordh);
+                hINT3282rev_low[i] = wordl;
+                hINT3282rev_high[i] = wordh;
             }
             for(i = 0; i <= 15; i++)
             {
-                UartPrintf("times=0x%x, low=0x%x ,high=0x%x\n", i, hs3282rev_low[i], hs3282rev_high[i]);
+                UartPrintf("times=0x%x, low=0x%x ,high=0x%x\n", i, hINT3282rev_low[i], hINT3282rev_high[i]);
             }
             UartPrintf("receive 16 times finished\n");
             break;
@@ -371,11 +371,11 @@ void main(void)
         //keyvalue=UartGetc();
     }
 #endif
-    // for debug hs3282
+    // for debug hINT3282
 #if 0
     while(1)
     {
-        Hs3282SendData(HS3282_TX_DAT1, HS3282_TX_DAT2);
+        HINT3282SendData(HS3282_TX_DAT1, HS3282_TX_DAT2);
     }
 #endif
 

@@ -51,7 +51,8 @@
 
 
 /* SPI config */
-#define SPI_PIN_MUX  (0xf)
+/* #define SPI_PIN_MUX  (0xf) */
+#define SPI_PIN_MUX  (0x7) /* STE as GPIO function */
 /* loopback=0,16bit, clock polarity =0*/
 #define SPICCR_CFG   (0x07)
 /**************************************
