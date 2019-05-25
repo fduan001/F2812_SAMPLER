@@ -18,7 +18,7 @@
 //#include "watchdog.h"
 
 #pragma DATA_SECTION   (shellstring,"shell_lib");
-far char shellstring[20];
+char shellstring[20];
 
 
 extern INT32 do_nothing(cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[]);
@@ -39,7 +39,7 @@ UINT8 set_shellprompt (char* p)
 }
 
 #pragma DATA_SECTION   (lastcommand,"shell_lib");
- static far INT8 lastcommand[CONFIG_SYS_CBSIZE] = { 0, };
+static INT8 lastcommand[CONFIG_SYS_CBSIZE] = { 0, };
 void shell_loop (void)
 {
     INT32 len;

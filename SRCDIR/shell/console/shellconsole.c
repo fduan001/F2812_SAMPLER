@@ -107,7 +107,7 @@ INT32 shellgetc(void)
 
 /****************************************************************************/
 #pragma DATA_SECTION   (printbuffer,"shell_lib");
-far  INT8 printbuffer[CONFIG_SYS_PBSIZE];
+INT8 printbuffer[CONFIG_SYS_PBSIZE];
 
 extern void Osal_ExitGlobalCriticalSection();
 extern void Osal_EnterGlobalCriticalSection();
@@ -720,9 +720,9 @@ INT32 had_ctrlc (void)
  */
  
 #pragma DATA_SECTION   (cmdbuf,"shell_lib");
- far INT8 cmdbuf[CONFIG_SYS_CBSIZE];	/* working copy of cmd		*/
+INT8 cmdbuf[CONFIG_SYS_CBSIZE];	/* working copy of cmd		*/
 #pragma DATA_SECTION   (finaltoken,"shell_lib");
- far INT8 finaltoken[CONFIG_SYS_CBSIZE];
+INT8 finaltoken[CONFIG_SYS_CBSIZE];
 INT32 run_command (const INT8 *cmd, INT32 flag)
 {
     cmd_tbl_t *cmdtp;
@@ -732,7 +732,7 @@ INT32 run_command (const INT8 *cmd, INT32 flag)
     INT8 *sep;			/* end of token (separator) in cmdbuf */
 // yexin 20180630 remove stack size	
  //   INT8 finaltoken[CONFIG_SYS_CBSIZE];
-    INT8 *str = cmdbuf;
+    INT8 *str = (INT8*)cmdbuf;
     INT8 *argv[CONFIG_SYS_MAXARGS + 1];	/* NULL terminated	*/
     INT32 argc, inquotes;
     INT32 repeatable = 1;

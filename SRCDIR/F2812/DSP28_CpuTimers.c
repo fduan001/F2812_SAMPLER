@@ -26,9 +26,9 @@
 #pragma DATA_SECTION   (CpuTimer1,"shell_lib");
 #pragma DATA_SECTION   (CpuTimer2,"shell_lib");
 
-far struct CPUTIMER_VARS CpuTimer0;
-far struct CPUTIMER_VARS CpuTimer1;
-far struct CPUTIMER_VARS CpuTimer2;
+struct CPUTIMER_VARS CpuTimer0;
+struct CPUTIMER_VARS CpuTimer1;
+struct CPUTIMER_VARS CpuTimer2;
 
 //---------------------------------------------------------------------------
 // InitCpuTimers:

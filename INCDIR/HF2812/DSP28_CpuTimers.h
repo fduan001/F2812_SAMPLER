@@ -135,9 +135,9 @@ extern volatile struct CPUTIMER_REGS CpuTimer0Regs;
 extern volatile struct CPUTIMER_REGS CpuTimer1Regs;
 extern volatile struct CPUTIMER_REGS CpuTimer2Regs;
 
-extern far struct CPUTIMER_VARS CpuTimer0;
-extern far struct CPUTIMER_VARS CpuTimer1;
-extern far struct CPUTIMER_VARS CpuTimer2;
+extern struct CPUTIMER_VARS CpuTimer0;
+extern struct CPUTIMER_VARS CpuTimer1;
+extern struct CPUTIMER_VARS CpuTimer2;
 
 //---------------------------------------------------------------------------
 // Usefull Timer Operations:

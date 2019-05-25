@@ -63,7 +63,7 @@ void FpgaSpiWRMode(UINT8 channel , UINT8 wrmode)
     spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 16);
 
     // write or read dir control
-    regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+    regdata = FPGA_REG16_R((UINT32)(&(spicontroller->ctlstatus)));
     bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_WIREMODE_BIT14, FPGA_SPI_CTL_WIREMODE_BIT14);
     //wire 4 mode
     if(SPI_4WIRE_MODE == bitvalue)
@@ -77,13 +77,13 @@ void FpgaSpiWRMode(UINT8 channel , UINT8 wrmode)
         if(SPI_WRITE_MODE == wrmode)
         {
             regdata = FPGA_SET_BITFIELD(regdata, SPI_WRITE_MODE, FPGA_SPI_CTL_WRDIR_BIT15, FPGA_SPI_CTL_WRDIR_BIT15);
-            FPGA_REG16_W(&(spicontroller->ctlstatus), regdata);
+            FPGA_REG16_W((UINT32)&(spicontroller->ctlstatus), regdata);
         }
         //read mode
         else
         {
             regdata = FPGA_SET_BITFIELD(regdata, SPI_READ_MODE, FPGA_SPI_CTL_WRDIR_BIT15, FPGA_SPI_CTL_WRDIR_BIT15);
-            FPGA_REG16_W(&(spicontroller->ctlstatus), regdata);
+            FPGA_REG16_W((UINT32)&(spicontroller->ctlstatus), regdata);
         }
     }
 }
