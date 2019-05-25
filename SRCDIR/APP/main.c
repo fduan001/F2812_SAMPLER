@@ -54,7 +54,7 @@ void MemoryTest(UINT32 startAddr, UINT32 endAddr)
 	UINT16 val = 0;
 
 	if( startAddr > endAddr ) {
-		shellprintf("invalid input %lx %lx\n", startAddr, endAddr);
+		UartPrintf("invalid input %lx %lx\n", startAddr, endAddr);
 		return ;
 	}
 
@@ -63,12 +63,12 @@ void MemoryTest(UINT32 startAddr, UINT32 endAddr)
 		*(volatile UINT16*)(startAddr + i) = pattern;
 		val = *(volatile UINT16*)(startAddr + i);
 		if( val != pattern ) {
-			shellprintf("MEMTEST Failed@%lx: %x %x\n", startAddr + i, pattern, val);
+			UartPrintf("MEMTEST Failed@%lx: %x %x\n", startAddr + i, pattern, val);
 			return ;
 		}
 		pattern = ~pattern;
 	}
-	shellprintf("MEMTEST PASSED\n");
+	UartPrintf("MEMTEST PASSED\n");
 }
 
 void StackTest()
@@ -168,10 +168,12 @@ void ShellTask()
 	shell_loop();
 }
 
+extern 	void RS422SysDataInit(void);
+
 /*
  *  ======== main ========
  */
-Void main()
+void main()
 { 
      // System_printf("hello world\n");
 
@@ -191,6 +193,11 @@ Void main()
 	Osal_TaskCreate( WatchdogTask, "wdogTask", 2,  0x400, (UINT16)0, (UINT16)0, 0 );
 	WatchdogKick();
 
+	SetCpuUsTimer2();
+
+
+
+	RS422SysDataInit();
 	BIOS_start ();
 
     /*

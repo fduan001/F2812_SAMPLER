@@ -1,18 +1,18 @@
 #ifndef RS422_H
 #define RS422_H
 
-#define   SYS_CLK  100000000
+#define   SYS_CLK  150000000
 
 #define   RBR     0x00
 #define   THR     0x00
-#define   IER     0x02
-#define   IIR     0x04
-#define   FCR     0x04
-#define   LCR     0x06
-#define   LSR     0x0a
+#define   IER     0x01
+#define   IIR     0x02
+#define   FCR     0x02
+#define   LCR     0x03
+#define   LSR     0x05
 
 #define   DLL    0x00
-#define   DLH    0x02
+#define   DLH    0x01
 
 
 #define  IER_RECV_VALID     (1 << 0)
@@ -64,14 +64,14 @@
 #define  LSR_TRANS_EMTPY   0x40
 #define  LSR_RECV_FIFO_ERROR 0x80
 
-int RS422Open(unsigned char chipNo,char party,unsigned char stop,unsigned char data_bit,unsigned int baud);
-int RS422Close(unsigned char chipNo);
-int RS422Read(unsigned char chipNo,char * buf,unsigned int nBytes);
-int RS422Write(unsigned char chipNo,char * buf,unsigned int nBytes);
+INT32 RS422Open(UINT8 chipNo, INT8 party, UINT8 stop, UINT8 data_bit, UINT32 baud);
+INT32 RS422Close(UINT8 chipNo);
+INT32 RS422Read(UINT8 chipNo, INT8 * buf, UINT32 nBytes);
+INT32 RS422Write(UINT8 chipNo, INT8 * buf, UINT32 nBytes);
 
-int RS422Init(unsigned char chipNo);
-int RS422SetOpt(unsigned char chipNo,char party,unsigned char stop_bit,unsigned char data_bit);
-int RS422SetBaud(unsigned char chipNo,unsigned int baud);
+INT32 RS422Init(UINT8 chipNo);
+INT32 RS422SetOpt(UINT8 chipNo, INT8 party,UINT8 stop_bit, UINT8 data_bit);
+INT32 RS422SetBaud(UINT8 chipNo, UINT32 baud);
 
 #endif
 

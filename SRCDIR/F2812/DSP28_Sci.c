@@ -51,6 +51,7 @@ void InitSci(void)
     /* enable SCI*/
     SciaRegs.SCICTL1.all = (SCICTL1_CFG | 0x20);
 
+#if 0
     //SCI B 
      ScibRegs.SCICTL1.all = 0x0;
     /*   8 bit data */
@@ -63,6 +64,7 @@ void InitSci(void)
     ScibRegs.SCILBAUD = (SCI_BAUD) & 0xFF;
     /* enable SCI*/
     ScibRegs.SCICTL1.all = (SCICTL1_CFG | 0x20);
+#endif
 	
 }
 
@@ -124,17 +126,15 @@ INT16 SciaRx_Ready(void)
 }
 
 INT16 ScibRx_Ready(void)
-{
-    UINT8 i;
-    if(ScibRegs.SCIRXST.bit.RXRDY == 1)
-    {
-        i = 1;
+{ 
+    UINT8 val = 0;
+    val = ScibRegs.SCIFFRX.bit.RXFIFST;
+    if( val != 0 ) {
+        return 1;
+    } else {
+        return 0;
     }
-    else
-    {
-        i = 0;
-    }
-    return(i);
+
 }
 /******************************************************************************
  *
@@ -272,22 +272,84 @@ void UartPrintf(const char *fmt, ...)
 }
 #endif
 
-
-
-
-INT16  UartCharGetTimeout(UINT16 timeout)
+UINT8  UartCharGetTimeout(UINT32 timeout, int *result)
 {
-    UINT32 timebase = GetTimer2Cnt();
-    while((GetTimer2Cnt() - timebase) <= timeout)
-    {
-        if(1 == SciaRx_Ready())
-        {
-            return (unsigned char)(SciaRegs.SCIRXBUF.all);
+    UINT32 count = 0;
 
-        }
+    if( result ) {
+        *result = 0;
     }
 
+    while(1) {
+        if(1 == SciaRx_Ready())
+        {
+            return (UINT8)(SciaRegs.SCIRXBUF.all);
+        }
+        ++count;
+        if( count > timeout ) {
+            break;
+        }
+        PlatformDelay(1);
+    }
+
+    if( result ) {
+        *result = -1;
+    }
     return -1;
+}
+
+UINT8 UartCharGetTimeout_B(UINT32 timeout, int *result)
+{
+	UINT32 count = 0;
+
+    if( result ) {
+        *result = 0;
+    }
+
+    while(1)
+    {
+        if(1 == ScibRx_Ready())
+        {
+            return (UINT8)(ScibRegs.SCIRXBUF.all);
+        }
+        ++count;
+        if( count > timeout ) {
+        	break;
+        }
+        PlatformDelay(1);
+    }
+
+    if( result ) {
+        *result = -1;
+    }
+    return 0xFF;
+}
+
+INT32 UartWrite_B(UINT8 *buffer, UINT32 length) {
+    int rt = 0;
+    UINT16 i = 0;
+    for( i = 0; i < length; ++i ) {
+        UartCharPut_B(buffer[i]);
+    }
+    return length;
+}
+
+#define GETCHAR_TIMEOUT      5000 /* 5ms */
+
+INT32 UartRead_B(UINT8* buffer, UINT32 length) {
+    int rt = -1;
+    int result = -1;
+    int i = 0;
+    UINT8 val = 0;
+    for( i = 0; i < length; ++i ) {
+        val = UartCharGetTimeout_B(GETCHAR_TIMEOUT, &result);
+        if( result != 0 ) {
+            break;
+        }
+        buffer[i] = val;
+    }
+
+    return i;
 }
 
 //===========================================================================

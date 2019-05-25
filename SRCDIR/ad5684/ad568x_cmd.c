@@ -1,3 +1,4 @@
+#include "F2812_datatype.h"
 #include "shellconsole.h"
 #include "command.h"
 #include "util.h"

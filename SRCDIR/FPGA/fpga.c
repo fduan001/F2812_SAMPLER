@@ -20,6 +20,7 @@
 #include "F2812_datatype.h"
 #include "boardcfg.h"
 #include "fpga.h"
+#include "shellconsole.h"
 
 void WriteFpgaRegister( UINT32 regaddr, UINT16 regvalue)
 {
@@ -54,7 +55,6 @@ void WriteFpgaRegisterBit(UINT32 regaddr, UINT8 bitpos, UINT8 bitvalue)
 
 UINT8 ReadFpgaRegisterBit(UINT32 regaddr, UINT8 bitpos, UINT8 bitvalue)
 {
-
     UINT16 regValue;
     regValue = ReadFpgaRegister(regaddr);
     return((regValue >> bitpos) & 0x1);
@@ -70,7 +70,7 @@ typedef struct isr_info_t {
 
 static isr_info_t g_isr_info[MAX_IRQ_NUM];
 
-int RegisterIsr(int bit_pos, ISR_HANDLER isr) {
+INT8 RegisterIsr(UINT8 bit_pos, ISR_HANDLER isr) {
     if(bit_pos >= MAX_IRQ_NUM) {
         return 1;
     }
@@ -83,7 +83,9 @@ int RegisterIsr(int bit_pos, ISR_HANDLER isr) {
 void XINT_Isr1(void) {
     UINT16 isr_sts = FPGA_REG16_R(FPGA_XINT1_STATUS_REG);
     UINT16 isr_mask = FPGA_REG16_R(FPGA_XINT1_MASK_REG);
-    UINT16 args = 0x8;
+    UINT8 args = 0x8;
+
+    PRINTF("isr=%x \n", isr_sts);
 
     if( isr_sts & 0x1 ) {
         args = 0x0;
@@ -171,3 +173,47 @@ void XINT_Isr1(void) {
 void XINT_Isr2(void) {
     // used for master/slave role switch
 }
+
+/* delay for some us timeout = 1000, 1ms delay */
+void SysUDelay(int timeout) {
+    if( timeout > 50000 || timeout <=0 ) { /* only allow 50 ms delay max for this interface */
+        return ;
+    }
+
+    /* clear udelay register */
+    FPGA_REG16_W(FPGA_UDELAY_CTRL_REG, 0x0);
+    // FPGA_REG16_W(FPGA_UDELAY_COUNT_REG, 0x0);
+
+    FPGA_REG16_W(FPGA_UDELAY_CTRL_REG, 0x3);
+    while(1) {
+        if( FPGA_REG16_R(FPGA_UDELAY_COUNT_REG) >= timeout ) {
+            break;
+        }
+    }
+
+    FPGA_REG16_W(FPGA_UDELAY_CTRL_REG, 0x0);
+    return;
+}
+
+/* delay for some us, 1000ms = 1 seconds */
+void SysMDelay(int timeout) {
+
+
+    int i = 0;
+    int loop = timeout / 50;
+    int rem = timeout % 50;
+
+    if( timeout > 50000 || timeout <=0 ) { /* only allow 50 seconds delay max for this interface */
+        return ;
+    }
+    for( i = 0; i < loop; ++i ) {
+        SysUDelay(50000); /* sleep 50 ms for each loop */
+    }
+
+    SysUDelay(rem);
+
+    return;
+}
+
+
+
