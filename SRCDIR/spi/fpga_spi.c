@@ -109,6 +109,7 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
     FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, regdata); // HI
     __msleep__(1);
 
+
     regdata = (regdata & (~(1 << SYSSPI_RESET_BIT[channel])));
  	FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, regdata);  // LO
      __msleep__(1);
@@ -132,7 +133,7 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
     FPGA_REG16_W(&(spicontroller->divider), spicfg.spisclk);
 
     regdata = FPGA_REG16_R(&(spicontroller->divider));
-    PRINTF("divider=0x%04x  spisclk=%u 0x%08x\n", regdata, spicfg.spisclk, &(spicontroller->divider));
+    PRINTF("divider=0x%04x  spisclk=%lu %ld\n", regdata, spicfg.spisclk, &(spicontroller->divider));
     //set the spi timing protocol ,default is read mode
     regdata = 0;
     //regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
