@@ -8,24 +8,27 @@
 #define FPGA_SELF_TEST_REG                              (FPGA_BASE_ADDR + 0x2)
 
 /* master/slave role switch */
-#define FPGA_ROLE_SWITCH_REG                            (FPGA_BASE_ADDR + 0x4)
+#define FPGA_ROLE_SWITCH_REG                            (FPGA_BASE_ADDR + 0x3)
 
 /* peripherals reset */
-#define FPGA_PERIPHERAL_RST_REG                         (FPGA_BASE_ADDR + 0x5)
+#define FPGA_PERIPHERAL_RST_REG                         (FPGA_BASE_ADDR + 0x4)
 
 /* interrupt registers */
-#define FPGA_XINT1_STATUS_REG                           (FPGA_BASE_ADDR + 0x6)
-#define FPGA_XINT1_MASK_REG                             (FPGA_BASE_ADDR + 0x7)
+#define FPGA_XINT1_STATUS_REG                           (FPGA_BASE_ADDR + 0x5)
+#define FPGA_XINT1_MASK_REG                             (FPGA_BASE_ADDR + 0x6)
 
-#define FPGA_XINT2_STATUS_REG                           (FPGA_BASE_ADDR + 0x8)
-#define FPGA_XINT2_MASK_REG                             (FPGA_BASE_ADDR + 0x9)
+#define FPGA_XINT2_STATUS_REG                           (FPGA_BASE_ADDR + 0x7)
+#define FPGA_XINT2_MASK_REG                             (FPGA_BASE_ADDR + 0x8)
 
 /* IO control */
-#define FPGA_IO_STATUS_REG                              (FPGA_BASE_ADDR + 0xA)
+#define FPGA_IO_STATUS_REG                              (FPGA_BASE_ADDR + 0x9)
+#define FPGA_IO_ST_CTRL_REG                              (FPGA_BASE_ADDR + 0xA)
+
+#define FPGA_RS422_TRX_CTRL_REG                            (FPGA_BASE_ADDR + 0xB)
 
 /* UDELAY */
-#define FPGA_UDELAY_CTRL_REG                            (FPGA_BASE_ADDR + 0xB)
-#define FPGA_UDELAY_COUNT_REG                           (FPGA_BASE_ADDR + 0xC)
+#define FPGA_UDELAY_CTRL_REG                            (FPGA_BASE_ADDR + 0xC)
+#define FPGA_UDELAY_COUNT_REG                           (FPGA_BASE_ADDR + 0xD)
 
 /* FUEL mearsument */
 #define FPGA_FUEL_SWITCH_REG                        (FPGA_BASE_ADDR + 0x10)
