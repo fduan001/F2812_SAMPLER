@@ -79,22 +79,30 @@ INT32 do_fpga_spi_write(cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, char * const a
 {
 	INT32 rc = 0;
 	UINT8 channel;
-	UINT32 source;
-	UINT32 length;
+	UINT8 buffer[100];
+	UINT32 len = 0;
+	INT32 i = 0;
 
-	if (argc != 4)
-	{
-		PRINTF("argc=%d\n", argc);
-		return cmd_usage(cmdtp);
+	if( argc <= 2 ) {
+		return CMD_RET_FAILURE;
 	}
 
 	channel = simple_strtoul(argv[1], NULL, 10);
-	source = simple_strtoul(argv[2], NULL, 16);
-	length = simple_strtoul(argv[3], NULL, 16);
+	argc -= 2;
 
-	rc = FpgaSpiWrite(channel, (UINT8*)source, length);
-	if( rc != 0 ) {
-		PRINTF("FpgaSpiWrite failed, rc=%d\n", rc);
+	for( i = 0; i < argc; ++i ) {
+		buffer[i] = simple_strtoul(argv[2 + i], NULL, 10);
+		++len;
+	}
+
+	if( len > 0 ) {
+		rc = FpgaSpiWrite(channel, (UINT8*)buffer, len);
+		if( rc != 0 ) {
+			PRINTF("FpgaSpiWrite failed, rc=%d\n", rc);
+			return CMD_RET_FAILURE;
+		}
+	} else {
+		PRINTF("no data to be sent\n");
 		return CMD_RET_FAILURE;
 	}
 
@@ -143,9 +151,9 @@ far cmd_tbl_t fpga_spi_cmd[] =
 
 int FpgaSpiCmdInit(void)
 {
-    INT8 index;
+	INT8 index;
 
-    for (index = 0; index < sizeof(fpga_spi_cmd) / sizeof(cmd_tbl_t); index++)
-        RegisterCommand(fpga_spi_cmd[index]);
+	for (index = 0; index < sizeof(fpga_spi_cmd) / sizeof(cmd_tbl_t); index++)
+		RegisterCommand(fpga_spi_cmd[index]);
 	return 0;
 }
