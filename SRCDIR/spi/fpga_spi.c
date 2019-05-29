@@ -5,15 +5,9 @@
 #include "shellconsole.h"
 
 //fpga spi bit
-#define FPGA_SPI_BASE  (0x80000 + 0x60)
-#define FPGA_SPI1_RESET_BIT    7
-#define FPGA_SPI2_RESET_BIT    8
-#define FPGA_SPI3_RESET_BIT    9
-#define FPGA_SPI4_RESET_BIT    0
-#define FPGA_SPI5_RESET_BIT    0
-#define FPGA_SPI6_RESET_BIT    0
-#define FPGA_SPI7_RESET_BIT    0
-#define FPGA_SPI8_RESET_BIT    0
+#define FPGA_SPI_BASE  (0x80000 + 0x20)
+#define FPGA_SPI1_RESET_BIT    2
+#define FPGA_SPI2_RESET_BIT    3
 
 #define BSP_DRV_OK  (1)
 #define BSP_DRV_FAIL (0)
@@ -31,8 +25,7 @@
 #define FPGA_SPI_TIMEOUT   10 /* 10 ms */
 
 UINT8 SYSSPI_RESET_BIT[] = {
-  FPGA_SPI1_RESET_BIT,FPGA_SPI2_RESET_BIT,FPGA_SPI3_RESET_BIT,FPGA_SPI4_RESET_BIT, \
-  FPGA_SPI5_RESET_BIT,FPGA_SPI6_RESET_BIT,FPGA_SPI7_RESET_BIT,FPGA_SPI8_RESET_BIT
+  FPGA_SPI1_RESET_BIT,FPGA_SPI2_RESET_BIT
 };
 
 static inline void __msleep__(UINT32 ms)
@@ -60,7 +53,7 @@ void FpgaSpiWRMode(UINT8 channel , UINT8 wrmode)
 {
     S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 16);
+    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 32);
 
     // write or read dir control
     regdata = FPGA_REG16_R((UINT32)(&(spicontroller->ctlstatus)));
@@ -107,7 +100,7 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
     S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue;
     UINT16  timeout = FPGA_SPI_TIMEOUT;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + (channel ) * 16);
+    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + (channel ) * 32);
     //check the go_bsy=0?  
     
     regdata = FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG);
@@ -185,7 +178,7 @@ INT32 FpgaSpiWrite(UINT8 channel , UINT8 *sendbuffer, UINT8 sendlen)
     S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue, timeout = FPGA_SPI_TIMEOUT;
     UINT8   index;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel * 16);
+    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel * 32);
     //first check the go_bsy=0?
     do
     {
@@ -248,7 +241,7 @@ INT32 FpgaSpiWriteRead(UINT8 channel , UINT8 *sendbuffer, UINT8 sendlen , UINT8 
     S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue, timeout = FPGA_SPI_TIMEOUT;
     UINT8   index;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 16);
+    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 32);
     //first check the go_bsy=0?
     do
     {
@@ -336,7 +329,7 @@ INT32 FpgaSpiWriteRead(UINT8 channel , UINT8 *sendbuffer, UINT8 sendlen , UINT8 
 void FpgaSpiCs(UINT8 channel , UINT8 chipsel)
 {
     S_SPI_CTRL_TYPE *spicontroller;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 16);
+    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 32);
     FPGA_REG16_W(&(spicontroller->slavesel), chipsel);
 }
 
@@ -362,7 +355,7 @@ INT32 FpgaSpiRead(UINT8 channel , UINT8 *readbuffer, UINT8 readlen)
     S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue, timeout = FPGA_SPI_TIMEOUT;
     UINT8   index;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 16);
+    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 32);
     //first check the go_bsy=0?
     do
     {
