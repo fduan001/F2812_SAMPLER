@@ -37,7 +37,7 @@ UINT8 SYSSPI_RESET_BIT[] = {
 
 static inline void __msleep__(UINT32 ms)
 {
-	Osal_TaskSleep(ms);
+	PlatformDelay(ms * 1000);
 }
 
 /******************************************************************************
