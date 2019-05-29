@@ -226,7 +226,9 @@ INT32 RS422Open(UINT8 chipNo, INT8 party, UINT8 stop, UINT8 data_bit, UINT32 bau
 INT32 RS422Close(UINT8 chipNo)
 {
     INT32 ret = OK;
+#ifdef RS422_USR_INTR_MODE
     UINT8 irq_num = 0;
+#endif
 
     UART_CTX_T *pdevFd = (UART_CTX_T *)&(gUartCtx[chipNo]);
 

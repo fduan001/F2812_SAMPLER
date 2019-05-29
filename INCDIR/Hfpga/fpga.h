@@ -129,8 +129,8 @@
 
 typedef void (*ISR_HANDLER)(void*);
 
-#define FPGA_REG16_W(addr,b)    WriteFpgaRegister(addr, b)
-#define FPGA_REG16_R(addr) 	    ReadFpgaRegister(addr)
+#define FPGA_REG16_W(addr,b)    WriteFpgaRegister((UINT32)(addr), b)
+#define FPGA_REG16_R(addr) 	    ReadFpgaRegister((UINT32)(addr))
 
 
 #define FPGABITMASK(x,y)      (   (   (  ((UINT16)1 << (((UINT16)x)-((UINT16)y)+(UINT16)1) ) - (UINT16)1 )   )   <<  ((UINT16)y)   )    // Sets a bitmask of 1s from [x:y]

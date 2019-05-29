@@ -326,7 +326,6 @@ UINT8 UartCharGetTimeout_B(UINT32 timeout, int *result)
 }
 
 INT32 UartWrite_B(UINT8 *buffer, UINT32 length) {
-    int rt = 0;
     UINT16 i = 0;
     for( i = 0; i < length; ++i ) {
         UartCharPut_B(buffer[i]);
@@ -337,7 +336,6 @@ INT32 UartWrite_B(UINT8 *buffer, UINT32 length) {
 #define GETCHAR_TIMEOUT      5000 /* 5ms */
 
 INT32 UartRead_B(UINT8* buffer, UINT32 length) {
-    int rt = -1;
     int result = -1;
     int i = 0;
     UINT8 val = 0;

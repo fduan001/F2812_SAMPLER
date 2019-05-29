@@ -110,7 +110,6 @@ static INT32 do_rs422_write(cmd_tbl_t *cmdtp, INT32 flag,  INT32 argc, char * co
 {
 	INT32  rc = 0;
 	UINT8  chip;
-	UINT32 bytes;
 	UINT8  magic[10];
 
 	magic[0] = 0x7e;
@@ -125,7 +124,7 @@ static INT32 do_rs422_write(cmd_tbl_t *cmdtp, INT32 flag,  INT32 argc, char * co
 	magic[9] = 0x7f;
 
 	chip = simple_strtoul(argv[1], NULL, 10);
-	rc = RS422Write(chip, magic, sizeof(magic));
+	rc = RS422Write(chip, (INT8*)magic, sizeof(magic));
 
 	if( rc != sizeof(magic) ) {
 		PRINTF("RS422Write failed\n");
