@@ -49,7 +49,9 @@ void HostSpiReset(void) {
 	SpiaRegs.SPICCR.all = (0x80 | SPICCR_CFG);
 
     SpiaRegs.SPIFFRX.all = ( 1 << 13) | 0xF; /* no interrupt */
-	SpiaRegs.SPIFFTX.all = ( 1 << 15) | (1 << 13);
+	SpiaRegs.SPIFFTX.all = ( 1 << 15) | (1 << 13) | (1 << 14);
+
+	PlatformDelay(10);
 
 	return ;
 }
