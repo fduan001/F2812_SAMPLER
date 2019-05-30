@@ -82,7 +82,8 @@ received is D15, the most significant bit (MSB)
 
 *********************************************************/
 /* clock phase =1 */
-#define SPICTL_CFG   (0xe)
+/* clock phase = 0 */
+#define SPICTL_CFG   (0x6)
 #define SPIBRR_CFG   (0x23) /*4 divide * 37.5/36 ~1MHZ/
 
 
