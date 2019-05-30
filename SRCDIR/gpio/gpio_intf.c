@@ -48,6 +48,8 @@ void GpioInit(void) {
 
 	GpioDataRegs.GPFSET.bit.GPIOF3 = 1;
 
+	GpioDataRegs.GPASET.bit.GPIOA14 = 1;
+
 	EDIS;
 }
 
