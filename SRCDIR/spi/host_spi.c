@@ -94,7 +94,8 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 		}
 		spi_msg->tx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->tx_len; ++i ) {
-			SpiaRegs.SPITXBUF = spi_msg->tx_buf[i];
+			//SpiaRegs.SPITXBUF = spi_msg->tx_buf[i];
+			SpiaRegs.SPIDAT = spi_msg->tx_buf[i];
 			PRINTF("%d: 0x%02x\n", i, spi_msg->tx_buf[i]);
 		}
 	}
