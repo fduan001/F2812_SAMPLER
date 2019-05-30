@@ -175,7 +175,7 @@ INT32 FpgaSpiConfig(UINT8 chan , S_SPI_CFG_TYPE spicfg)
     FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
 
     regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-    PRINTF("CSR=0x%04x\n", regdata);
+    PRINTF("Addr: 0x%08lx CSR=0x%04x\n", g_fpga_spi_cfg[chan].csr, regdata);
 
     __msleep__(1);
     
