@@ -111,6 +111,8 @@ int ADS124S08_Init(void)
 	registers[GPIODAT_ADDR_MASK] 	= 0x00;
 	registers[GPIOCON_ADDR_MASK]= 0x00;
 
+	setChipSelect();
+	
 	ADS124S08_DeassertStart();
 
 	FpgaSpiConfig(AD124S08_SPI_CHANNEL, ad124s08_spicfg);
