@@ -137,7 +137,7 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
     FPGA_REG16_W(&(spicontroller->divider), val);
 
     regdata = FPGA_REG16_R(&(spicontroller->divider));
-    PRINTF("divider=0x%04x  spisclk=%lu %ld\n", regdata, spicfg.spisclk, &(spicontroller->divider));
+    PRINTF("divider=0x%04x  spisclk=%u 0x%08lx\n", regdata, spicfg.spisclk, (UINT32)&(spicontroller->divider));
     //set the spi timing protocol ,default is read mode
     regdata = 0;
     //regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));

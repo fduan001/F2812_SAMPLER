@@ -45,6 +45,7 @@
 /******************************************************************************/
 #include "F2812_datatype.h"
 #include "AD568X.h"		// AD568X definitions.
+#include "fpga.h"
 
 /******************************************************************************/
 /***************************** Include Files **********************************/
@@ -60,6 +61,17 @@ UINT8 deviceBitsNumber     = 0;
 /******************************************************************************/
 /************************ Functions Definitions *******************************/
 /******************************************************************************/
+
+void AD568X_HWReset(void) {
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) | (1 << 1)); // MR = HI;
+    PlatformDelay(5); 
+
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) & (~(1 << 1))); // MR = LO;
+    PlatformDelay(5);
+
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) | (1 << 1)); // MR = HI;
+    PlatformDelay(5); 
+}
 
 /***************************************************************************//**
  * @brief Initializes the device.
@@ -78,7 +90,7 @@ UINT8 deviceBitsNumber     = 0;
 UINT8 AD568X_Init(UINT8 ad568x)
 {
     UINT8 status = 0;
-    
+    AD568X_HWReset();
 #if 0
     /* GPIO configuration. */
     AD568X_LDAC_LOW;

@@ -71,6 +71,17 @@ void setChipSelect(void){
 	FpgaSpiCs(AD124S08_SPI_CHANNEL,  0);
 }
 
+void ADS124S08_HWReset(void) {
+	FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) | (1 << 0)); // MR = HI;
+    PlatformDelay(5); 
+
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) & (~(1 << 0))); // MR = LO;
+    PlatformDelay(5);
+
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) | (1 << 00)); // MR = HI;
+    PlatformDelay(5); 
+}
+
 /*
  * Initializes device for use in the ADS124S08 EVM.
  *
@@ -79,6 +90,7 @@ void setChipSelect(void){
  */
 int ADS124S08_Init(void)
 {
+	ADS124S08_HWReset();
 	/* Default register settings */
 	registers[ID_ADDR_MASK] 	= 0x08;
 	registers[STATUS_ADDR_MASK] = 0x80;
