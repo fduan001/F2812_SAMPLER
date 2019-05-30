@@ -49,7 +49,7 @@ void HostSpiReset(void) {
 	SpiaRegs.SPICCR.all = (0x80 | SPICCR_CFG);
 
     SpiaRegs.SPIFFRX.all = ( 1 << 13) | 0xF; /* no interrupt */
-	SpiaRegs.SPIFFTX.all = ( 1 << 15) | (1 << 13) | (1 << 14);
+	SpiaRegs.SPIFFTX.all = ( 1 << 15) | (1 << 13);
 
 	PlatformDelay(10);
 
@@ -111,7 +111,7 @@ int HostSpiSetupXfer(spi_msg_t *spi_msg) {
 	if( spi_msg->tx_buf ) {
 		loop = spi_msg->tx_len / HOST_SPI_MAX_XFER_BYTES;
 		remain = spi_msg->tx_len % HOST_SPI_MAX_XFER_BYTES;
-	/* tx 1st then rx */
+		/* tx 1st then rx */
 		for( i = 0; i < loop; ++i ) {
 			cur_msg.tx_len = HOST_SPI_MAX_XFER_BYTES;
 			cur_msg.tx_done = HOST_SPI_MSG_INIT;
