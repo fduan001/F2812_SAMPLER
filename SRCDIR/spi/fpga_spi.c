@@ -100,7 +100,7 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
     S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue;
     UINT16 timeout = FPGA_SPI_TIMEOUT;
-    UINT32 ref_clk = 150000000;
+    UINT32 ref_clk = 150000;
     UINT16 val = 0;
 
     spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + (channel ) * 32);

@@ -91,7 +91,7 @@ UINT8 AD568X_Init(UINT8 ad568x)
     AD568X_GAIN_OUT;
 #endif
     status = SPI_Init(0,        // Transfer format.
-                      8000000,  // SPI clock frequency.
+                      8000,  // SPI clock frequency.
                       1,        // SPI clock polarity.
                       1);       // SPI clock edge.
     if((ad568x == AD5686) || (ad568x == AD5686R))

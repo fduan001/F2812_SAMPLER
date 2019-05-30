@@ -44,7 +44,7 @@
 UINT8 registers[NUM_REGISTERS];
 
 #define AD124S08_SPI_CHANNEL    1
-#define AD124S08_SPI_CLK (4000000)
+#define AD124S08_SPI_CLK (4000)
 #define AD124S08_DELAY  (10)
 
 S_SPI_CFG_TYPE  ad124s08_spicfg =
