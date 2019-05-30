@@ -53,7 +53,7 @@ void GpioInit(void) {
 
 void FRAMWriteEnable(UINT8 onoff) {
 	if( onoff ) {
-		GpioDataRegs.GPACLEAR.bit.GPIOA13 = 1;
+		GpioDataRegs.GPASET.bit.GPIOA13 = 1;
 	} else {
 		GpioDataRegs.GPACLEAR.bit.GPIOA13 = 1;
 	}
