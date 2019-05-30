@@ -37,13 +37,14 @@ int FRAMWriteByte(UINT16 addr, UINT8 val) {
 	HostSpiAssertCS();
 	/* WREN has to be written prior to each write access to FRAM */
 	tx_buf[0] = FRAM_WREN;
+
+	HostSpiXfer(tx_buf, 1, NULL, 0);
 	HostSpiDeassertCS();
 
 	HostSpiAssertCS();
-	HostSpiXfer(tx_buf, 1, NULL, 0);
 	
-	/* build read buffer for tx */
-	tx_buf[0] = FRAM_READ;
+	/* build write buffer for tx */
+	tx_buf[0] = FRAM_WRITE;
 	tx_buf[1] = ((addr >> 8) & 0xFF);
 	tx_buf[2] = (addr & 0xFF);
 	tx_buf[3] = val;
@@ -77,13 +78,13 @@ int FRAMWriteBlock(UINT16 addr, UINT8* buffer, UINT16 length) {
 	/* WREN has to be written prior to each write access to FRAM */
 	tx_buf[0] = FRAM_WREN;
 	HostSpiDeassertCS();
-	
-	HostSpiAssertCS();
 
 	HostSpiXfer(tx_buf, 1, NULL, 0);
 	
+	HostSpiAssertCS();
+	
 	/* build read buffer for tx */
-	tx_buf[0] = FRAM_READ;
+	tx_buf[0] = FRAM_WRITE;
 	tx_buf[1] = ((addr >> 8) & 0xFF);
 	tx_buf[2] = (addr & 0xFF);
 

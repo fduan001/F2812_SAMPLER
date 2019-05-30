@@ -27,11 +27,13 @@ void HostSpiInit(void) {
 
 void HostSpiAssertCS(void) {
 	GpioSpiAssertCS();
+	PlatformDelay(10);
 
 }
 
 void HostSpiDeassertCS(void) {
 	GpioSpiDeassertCS();
+	PlatformDelay(10);
 }
 
 void HostSpiReset(void) {
