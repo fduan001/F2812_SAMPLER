@@ -19,14 +19,8 @@ void HostSpiInit(void) {
 	regval |= SPI_PIN_MUX;
 	GpioMuxRegs.GPFMUX.all = regval;
 	EDIS;
-    /* loopback   8 bit data */
-	SpiaRegs.SPICCR.all = SPICCR_CFG;
 
-	SpiaRegs.SPICTL.all = SPICTL_CFG;
-
-    SpiaRegs.SPIBRR = SPIBRR_CFG;//
-
-    SpiaRegs.SPICCR.all = (0x80 | SPICCR_CFG);
+	HostSpiReset();
 	/* initialize the GPIO settings */
 	/* set master mode, 8-bits mode */
 }

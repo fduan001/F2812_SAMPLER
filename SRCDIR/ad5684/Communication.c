@@ -62,8 +62,7 @@ S_SPI_CFG_TYPE  ad568x_spicfg =
     8,
     SPI_MSB_ORDER,
     SPI_TX_DATA_FALLING,
-    SPI_RX_DATA_RISING,
-    1
+    SPI_RX_DATA_RISING
 };
 
 /***************************************************************************//**
