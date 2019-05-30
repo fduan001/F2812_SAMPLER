@@ -39,9 +39,11 @@ void GpioInit(void) {
 
 	GpioMuxRegs.GPAMUX.bit.C1TRIP_GPIOA13 = 0;
 	GpioMuxRegs.GPAMUX.bit.C2TRIP_GPIOA14 = 0;
+	GpioMuxRegs.GPAMUX.bit.C3TRIP_GPIOA15 = 0;
 
 	GpioMuxRegs.GPADIR.bit.GPIOA13 = GPIO_DIR_OUTPUT;
 	GpioMuxRegs.GPADIR.bit.GPIOA14 = GPIO_DIR_OUTPUT;
+	GpioMuxRegs.GPADIR.bit.GPIOA15 = GPIO_DIR_INPUT;
 
 	GpioMuxRegs.GPFMUX.bit.SPISTEA_GPIOF3 = 0;
 	GpioMuxRegs.GPFDIR.bit.GPIOF3 = GPIO_DIR_OUTPUT;
