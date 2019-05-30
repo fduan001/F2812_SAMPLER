@@ -111,10 +111,15 @@ int ADS124S08_Init(void)
 	registers[GPIODAT_ADDR_MASK] 	= 0x00;
 	registers[GPIOCON_ADDR_MASK]= 0x00;
 	setChipSelect();
+	PlatformDelay(10);
 
 	ADS124S08_DeassertStart();
 
 	FpgaSpiConfig(AD124S08_SPI_CHANNEL, ad124s08_spicfg);
+	
+	ADS124S08_AssertStart();
+	PlatformDelay(10);
+
 	return 1;
 }
 /*
@@ -137,8 +142,12 @@ UINT8 ADS124S08_ReadReg(UINT8 regnum)
 	ulDataTx[1] = 0x00;
 	clearChipSelect();
 
+	PlatformDelay(10);
+
 	FpgaSpiWriteRead(AD124S08_SPI_CHANNEL, ulDataTx, 2, ulDataRx, 1);
 	registers[regnum] = ulDataRx[0];
+
+	PlatformDelay(10);
 	setChipSelect();
 	return ulDataRx[0];
 }
