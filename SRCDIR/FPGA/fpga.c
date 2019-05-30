@@ -24,7 +24,7 @@
 
 void WriteFpgaRegister( UINT32 regaddr, UINT16 regvalue)
 {
-    volatile UINT32 *regPtr;
+    volatile UINT16 *regPtr;
 
     regPtr = (volatile UINT16 *)regaddr;
     *(regPtr) = regvalue;
@@ -32,7 +32,7 @@ void WriteFpgaRegister( UINT32 regaddr, UINT16 regvalue)
 
 UINT16 ReadFpgaRegister( UINT32 regaddr )
 {
-    volatile UINT32 *regPtr;
+    volatile UINT16 *regPtr;
     regPtr = (volatile UINT16 *)regaddr;
     return ((*regPtr) & 0xffff);
 }
