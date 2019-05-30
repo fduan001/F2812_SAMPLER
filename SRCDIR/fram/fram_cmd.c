@@ -42,6 +42,12 @@ INT32 do_fram ( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 		return 0;
 	}
 
+	if( strcmp(ops, "rsr") == 0 ) {
+		val = FRAMReadSR();
+		PRINTF("SR: 0x%02x\n", val);
+		return 0;
+	}
+
 	return 1;
 }
 

@@ -30,6 +30,20 @@ UINT8 FRAMReadByte(UINT16 addr) {
 	return val[0];
 }
 
+UINT8 FRAMReadSR(void) {
+	UINT8 val[1] = {0x0};
+	UINT8 tx_buf[1];
+	
+	/* build read buffer for tx */
+	tx_buf[0] = FRAM_RDSR;
+
+	HostSpiAssertCS();
+	HostSpiXfer(tx_buf, 1, val, 1);
+	HostSpiDeassertCS();
+
+	return val[0];
+}
+
 int FRAMWriteByte(UINT16 addr, UINT8 val) {
 	UINT8 tx_buf[4];
 
