@@ -99,7 +99,10 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
 {
     S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue;
-    UINT16  timeout = FPGA_SPI_TIMEOUT;
+    UINT16 timeout = FPGA_SPI_TIMEOUT;
+    UINT32 ref_clk = 150000000;
+    UINT16 val = 0;
+
     spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + (channel ) * 32);
     //check the go_bsy=0?  
     
@@ -130,7 +133,8 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
     } while(SPI_GO_START == bitvalue);
     //set the  clock  rate;
 
-    FPGA_REG16_W(&(spicontroller->divider), spicfg.spisclk);
+    val = (ref_clk / spicfg.spisclk) / 2 - 1;
+    FPGA_REG16_W(&(spicontroller->divider), val);
 
     regdata = FPGA_REG16_R(&(spicontroller->divider));
     PRINTF("divider=0x%04x  spisclk=%lu %ld\n", regdata, spicfg.spisclk, &(spicontroller->divider));
