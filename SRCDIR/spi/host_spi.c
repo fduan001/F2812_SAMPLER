@@ -111,7 +111,8 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 	if( spi_msg->rx_len > 0 ) {
 		spi_msg->rx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->rx_len; ++i ) {
-			SpiaRegs.SPITXBUF = 0x00; /* dummy byte */
+			// SpiaRegs.SPITXBUF = 0x00; /* dummy byte */
+			SpiaRegs.SPIDAT = 0x0;
 			while(SpiaRegs.SPIFFRX.bit.RXFFST == 0) {
 				++count;
 				if( count > limit ) {
