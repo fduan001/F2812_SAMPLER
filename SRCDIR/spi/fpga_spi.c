@@ -215,7 +215,7 @@ INT32 FpgaSpiWrite(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen)
         }
     } while(SPI_GO_START == bitvalue);
 
-    // FpgaSpiWRMode(chan, SPI_WRITE_MODE);
+    FpgaSpiWRMode(chan, SPI_WRITE_MODE);
     //write the data byte by byte
     for(index = 0; index < sendlen; index++)
     {
@@ -282,7 +282,7 @@ INT32 FpgaSpiWriteRead(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen , UINT8 *re
     
     if( sendbuffer ) {
         // write mode
-        // FpgaSpiWRMode(chan, SPI_WRITE_MODE);
+        FpgaSpiWRMode(chan, SPI_WRITE_MODE);
         //write the command data byte by byte
 
         for(index = 0; index < sendlen; index++)
@@ -312,7 +312,7 @@ INT32 FpgaSpiWriteRead(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen , UINT8 *re
 
     if( readbuffer ) {
         // read mode
-        // FpgaSpiWRMode(chan, SPI_READ_MODE);
+        FpgaSpiWRMode(chan, SPI_READ_MODE);
         // now to send the clock to read buffer;
         for(index = 0; index < readlen; index++)
         {
@@ -395,7 +395,7 @@ INT32 FpgaSpiRead(UINT8 chan, UINT8 *readbuffer, UINT8 readlen)
         }
     } while(SPI_GO_START == bitvalue);
     // read mode
-    // FpgaSpiWRMode(chan, SPI_READ_MODE);
+    FpgaSpiWRMode(chan, SPI_READ_MODE);
     //write the data byte by byte
     for(index = 0; index < readlen; index++)
     {

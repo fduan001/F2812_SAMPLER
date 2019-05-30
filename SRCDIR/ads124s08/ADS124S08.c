@@ -54,7 +54,8 @@ S_SPI_CFG_TYPE  ad124s08_spicfg =
     8,
     SPI_MSB_ORDER,
     SPI_TX_DATA_RISING,
-    SPI_RX_DATA_FALLING
+    SPI_RX_DATA_FALLING,
+    SPI_4WIRE_MODE
 };
 
 /*
