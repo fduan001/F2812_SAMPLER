@@ -92,7 +92,7 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 				}
 				PlatformDelay(1);
 			};
-			spi_msg->rx_buf[i] = SpiaRegs.SPIRXBUF;
+			spi_msg->rx_buf[i] = (UINT8)(SpiaRegs.SPIRXBUF & 0xFF);
 		}
 	}
 
