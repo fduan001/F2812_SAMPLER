@@ -2,6 +2,7 @@
 #include "boardcfg.h"
 #include "F2812_datatype.h"
 #include "host_spi.h"
+#include "shellconsole.h"
 
 #define HOST_SPI_MAX_XFER_BYTES           16 /* 16 words per fifo */
 
@@ -78,11 +79,20 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 
 int HostSpiXferRead(spi_msg_t *spi_msg) {
 	int i = 0;
+	UINT32 count = 0;
+	UINT32 limit = 5000;
 	if( spi_msg->rx_len > 0 ) {
 		spi_msg->rx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->rx_len; ++i ) {
 			SpiaRegs.SPITXBUF = 0x00; /* dummy byte */
-			while(SpiaRegs.SPIFFRX.bit.RXFFST !=1) {};
+			while(SpiaRegs.SPIFFRX.bit.RXFFST != 1) {  
+				++count;
+				if( count > limit ) {
+					PRINTF("xfer read timeout\n");
+					return -1;
+				}
+				PlatformDelay(1);
+			};
 			spi_msg->rx_buf[i] = SpiaRegs.SPIRXBUF;
 		}
 	}
