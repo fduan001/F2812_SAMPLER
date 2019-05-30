@@ -110,15 +110,23 @@ int ADS124S08_Init(void)
 	registers[FSCAL2_ADDR_MASK] 	= 0x40;
 	registers[GPIODAT_ADDR_MASK] 	= 0x00;
 	registers[GPIOCON_ADDR_MASK]= 0x00;
-	setChipSelect();
-	PlatformDelay(10);
 
 	ADS124S08_DeassertStart();
 
 	FpgaSpiConfig(AD124S08_SPI_CHANNEL, ad124s08_spicfg);
 	
+#if 0
 	ADS124S08_AssertStart();
 	PlatformDelay(10);
+
+	ADS124S08_SendCmd(RESET_OPCODE_MASK);
+
+	PlatformDelay(600); /* delay 0.6 ms */
+
+	ADS124S08_SendCmd(SYOCAL_OPCODE_MASK);
+
+	PlatformDelay(500); /* delay 0.6 ms */
+#endif
 
 	return 1;
 }
