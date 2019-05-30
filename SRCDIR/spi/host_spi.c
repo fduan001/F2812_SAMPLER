@@ -62,7 +62,7 @@ void HostSpiReset(void) {
    SpiaRegs.SPICCR.bit.RESET=0; // Reset SPI
 
    SpiaRegs.SPICCR.all=0x0007;       //8-bit character, no Loopback mode
-   SpiaRegs.SPICTL.all=0x0017;       //Interrupt enabled, Master/Slave XMIT enabled
+   SpiaRegs.SPICTL.all=0x0006;       //Interrupt enabled, Master/Slave XMIT enabled
    SpiaRegs.SPISTS.all=0x0000;
    SpiaRegs.SPIBRR = SPIBRR_CFG;           // Baud rate
 #if 0
@@ -85,17 +85,30 @@ void HostSpiReset(void) {
 
 int HostSpiXferWrite(spi_msg_t *spi_msg) {
 	int  i = 0;
+	UINT32 count = 0;
+	UINT32 limit = 2000;
+
 	if( spi_msg->tx_len > 0 ) {
+		#if 0
 		/* Setup the TX FIFO and RX FIFO */
 		if( spi_msg->tx_len < HOST_SPI_MAX_XFER_BYTES ) {
 			SpiaRegs.SPIFFTX.all |= spi_msg->tx_len;
 		} else {
 			SpiaRegs.SPIFFTX.all |= 0xF; /* 16 words */
 		}
+		#endif
 		spi_msg->tx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->tx_len; ++i ) {
-			//SpiaRegs.SPITXBUF = spi_msg->tx_buf[i];
-			SpiaRegs.SPIDAT = spi_msg->tx_buf[i];
+			while( SpiaRegs.SPISTS.bit.BUFFULL_FLAG != 0 ) {
+				++count;
+				if( count > limit ) {
+					PRINTF("xfer write timeout\n");
+					return -1;
+				}
+				PlatformDelay(1);
+			}
+			SpiaRegs.SPITXBUF = spi_msg->tx_buf[i];
+			//SpiaRegs.SPIDAT = spi_msg->tx_buf[i];
 			PRINTF("%d: 0x%02x\n", i, spi_msg->tx_buf[i]);
 		}
 	}
@@ -111,8 +124,18 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 	if( spi_msg->rx_len > 0 ) {
 		spi_msg->rx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->rx_len; ++i ) {
-			// SpiaRegs.SPITXBUF = 0x00; /* dummy byte */
-			SpiaRegs.SPIDAT = 0x0;
+			while( SpiaRegs.SPISTS.bit.BUFFULL_FLAG != 0 ) {
+				++count;
+				if( count > limit ) {
+					PRINTF("xfer write timeout\n");
+					return -1;
+				}
+				PlatformDelay(1);
+			}
+			SpiaRegs.SPITXBUF = 0x00; /* dummy byte */
+
+			//SpiaRegs.SPIDAT = 0x0;
+#if 0
 			while(SpiaRegs.SPIFFRX.bit.RXFFST == 0) {
 				++count;
 				if( count > limit ) {
@@ -121,6 +144,7 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 				}
 				PlatformDelay(1);
 			};
+#endif
 			spi_msg->rx_buf[i] = (UINT8)(SpiaRegs.SPIRXBUF & 0xFF);
 		}
 	}
@@ -135,8 +159,6 @@ int HostSpiSetupXfer(spi_msg_t *spi_msg) {
 	int remain = 0;
 	spi_msg_t cur_msg;
 
-	/* reset SPI controller */
-	HostSpiReset();
 	if( spi_msg->tx_buf ) {
 		loop = spi_msg->tx_len / HOST_SPI_MAX_XFER_BYTES;
 		remain = spi_msg->tx_len % HOST_SPI_MAX_XFER_BYTES;
