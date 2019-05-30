@@ -60,7 +60,7 @@ void HostSpiReset(void) {
 #endif
    SpiaRegs.SPICCR.bit.RESET=0; // Reset SPI
 
-   SpiaRegs.SPICCR.all=0x0007;       //8-bit character, no Loopback mode
+   SpiaRegs.SPICCR.all=0x0047;       //8-bit character, no Loopback mode
    SpiaRegs.SPICTL.all=0x0017;       //Interrupt enabled, Master/Slave XMIT enabled
    SpiaRegs.SPISTS.all=0x0000;
    SpiaRegs.SPIBRR=0x0063;           // Baud rate
