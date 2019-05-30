@@ -40,16 +40,19 @@ void HostSpiReset(void) {
 	/* Disable SPI Master */
 	SpiaRegs.SPICCR.all = 0x0;
 	/* Disable FIFO and reset TX/RX FIFO */
-	SpiaRegs.SPIFFTX.all = 0x0;
-	SpiaRegs.SPIFFRX.all = 0x0;
+	SpiaRegs.SPIFFTX.all = 0xC028;
+	SpiaRegs.SPIFFRX.all = 0x28;
 
 	SpiaRegs.SPICCR.all = SPICCR_CFG;
 	SpiaRegs.SPICTL.all = SPICTL_CFG;
 	SpiaRegs.SPIBRR = SPIBRR_CFG;
 	SpiaRegs.SPICCR.all = (0x80 | SPICCR_CFG);
 
-    SpiaRegs.SPIFFRX.all = ( 1 << 13) | 0xF; /* no interrupt */
-	SpiaRegs.SPIFFTX.all = ( 1 << 15) | (1 << 13);
+	SpiaRegs.SPIFFCT.all=0x00;
+   	SpiaRegs.SPIPRI.all=0x0010;
+
+    SpiaRegs.SPIFFRX.all = ( 1 << 13) | 0x28; /* no interrupt */
+	SpiaRegs.SPIFFTX.all = ( 1 << 15) | (1 << 13) | ( 1 << 14 ) | 0x28;
 
 	PlatformDelay(10);
 
