@@ -87,6 +87,7 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 	int  i = 0;
 	UINT32 count = 0;
 	UINT32 limit = 2000;
+	UINT16 val = 0;
 
 	if( spi_msg->tx_len > 0 ) {
 		#if 0
@@ -107,8 +108,9 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 				}
 				PlatformDelay(1);
 			}
-			SpiaRegs.SPITXBUF = (spi_msg->tx_buf[i] << 8);
-			//SpiaRegs.SPIDAT = spi_msg->tx_buf[i];
+			val = (spi_msg->tx_buf[i] << 8) | 0x00;
+			SpiaRegs.SPITXBUF = val;
+			PlatformDelay(1);
 			PRINTF("%d: 0x%02x\n", i, spi_msg->tx_buf[i]);
 		}
 	}
@@ -133,6 +135,7 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 				PlatformDelay(1);
 			}
 			SpiaRegs.SPITXBUF = 0x0000; /* dummy byte */
+			PlatformDelay(1);
 
 			//SpiaRegs.SPIDAT = 0x0;
 #if 0
