@@ -24,9 +24,55 @@
 
 #define FPGA_SPI_TIMEOUT   10 /* 10 ms */
 
-UINT8 SYSSPI_RESET_BIT[] = {
-  FPGA_SPI1_RESET_BIT,FPGA_SPI2_RESET_BIT
+typedef struct fpga_spi_cfg_t {
+    UINT32 trx; /* tx and rx data register */
+    UINT32 csr; /* ctrl status register */
+    UINT32 divider; /* freq settings */
+    UINT32 cs; /* chip select */
+} fpga_spi_cfg_t;
+
+#define MAX_FPGA_SPI_CHAN            2
+
+static fpga_spi_cfg_t g_fpga_spi_cfg[2];
+
+UINT8 SYSSPI_RESET_BIT[MAX_FPGA_SPI_CHAN] = {
+    FPGA_SPI1_RESET_BIT,
+    FPGA_SPI2_RESET_BIT,
 };
+
+void InitFpgaSpiData(void) {
+    g_fpga_spi_cfg[0].trx = FPGA_SPI_BASE;
+    g_fpga_spi_cfg[0].csr = FPGA_SPI_BASE + 1;
+    g_fpga_spi_cfg[0].divider = FPGA_SPI_BASE + 2;
+    g_fpga_spi_cfg[0].cs = FPGA_SPI_BASE + 3;
+
+    g_fpga_spi_cfg[1].trx = FPGA_SPI_BASE + 0x20;
+    g_fpga_spi_cfg[1].csr = FPGA_SPI_BASE + 0x20 + 1;
+    g_fpga_spi_cfg[1].divider = FPGA_SPI_BASE + 0x20 + 2;
+    g_fpga_spi_cfg[1].cs = FPGA_SPI_BASE + 0x20 + 3;
+}
+
+UINT8 Chan2RstBitPos(UINT8 chan) {
+    return SYSSPI_RESET_BIT[chan];
+}
+
+void FpgaSpiMasterReset(UINT8 chan) {
+    UINT8 bit_pos = 0;
+    if( chan > MAX_FPGA_SPI_CHAN ) {
+        return;
+    }
+
+    bit_pos = Chan2RstBitPos(chan);
+
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) | (1 << bit_pos)); // MR = HI;
+    PlatformDelay(5); 
+
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) & (~(1 << bit_pos))); // MR = LO;
+    PlatformDelay(5);
+
+    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) | (1 << bit_pos)); // MR = HI;
+    PlatformDelay(5); 
+}
 
 static inline void __msleep__(UINT32 ms)
 {
@@ -49,34 +95,26 @@ static inline void __msleep__(UINT32 ms)
  *
  *****************************************************************************/
 
-void FpgaSpiWRMode(UINT8 channel , UINT8 wrmode)
+void FpgaSpiWRMode(UINT8 chan , UINT8 wrmode)
 {
-    S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 32);
-
     // write or read dir control
-    regdata = FPGA_REG16_R((UINT32)(&(spicontroller->ctlstatus)));
+    regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
     bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_WIREMODE_BIT14, FPGA_SPI_CTL_WIREMODE_BIT14);
     //wire 4 mode
-    if(SPI_4WIRE_MODE == bitvalue)
-    {
+    if(SPI_4WIRE_MODE == bitvalue) {
 
-    }
+    } else {
     // wire 3 mode
-    else
-    {
         //write mode
         if(SPI_WRITE_MODE == wrmode)
         {
             regdata = FPGA_SET_BITFIELD(regdata, SPI_WRITE_MODE, FPGA_SPI_CTL_WRDIR_BIT15, FPGA_SPI_CTL_WRDIR_BIT15);
-            FPGA_REG16_W((UINT32)&(spicontroller->ctlstatus), regdata);
-        }
-        //read mode
-        else
-        {
+            FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
+        } else {
+            //read mode
             regdata = FPGA_SET_BITFIELD(regdata, SPI_READ_MODE, FPGA_SPI_CTL_WRDIR_BIT15, FPGA_SPI_CTL_WRDIR_BIT15);
-            FPGA_REG16_W((UINT32)&(spicontroller->ctlstatus), regdata);
+            FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
         }
     }
 }
@@ -95,35 +133,17 @@ void FpgaSpiWRMode(UINT8 channel , UINT8 wrmode)
 
  *
  *****************************************************************************/
-INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
+INT32 FpgaSpiConfig(UINT8 chan , S_SPI_CFG_TYPE spicfg)
 {
-    S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue;
     UINT16 timeout = FPGA_SPI_TIMEOUT;
     UINT32 ref_clk = 150000;
     UINT16 val = 0;
 
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + (channel ) * 32);
-    //check the go_bsy=0?  
-    
-    regdata = FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG);
-    regdata = (regdata | ((1 << SYSSPI_RESET_BIT[channel] )));
-
-    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, regdata); // HI
-    __msleep__(1);
-
-
-    regdata = (regdata & (~(1 << SYSSPI_RESET_BIT[channel])));
- 	FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, regdata);  // LO
-     __msleep__(1);
-
-     regdata = (regdata | ((1 << SYSSPI_RESET_BIT[channel])));  
-    FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, regdata);   // HI
-    __msleep__(1);   
-    
+    FpgaSpiMasterReset(chan);
     do
     {
-        regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
         bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
         __msleep__(1);
         timeout--;
@@ -134,13 +154,12 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
     //set the  clock  rate;
 
     val = (ref_clk / spicfg.spisclk) / 2 - 1;
-    FPGA_REG16_W(&(spicontroller->divider), val);
+    FPGA_REG16_W(g_fpga_spi_cfg[chan].divider, val);
 
-    regdata = FPGA_REG16_R(&(spicontroller->divider));
-    PRINTF("divider=0x%04x  spisclk=%u 0x%08lx\n", regdata, spicfg.spisclk, (UINT32)&(spicontroller->divider));
+    regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].divider);
+    PRINTF("divider=0x%04x  spisclk=%lu 0x%08lx\n", regdata, spicfg.spisclk, g_fpga_spi_cfg[chan].divider);
     //set the spi timing protocol ,default is read mode
     regdata = 0;
-    //regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
     //set the cs generate manually
     regdata = FPGA_SET_BITFIELD(regdata, spicfg.spicsgen, FPGA_SPI_CTL_ASS_BIT13, FPGA_SPI_CTL_ASS_BIT13);
     //set the bit order;
@@ -153,12 +172,14 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
     regdata = FPGA_SET_BITFIELD(regdata, spicfg.spidatalen, 6, 0);
     //set 3wire or 4wire spi mode
     regdata = FPGA_SET_BITFIELD(regdata, spicfg.wiremode, FPGA_SPI_CTL_WIREMODE_BIT14 , FPGA_SPI_CTL_WIREMODE_BIT14);
-    FPGA_REG16_W(&(spicontroller->ctlstatus), regdata);
+    FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
+
+    regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
+    PRINTF("CSR=0x%04x\n", regdata);
 
     __msleep__(1);
     
     return BSP_DRV_OK;
-
 }
 
 
@@ -178,38 +199,36 @@ INT32 FpgaSpiConfig(UINT8 channel , S_SPI_CFG_TYPE spicfg)
  *
  *****************************************************************************/
 
-INT32 FpgaSpiWrite(UINT8 channel , UINT8 *sendbuffer, UINT8 sendlen)
+INT32 FpgaSpiWrite(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen)
 {
-    S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue, timeout = FPGA_SPI_TIMEOUT;
-    UINT8   index;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel * 32);
+    UINT8  index;
     //first check the go_bsy=0?
     do
     {
-        regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
         bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
         __msleep__(1);
         timeout--;
         if(0 == timeout) {
             return BSP_DRV_FAIL;
         }
-    }
-    while(SPI_GO_START == bitvalue);
-    FpgaSpiWRMode(channel, SPI_WRITE_MODE);
+    } while(SPI_GO_START == bitvalue);
+
+    FpgaSpiWRMode(chan, SPI_WRITE_MODE);
     //write the data byte by byte
     for(index = 0; index < sendlen; index++)
     {
         //send one byte
-        FPGA_REG16_W(&(spicontroller->txdat), sendbuffer[index]);
-        regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+        FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, sendbuffer[index]);
+        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
         regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-        FPGA_REG16_W(&(spicontroller->ctlstatus), regdata);
+        FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
         //check ready for next;
         timeout = FPGA_SPI_TIMEOUT;
         do
         {
-            regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+            regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
             bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
             __msleep__(1);
             timeout--;
@@ -241,16 +260,14 @@ INT32 FpgaSpiWrite(UINT8 channel , UINT8 *sendbuffer, UINT8 sendlen)
  *
  *****************************************************************************/
 
-INT32 FpgaSpiWriteRead(UINT8 channel , UINT8 *sendbuffer, UINT8 sendlen , UINT8 *readbuffer , UINT8 readlen  )
+INT32 FpgaSpiWriteRead(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen , UINT8 *readbuffer , UINT8 readlen  )
 {
-    S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue, timeout = FPGA_SPI_TIMEOUT;
-    UINT8   index;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 32);
+    UINT8  index;
     //first check the go_bsy=0?
     do
     {
-        regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
         bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
         __msleep__(1);
         timeout--;
@@ -261,21 +278,21 @@ INT32 FpgaSpiWriteRead(UINT8 channel , UINT8 *sendbuffer, UINT8 sendlen , UINT8 
     
     if( sendbuffer ) {
         // write mode
-        FpgaSpiWRMode(channel, SPI_WRITE_MODE);
+        FpgaSpiWRMode(chan, SPI_WRITE_MODE);
         //write the command data byte by byte
 
         for(index = 0; index < sendlen; index++)
         {
             //send one byte
-            FPGA_REG16_W(&(spicontroller->txdat), sendbuffer[index]);
-            regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+            FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, sendbuffer[index]);
+            regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
             regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-            FPGA_REG16_W(&(spicontroller->ctlstatus), regdata);
+            FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
             //check ready for next;
             timeout = FPGA_SPI_TIMEOUT;
             do
             {
-                regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+                regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
                 bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
                 __msleep__(1);
                 timeout--;
@@ -288,20 +305,20 @@ INT32 FpgaSpiWriteRead(UINT8 channel , UINT8 *sendbuffer, UINT8 sendlen , UINT8 
 
     if( readbuffer ) {
         // read mode
-        FpgaSpiWRMode(channel, SPI_READ_MODE);
+        FpgaSpiWRMode(chan, SPI_READ_MODE);
         // now to send the clock to read buffer;
         for(index = 0; index < readlen; index++)
         {
             //send one byte
-            FPGA_REG16_W(&(spicontroller->txdat), 0x0);
-            regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+            FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, 0x0);
+            regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
             regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-            FPGA_REG16_W(&(spicontroller->ctlstatus), regdata);
+            FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
             //check ready for next;
             timeout = FPGA_SPI_TIMEOUT;
             do
             {
-                regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+                regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
                 bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
                 __msleep__(1);
                 timeout--;
@@ -309,7 +326,7 @@ INT32 FpgaSpiWriteRead(UINT8 channel , UINT8 *sendbuffer, UINT8 sendlen , UINT8 
                     return BSP_DRV_FAIL;
                 }
             } while(SPI_GO_START == bitvalue);
-            readbuffer[index] = FPGA_REG16_R(&(spicontroller->rxdat));
+            readbuffer[index] = (UINT8)(FPGA_REG16_R(g_fpga_spi_cfg[chan].trx) & 0xFF);
         }
     }
     return BSP_DRV_OK;
@@ -331,11 +348,9 @@ INT32 FpgaSpiWriteRead(UINT8 channel , UINT8 *sendbuffer, UINT8 sendlen , UINT8 
  *
  *****************************************************************************/
 
-void FpgaSpiCs(UINT8 channel , UINT8 chipsel)
+void FpgaSpiCs(UINT8 chan, UINT8 chipsel)
 {
-    S_SPI_CTRL_TYPE *spicontroller;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 32);
-    FPGA_REG16_W(&(spicontroller->slavesel), chipsel);
+    FPGA_REG16_W(g_fpga_spi_cfg[chan].cs, chipsel);
 }
 
 
@@ -355,16 +370,14 @@ void FpgaSpiCs(UINT8 channel , UINT8 chipsel)
  *
  *****************************************************************************/
 
-INT32 FpgaSpiRead(UINT8 channel , UINT8 *readbuffer, UINT8 readlen)
+INT32 FpgaSpiRead(UINT8 chan, UINT8 *readbuffer, UINT8 readlen)
 {
-    S_SPI_CTRL_TYPE *spicontroller;
     UINT16 regdata, bitvalue, timeout = FPGA_SPI_TIMEOUT;
     UINT8   index;
-    spicontroller = (S_SPI_CTRL_TYPE *)(FPGA_SPI_BASE + channel  * 32);
     //first check the go_bsy=0?
     do
     {
-        regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
         bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
         __msleep__(1);
         timeout--;
@@ -373,20 +386,20 @@ INT32 FpgaSpiRead(UINT8 channel , UINT8 *readbuffer, UINT8 readlen)
         }
     } while(SPI_GO_START == bitvalue);
     // read mode
-    FpgaSpiWRMode(channel, SPI_READ_MODE);
+    FpgaSpiWRMode(chan, SPI_READ_MODE);
     //write the data byte by byte
     for(index = 0; index < readlen; index++)
     {
         //send one byte
-        FPGA_REG16_W(&(spicontroller->txdat), 0x0);
-        regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+        FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, 0x0);
+        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
         regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-        FPGA_REG16_W(&(spicontroller->ctlstatus), regdata);
+        FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
         //check ready for next;
         timeout = FPGA_SPI_TIMEOUT;
         do
         {
-            regdata = FPGA_REG16_R(&(spicontroller->ctlstatus));
+            regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
             bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
             __msleep__(1);
             timeout--;
@@ -394,7 +407,7 @@ INT32 FpgaSpiRead(UINT8 channel , UINT8 *readbuffer, UINT8 readlen)
                 return BSP_DRV_FAIL;
             }
         } while(SPI_GO_START == bitvalue);
-        readbuffer[index] = FPGA_REG16_R(&(spicontroller->rxdat));
+        readbuffer[index] = (UINT8)(FPGA_REG16_R(g_fpga_spi_cfg[chan].trx) & 0xFF);
     }
     return BSP_DRV_OK;
 }

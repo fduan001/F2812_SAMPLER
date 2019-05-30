@@ -15,7 +15,7 @@ typedef struct
 typedef struct
 {
     UINT8   spicsgen;
-    UINT16  spisclk;
+    UINT32  spisclk;
     UINT8   spidatalen;
     UINT8   bitorder;
     UINT8   spitxdatrising;

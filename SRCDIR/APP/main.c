@@ -31,6 +31,7 @@ extern void ADS124S08CmdInitialize();
 extern void FuelCmdInitialzie();
 extern void FlowCmdInitialzie();
 extern void FRAMCmdInitialize();
+extern void InitFpgaSpiData(void);
 
 /******************************
    option 2
@@ -145,6 +146,7 @@ void ShellTask()
     set_shellprompt(CONFIG_BOARD_PROMPT);
     WatchdogKick();
 
+    InitFpgaSpiData();
     GpioInit();
     FRAMCmdInitialize();
     MidCmdInitialize();
