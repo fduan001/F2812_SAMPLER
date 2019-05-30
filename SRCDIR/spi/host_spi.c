@@ -107,7 +107,7 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 				}
 				PlatformDelay(1);
 			}
-			SpiaRegs.SPITXBUF = spi_msg->tx_buf[i];
+			SpiaRegs.SPITXBUF = (spi_msg->tx_buf[i] << 8);
 			//SpiaRegs.SPIDAT = spi_msg->tx_buf[i];
 			PRINTF("%d: 0x%02x\n", i, spi_msg->tx_buf[i]);
 		}
@@ -132,7 +132,7 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 				}
 				PlatformDelay(1);
 			}
-			SpiaRegs.SPITXBUF = 0x00; /* dummy byte */
+			SpiaRegs.SPITXBUF = 0x0000; /* dummy byte */
 
 			//SpiaRegs.SPIDAT = 0x0;
 #if 0
