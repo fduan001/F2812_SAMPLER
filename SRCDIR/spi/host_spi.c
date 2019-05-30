@@ -37,6 +37,8 @@ void HostSpiDeassertCS(void) {
 }
 
 void HostSpiReset(void) {
+
+#if 0
 	/* Disable SPI Master */
 	SpiaRegs.SPICCR.all = 0x0;
 	/* Disable FIFO and reset TX/RX FIFO */
@@ -55,6 +57,22 @@ void HostSpiReset(void) {
 	SpiaRegs.SPIFFTX.all = ( 1 << 15) | (1 << 13) | ( 1 << 14 ) | 0x28;
 
 	PlatformDelay(10);
+#endif
+   SpiaRegs.SPICCR.bit.RESET=0; // Reset SPI
+
+   SpiaRegs.SPICCR.all=0x0007;       //8-bit character, no Loopback mode
+   SpiaRegs.SPICTL.all=0x0017;       //Interrupt enabled, Master/Slave XMIT enabled
+   SpiaRegs.SPISTS.all=0x0000;
+   SpiaRegs.SPIBRR=0x0063;           // Baud rate
+   SpiaRegs.SPIFFTX.all=0xC028;      // Enable FIFO's, set TX FIFO level to 8
+   SpiaRegs.SPIFFRX.all=0x0028;      // Set RX FIFO level to 8
+   SpiaRegs.SPIFFCT.all=0x00;
+   SpiaRegs.SPIPRI.all=0x0010;
+
+   SpiaRegs.SPICCR.bit.RESET=1;  // Enable SPI
+
+   SpiaRegs.SPIFFTX.bit.TXFIFORESET=1;
+   SpiaRegs.SPIFFRX.bit.RXFIFORESET=1;
 
 	return ;
 }
