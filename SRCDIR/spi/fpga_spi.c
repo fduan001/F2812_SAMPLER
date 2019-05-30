@@ -81,46 +81,6 @@ static inline void __msleep__(UINT32 ms)
 
 /******************************************************************************
  *
- * Function:		FpgaSpiWRMode
- *
- * Description:       This function config the spi controller  to write or read mode
-                             it is only used for 3 wire mode
- *
- * Parameters:	channel:  uart channel number
-                      wrmode:  1   write mode , 0 read mode
- *
- *
- * Return Value:
-
- *
- *****************************************************************************/
-
-void FpgaSpiWRMode(UINT8 chan , UINT8 wrmode)
-{
-    UINT16 regdata, bitvalue;
-    // write or read dir control
-    regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-    bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_WIREMODE_BIT14, FPGA_SPI_CTL_WIREMODE_BIT14);
-    //wire 4 mode
-    if(SPI_4WIRE_MODE == bitvalue) {
-
-    } else {
-    // wire 3 mode
-        //write mode
-        if(SPI_WRITE_MODE == wrmode)
-        {
-            regdata = FPGA_SET_BITFIELD(regdata, SPI_WRITE_MODE, FPGA_SPI_CTL_WRDIR_BIT15, FPGA_SPI_CTL_WRDIR_BIT15);
-            FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
-        } else {
-            //read mode
-            regdata = FPGA_SET_BITFIELD(regdata, SPI_READ_MODE, FPGA_SPI_CTL_WRDIR_BIT15, FPGA_SPI_CTL_WRDIR_BIT15);
-            FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
-        }
-    }
-}
-
-/******************************************************************************
- *
  * Function:		FpgaSpiConfig
  *
  * Description:       This function config the spi controller using the paramter
@@ -214,8 +174,6 @@ INT32 FpgaSpiWrite(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen)
             return BSP_DRV_FAIL;
         }
     } while(SPI_GO_START == bitvalue);
-
-    FpgaSpiWRMode(chan, SPI_WRITE_MODE);
     //write the data byte by byte
     for(index = 0; index < sendlen; index++)
     {
@@ -281,10 +239,7 @@ INT32 FpgaSpiWriteRead(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen , UINT8 *re
     } while(SPI_GO_START == bitvalue);
     
     if( sendbuffer ) {
-        // write mode
-        FpgaSpiWRMode(chan, SPI_WRITE_MODE);
         //write the command data byte by byte
-
         for(index = 0; index < sendlen; index++)
         {
             //send one byte
@@ -311,8 +266,6 @@ INT32 FpgaSpiWriteRead(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen , UINT8 *re
     }
 
     if( readbuffer ) {
-        // read mode
-        FpgaSpiWRMode(chan, SPI_READ_MODE);
         // now to send the clock to read buffer;
         for(index = 0; index < readlen; index++)
         {
@@ -394,8 +347,7 @@ INT32 FpgaSpiRead(UINT8 chan, UINT8 *readbuffer, UINT8 readlen)
             return BSP_DRV_FAIL;
         }
     } while(SPI_GO_START == bitvalue);
-    // read mode
-    FpgaSpiWRMode(chan, SPI_READ_MODE);
+    
     //write the data byte by byte
     for(index = 0; index < readlen; index++)
     {

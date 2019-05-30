@@ -54,8 +54,7 @@ S_SPI_CFG_TYPE  ad124s08_spicfg =
     8,
     SPI_MSB_ORDER,
     SPI_TX_DATA_RISING,
-    SPI_RX_DATA_FALLING,
-    SPI_4WIRE_MODE
+    SPI_RX_DATA_FALLING
 };
 
 /*
@@ -117,8 +116,7 @@ int ADS124S08_Init(void)
 	ADS124S08_DeassertStart();
 
 	FpgaSpiConfig(AD124S08_SPI_CHANNEL, ad124s08_spicfg);
-	
-#if 0
+
 	ADS124S08_AssertStart();
 	PlatformDelay(10);
 
@@ -129,7 +127,6 @@ int ADS124S08_Init(void)
 	ADS124S08_SendCmd(SYOCAL_OPCODE_MASK);
 
 	PlatformDelay(500); /* delay 0.6 ms */
-#endif
 
 	return 1;
 }
