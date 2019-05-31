@@ -198,7 +198,7 @@ void AD568X_Reset(UINT8 resetOutput)
  *
  * @return none.
 *******************************************************************************/
-void AD568X_SetInputRegister(unsigned long registerValue)
+void AD568X_SetInputRegister(UINT32 registerValue)
 {
     UINT8 registerWord[3] = {0, 0, 0};
     UINT8* dataPointer    = (UINT8*)&registerValue;
