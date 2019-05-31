@@ -110,6 +110,17 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 			}
 			val = (spi_msg->tx_buf[i] << 8) | 0x00;
 			SpiaRegs.SPITXBUF = val;
+			count = 0;
+			while( SpiaRegs.SPISTS.bit.INT_FLAG == 0 ) {
+				++count;
+				if( count > limit ) {
+					PRINTF("xfer write timeout\n");
+					return -1;
+				}
+				PlatformDelay(1);
+			}
+
+			val = SpiaRegs.SPIRXBUF;
 			PlatformDelay(1);
 			PRINTF("%d: 0x%02x\n", i, spi_msg->tx_buf[i]);
 		}
@@ -135,20 +146,20 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 				PlatformDelay(1);
 			}
 			SpiaRegs.SPITXBUF = 0x0000; /* dummy byte */
-			PlatformDelay(1);
-
-			//SpiaRegs.SPIDAT = 0x0;
-#if 0
-			while(SpiaRegs.SPIFFRX.bit.RXFFST == 0) {
+			count = 0;
+			while( SpiaRegs.SPISTS.bit.INT_FLAG == 0 ) {
 				++count;
 				if( count > limit ) {
 					PRINTF("xfer read timeout\n");
 					return -1;
 				}
 				PlatformDelay(1);
-			};
-#endif
+			}
+
+			//SpiaRegs.SPIDAT = 0x0;
+
 			spi_msg->rx_buf[i] = (UINT8)(SpiaRegs.SPIRXBUF & 0xFF);
+			PRINTF("read 0x%02x\n", spi_msg->rx_buf[i]);
 		}
 	}
 
