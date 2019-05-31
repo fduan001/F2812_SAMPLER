@@ -194,9 +194,9 @@ void AD568X_SetInputRegister(UINT32 registerValue)
     UINT8 registerWord[3] = {0, 0, 0};
     UINT8* dataPointer    = (UINT8*)&registerValue;
 
-    registerWord[0] = dataPointer[2];
-    registerWord[1] = dataPointer[1];
-    registerWord[2] = dataPointer[0];
+    registerWord[0] = dataPointer[1];
+    registerWord[1] = dataPointer[2];
+    registerWord[2] = dataPointer[3];
     
     PRINTF("0x%02x 0x%02x 0x%02x 0x%02x\n", registerWord[0], registerWord[1], registerWord[2], registerWord[3]);
     PRINTF("0x%02x 0x%02x 0x%02x 0x%02x\n", dataPointer[0], dataPointer[1], dataPointer[2], dataPointer[3]);
