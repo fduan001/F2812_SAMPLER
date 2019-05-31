@@ -25,7 +25,8 @@
 extern void GpioInit(void);
 extern int RS422CmdInit(void);
 extern void FpgaCmdInitialzie();
-extern  int FpgaSpiCmdInit(void);
+extern int FpgaSpiCmdInit(void);
+extern int HostSpiCmdInit(void);
 extern void AD567XCmdInitialize();
 extern void ADS124S08CmdInitialize();
 extern void FuelCmdInitialzie();
@@ -151,6 +152,7 @@ void ShellTask()
     FRAMCmdInitialize();
     MidCmdInitialize();
     FpgaSpiCmdInit();
+    HostSpiCmdInit();
     AD567XCmdInitialize();
     ADS124S08CmdInitialize();
     FuelCmdInitialzie();
