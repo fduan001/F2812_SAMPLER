@@ -113,7 +113,7 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 			}
 
 			val = SpiaRegs.SPIRXBUF;
-			PRINTF("%d: 0x%02x\n", i, spi_msg->tx_buf[i]);
+			//PRINTF("%d: 0x%02x\n", i, spi_msg->tx_buf[i]);
 		}
 	}
 
@@ -150,7 +150,7 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 			//SpiaRegs.SPIDAT = 0x0;
 
 			spi_msg->rx_buf[i] = (UINT8)(SpiaRegs.SPIRXBUF & 0xFF);
-			PRINTF("read 0x%02x\n", spi_msg->rx_buf[i]);
+			//PRINTF("read 0x%02x\n", spi_msg->rx_buf[i]);
 		}
 	}
 
