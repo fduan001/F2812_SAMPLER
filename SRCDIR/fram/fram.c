@@ -91,9 +91,8 @@ int FRAMWriteBlock(UINT16 addr, UINT8* buffer, UINT16 length) {
 	HostSpiAssertCS();
 	/* WREN has to be written prior to each write access to FRAM */
 	tx_buf[0] = FRAM_WREN;
-	HostSpiDeassertCS();
-
 	HostSpiXfer(tx_buf, 1, NULL, 0);
+	HostSpiDeassertCS();
 	
 	HostSpiAssertCS();
 	
