@@ -38,49 +38,40 @@ void HostSpiDeassertCS(void) {
 }
 
 void HostSpiReset(void) {
-
-#if 0
-	/* Disable SPI Master */
-	SpiaRegs.SPICCR.all = 0x0;
-	/* Disable FIFO and reset TX/RX FIFO */
-	SpiaRegs.SPIFFTX.all = 0xC028;
-	SpiaRegs.SPIFFRX.all = 0x28;
-
-	SpiaRegs.SPICCR.all = SPICCR_CFG;
-	SpiaRegs.SPICTL.all = SPICTL_CFG;
-	SpiaRegs.SPIBRR = SPIBRR_CFG;
-	SpiaRegs.SPICCR.all = (0x80 | SPICCR_CFG);
-
-	SpiaRegs.SPIFFCT.all=0x00;
-   	SpiaRegs.SPIPRI.all=0x0010;
-
-    SpiaRegs.SPIFFRX.all = ( 1 << 13) | 0x28; /* no interrupt */
-	SpiaRegs.SPIFFTX.all = ( 1 << 15) | (1 << 13) | ( 1 << 14 ) | 0x28;
-
-	PlatformDelay(10);
-#endif
    SpiaRegs.SPICCR.bit.RESET=0; // Reset SPI
-
    SpiaRegs.SPICCR.all=0x0007;       //8-bit character, no Loopback mode
    SpiaRegs.SPICTL.all=0x000e;       //Interrupt enabled, Master/Slave XMIT enabled
    SpiaRegs.SPISTS.all=0x0000;
    SpiaRegs.SPIBRR = SPIBRR_CFG;           // Baud rate
-#if 0
-   SpiaRegs.SPIFFTX.all=0xC028;      // Enable FIFO's, set TX FIFO level to 8
-   SpiaRegs.SPIFFRX.all=0x0028;      // Set RX FIFO level to 8
-
-   SpiaRegs.SPIFFCT.all=0x00;
-#endif
    SpiaRegs.SPIPRI.all=0x0010;
-
    SpiaRegs.SPICCR.bit.RESET=1;  // Enable SPI
+   return ;
+}
 
-#if 0
-   SpiaRegs.SPIFFTX.bit.TXFIFORESET=1;
-   SpiaRegs.SPIFFRX.bit.RXFIFORESET=1;
-#endif
+int IsMasterTXIdle(UINT32 timeout) {
+	UINT32 count = 0;
+	while( SpiaRegs.SPISTS.bit.BUFFULL_FLAG != 0 ) {
+		++count;
+		if( count > timeout ) {
+			PRINTF("Master is busy\n");
+			return 0;
+		}
+		PlatformDelay(1);
+	}
+	return 1;
+}
 
-	return ;
+int IsMasterRXReady(UINT32 timeout) {
+	UINT32	count = 0;
+	while( SpiaRegs.SPISTS.bit.INT_FLAG == 0 ) {
+		++count;
+		if( count > timeout ) {
+			PRINTF("Master RX Ready timeout\n");
+			return 0;
+		}
+		PlatformDelay(1);
+	}
+	return 1;
 }
 
 int HostSpiXferWrite(spi_msg_t *spi_msg) {
@@ -92,24 +83,13 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 	if( spi_msg->tx_len > 0 ) {
 		spi_msg->tx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->tx_len; ++i ) {
-			while( SpiaRegs.SPISTS.bit.BUFFULL_FLAG != 0 ) {
-				++count;
-				if( count > limit ) {
-					PRINTF("xfer write timeout\n");
-					return -1;
-				}
-				PlatformDelay(1);
+			if( IsMasterTXIdle(2000) != 1 ) {
+				return -1;
 			}
 			val = (spi_msg->tx_buf[i] << 8) | 0x00;
 			SpiaRegs.SPITXBUF = val;
-			count = 0;
-			while( SpiaRegs.SPISTS.bit.INT_FLAG == 0 ) {
-				++count;
-				if( count > limit ) {
-					PRINTF("xfer write timeout\n");
-					return -1;
-				}
-				PlatformDelay(1);
+			if( IsMasterRXReady(2000) != 1 ) {
+				return -1;
 			}
 
 			val = SpiaRegs.SPIRXBUF;
@@ -128,27 +108,13 @@ int HostSpiXferRead(spi_msg_t *spi_msg) {
 	if( spi_msg->rx_len > 0 ) {
 		spi_msg->rx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->rx_len; ++i ) {
-			while( SpiaRegs.SPISTS.bit.BUFFULL_FLAG != 0 ) {
-				++count;
-				if( count > limit ) {
-					PRINTF("xfer write timeout\n");
-					return -1;
-				}
-				PlatformDelay(1);
+			if( IsMasterTXIdle(2000) != 1 ) {
+				return -1;
 			}
 			SpiaRegs.SPITXBUF = 0x0000; /* dummy byte */
-			count = 0;
-			while( SpiaRegs.SPISTS.bit.INT_FLAG == 0 ) {
-				++count;
-				if( count > limit ) {
-					PRINTF("xfer read timeout\n");
-					return -1;
-				}
-				PlatformDelay(1);
+			if( IsMasterRXReady(2000) != 1 ) {
+				return -1;
 			}
-
-			//SpiaRegs.SPIDAT = 0x0;
-
 			spi_msg->rx_buf[i] = (UINT8)(SpiaRegs.SPIRXBUF & 0xFF);
 			//PRINTF("read 0x%02x\n", spi_msg->rx_buf[i]);
 		}

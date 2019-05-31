@@ -142,6 +142,34 @@ INT32 FpgaSpiConfig(UINT8 chan , S_SPI_CFG_TYPE spicfg)
     return BSP_DRV_OK;
 }
 
+INT32 IsMasterIdle(UINT8 chan, UINT32 timeout) {
+    UINT16 regdata;
+    UINT16 bitvalue;
+
+    regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
+    while(1) {       
+        bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
+        if( SPI_GO_START != bitvalue ) {
+            return 1; /* master is idle */
+        }
+        PlatformDelay(1);
+        --timeout;
+        if(0 == timeout) {
+            return 0;
+        }
+    }
+
+    return 0;
+}
+
+void FpgaSpiTransChar(UINT8 chan, UINT8 obj) {
+    UINT16 regdata, bitvalue;
+    FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, obj);
+    PRINTF("DIN: 0x%02x\n", obj);
+    regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
+    regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
+    FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
+}
 
 /******************************************************************************
  *
@@ -161,46 +189,16 @@ INT32 FpgaSpiConfig(UINT8 chan , S_SPI_CFG_TYPE spicfg)
 
 INT32 FpgaSpiWrite(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen)
 {
-    UINT16 regdata, bitvalue, timeout = FPGA_SPI_TIMEOUT;
-    UINT8  index;
-    //first check the go_bsy=0?
-    do
-    {
-        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-        bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-        PlatformDelay(1);
-        timeout--;
-        if(0 == timeout) {
+    UINT8  indx = 0;
+    //write the data byte by byte
+    for(indx = 0; indx < sendlen; ++indx ) {
+        if( IsMasterIdle(chan, FPGA_SPI_TIMEOUT) == 0 ) {
             return BSP_DRV_FAIL;
         }
-    } while(SPI_GO_START == bitvalue);
-    //write the data byte by byte
-    for(index = 0; index < sendlen; index++)
-    {
         //send one byte
-        FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, sendbuffer[index]);
-        PRINTF("DIN: 0x%02x\n", sendbuffer[index]);
-        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-        regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-        FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
-        //check ready for next;
-        timeout = FPGA_SPI_TIMEOUT;
-        do
-        {
-            regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-            bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-            PlatformDelay(1);
-            timeout--;
-            if(0 == timeout) {
-                return BSP_DRV_FAIL;
-            }
-        } while(SPI_GO_START == bitvalue);
-
-        // read dummy data from bus
-        // FPGA_REG16_R(g_fpga_spi_cfg[chan].trx);
+        FpgaSpiTransChar(chan, sendbuffer[indx]);
     }
     return BSP_DRV_OK;
-
 }
 
 /******************************************************************************
@@ -224,71 +222,35 @@ INT32 FpgaSpiWrite(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen)
 
 INT32 FpgaSpiWriteRead(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen , UINT8 *readbuffer , UINT8 readlen  )
 {
-    UINT16 regdata, bitvalue, timeout = FPGA_SPI_TIMEOUT;
-    UINT8  index;
-    //first check the go_bsy=0?
-    do
-    {
-        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-        bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-        PlatformDelay(1);
-        timeout--;
-        if(0 == timeout) {
-            return BSP_DRV_FAIL;
-        }
-    } while(SPI_GO_START == bitvalue);
-    
+    UINT8  indx;
+
     if( sendbuffer ) {
         //write the command data byte by byte
-        for(index = 0; index < sendlen; index++)
-        {
+        for(indx = 0; indx < sendlen; indx++) {
+            //check ready 1st
+            if( IsMasterIdle(chan, FPGA_SPI_TIMEOUT) == 0 ) {
+                return BSP_DRV_FAIL;
+            }
             //send one byte
-            FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, sendbuffer[index]);
-            PRINTF("DIN: 0x%02x\n", sendbuffer[index]);
-            regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-            regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-            FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
-            //check ready for next;
-            timeout = FPGA_SPI_TIMEOUT;
-            do
-            {
-                regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-                bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-                PlatformDelay(1);
-                timeout--;
-                if(0 == timeout) {
-                    return BSP_DRV_FAIL;
-                }
-            } while(SPI_GO_START == bitvalue);
-            // read dummy data from bus
-            // FPGA_REG16_R(g_fpga_spi_cfg[chan].trx);
+            FpgaSpiTransChar(chan, sendbuffer[indx]);
         }
+    }
+
+    if( IsMasterIdle(chan, FPGA_SPI_TIMEOUT) == 0 ) {
+        return BSP_DRV_FAIL;
     }
 
     if( readbuffer ) {
         // now to send the clock to read buffer;
-        for(index = 0; index < readlen; index++)
-        {
+        for(indx = 0; indx < readlen; indx++) {
             //send one byte
-            FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, 0x0);
-            PRINTF("DIN_FOR_READ: 0x%02x\n", 0);
-            regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-            regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-            FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
+            FpgaSpiTransChar(chan, 0);
             //check ready for next;
-            timeout = FPGA_SPI_TIMEOUT;
-            do
-            {
-                regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-                bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-                PlatformDelay(1);
-                timeout--;
-                if(0 == timeout) {
-                    return BSP_DRV_FAIL;
-                }
-            } while(SPI_GO_START == bitvalue);
-            readbuffer[index] = (UINT8)(FPGA_REG16_R(g_fpga_spi_cfg[chan].trx) & 0xFF);
-            // PRINTF("DOUT: 0x%02x\n", readbuffer[index]);
+            if( IsMasterIdle(chan, FPGA_SPI_TIMEOUT) == 0 ) {
+                return BSP_DRV_FAIL;
+            }
+            readbuffer[indx] = (UINT8)(FPGA_REG16_R(g_fpga_spi_cfg[chan].trx) & 0xFF);
+            // PRINTF("DOUT: 0x%02x\n", readbuffer[indx]);
         }
     }
     return BSP_DRV_OK;
@@ -334,43 +296,22 @@ void FpgaSpiCs(UINT8 chan, UINT8 chipsel)
 
 INT32 FpgaSpiRead(UINT8 chan, UINT8 *readbuffer, UINT8 readlen)
 {
-    UINT16 regdata, bitvalue, timeout = FPGA_SPI_TIMEOUT;
-    UINT8   index;
+    UINT8   indx;
     //first check the go_bsy=0?
-    do
-    {
-        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-        bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-        PlatformDelay(1);
-        timeout--;
-        if(0 == timeout) {
-        	PRINTF("Timeout during spi read\n");
-            return BSP_DRV_FAIL;
-        }
-    } while(SPI_GO_START == bitvalue);
+    if( IsMasterIdle(chan, FPGA_SPI_TIMEOUT) == 0 ) {
+        return BSP_DRV_FAIL;
+    }
     
     //write the data byte by byte
-    for(index = 0; index < readlen; index++)
-    {
+    for(indx = 0; indx < readlen; indx++) {
         //send one byte
-        FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, 0x0);
-        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-        regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-        FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
+        FpgaSpiTransChar(chan, 0);
         //check ready for next;
-        timeout = FPGA_SPI_TIMEOUT;
-        do
-        {
-            regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-            bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-            PlatformDelay(1);
-            timeout--;
-            if(0 == timeout) {
-                return BSP_DRV_FAIL;
-            }
-        } while(SPI_GO_START == bitvalue);
-        readbuffer[index] = (UINT8)(FPGA_REG16_R(g_fpga_spi_cfg[chan].trx) & 0xFF);
-        PRINTF("%u: 0x%02x\n", index, readbuffer[index]);
+        if( IsMasterIdle(chan, FPGA_SPI_TIMEOUT) == 0 ) {
+            return BSP_DRV_FAIL;
+        }
+        readbuffer[indx] = (UINT8)(FPGA_REG16_R(g_fpga_spi_cfg[chan].trx) & 0xFF);
+        PRINTF("%u: 0x%02x\n", indx, readbuffer[indx]);
     }
     return BSP_DRV_OK;
 }
