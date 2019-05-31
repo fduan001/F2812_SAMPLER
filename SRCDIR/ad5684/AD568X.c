@@ -267,7 +267,7 @@ UINT16 AD568X_ReadBack(UINT8 dacChannelAddr)
     SPI_Read(AD568X_SLAVE_ID, rxBuffer, 3);
     PRINTF("rdbk: 0x%02x 0x%02x 0x%02x\n", rxBuffer[0], rxBuffer[1], rxBuffer[2]);
     
-    channelValue = ((long)rxBuffer[0] << 8) | rxBuffer[1];
+    channelValue = ((UINT16)rxBuffer[1] << 8) | rxBuffer[2];
     channelValue >>= shiftValue;
     
     return channelValue;
@@ -296,12 +296,12 @@ float AD568X_SetVoltage(UINT8 channel,
     
     if(vRef == 0)
     {
-        vRef = 2.5;
+        vRef = 5.0;
     }
 #if 0
     vRef *= (AD568X_GAIN_STATE != 0) ? 2 : 1;
 #endif
-    vRef *= 2;
+    // vRef *= 2;
 
     binaryValue = (UINT16)(outputVoltage * (1 << deviceBitsNumber) / 
                                   vRef);
