@@ -253,7 +253,7 @@ void AD568X_WriteFunction(UINT8 writeCommand,
 *******************************************************************************/
 UINT16 AD568X_ReadBack(UINT8 dacChannelAddr)
 {
-    unsigned long channelValue = 0;
+    UINT16 channelValue = 0;
     UINT8 shiftValue   = 0;
     UINT8 rxBuffer[3]  = {0, 0, 0};
     UINT32 val = 0;

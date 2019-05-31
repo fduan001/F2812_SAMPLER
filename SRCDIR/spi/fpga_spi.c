@@ -344,6 +344,7 @@ INT32 FpgaSpiRead(UINT8 chan, UINT8 *readbuffer, UINT8 readlen)
         PlatformDelay(1);
         timeout--;
         if(0 == timeout) {
+        	PRINTF("Timeout during spi read\n");
             return BSP_DRV_FAIL;
         }
     } while(SPI_GO_START == bitvalue);
@@ -369,6 +370,7 @@ INT32 FpgaSpiRead(UINT8 chan, UINT8 *readbuffer, UINT8 readlen)
             }
         } while(SPI_GO_START == bitvalue);
         readbuffer[index] = (UINT8)(FPGA_REG16_R(g_fpga_spi_cfg[chan].trx) & 0xFF);
+        PRINTF("%u: 0x%02x\n", index, readbuffer[index]);
     }
     return BSP_DRV_OK;
 }

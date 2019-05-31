@@ -57,8 +57,8 @@ INT32 do_ad568x ( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 
 	if( strcmp(ops, "rdbk") == 0 ) {
 		chan = simple_strtoul(argv[2], NULL, 10);
-		val = AD568X_ReadBack(chan);
-		PRINTF("val=0x%04x\n", val);
+		val = (UINT32)AD568X_ReadBack(chan);
+		PRINTF("val=0x%04x\n", (UINT16)val);
 		return 0;
 	}
 
