@@ -51,6 +51,7 @@ typedef unsigned int size_t;
 
 typedef unsigned char UINT8;
 typedef unsigned long UINT32;
+typedef unsigned long long UINT64;
 typedef unsigned short UINT16;
 typedef unsigned long phys_addr_t;
 typedef unsigned long ulong;
