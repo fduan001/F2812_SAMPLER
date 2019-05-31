@@ -178,16 +178,7 @@ void AD568X_PowerMode(UINT8 channel, UINT8 pwrMode)
 *******************************************************************************/
 void AD568X_Reset(UINT8 resetOutput)
 {
-#if 0
-    if(resetOutput)
-    {
-        AD568X_RSTSEL_HIGH;
-    }
-    else
-    {
-        AD568X_RSTSEL_LOW;
-    }
-#endif
+	AD568X_HWReset();
     AD568X_SetInputRegister(AD568X_CMD(AD568X_CMD_SOFT_RESET));
 }
 
@@ -207,7 +198,12 @@ void AD568X_SetInputRegister(UINT32 registerValue)
     registerWord[1] = dataPointer[1];
     registerWord[2] = dataPointer[0];
     
-    PRINTF("input 0x%08lx 0x%02x 0x%02x 0x%02x\n", registerValue, registerWord[0], registerWord[1], registerWord[2]);
+    PRINTF("0x%02x 0x%02x 0x%02x\n", registerWord[0], registerWord[1], registerWord[2]);
+    PRINTF("input: 0x%02x 0x%02x 0x%02x 0x%02x \n", (registerValue & 0xFF),
+    	((registerValue >> 8) & 0xFF),
+    	((registerValue >> 16) & 0xFF),
+    	((registerValue >> 24) & 0xFF)
+    	);
     SPI_Write(AD568X_SLAVE_ID, registerWord, 3);
 }
 
