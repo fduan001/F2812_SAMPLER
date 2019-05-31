@@ -76,9 +76,9 @@
 #define AD568X_SLAVE_ID        1
 
 /* AD568X Input Register */
-#define AD568X_CMD(x)                  ((0x000F & (x)) << 20)
-#define AD568X_ADDR(x)                 ((0x000F & (x)) << 16)
-#define AD568X_DATA_BITS(x)            ((0xFFFF & (x)) <<  0)
+#define AD568X_CMD(x)                  (UINT32)((UINT32)((0x000F & ((UINT32)(x)))) << 20)
+#define AD568X_ADDR(x)                 (UINT32)((UINT32)((0x000F & ((UINT32)(x)))) << 16)
+#define AD568X_DATA_BITS(x)            (UINT32)((UINT32)((0xFFFF & ((UINT32)(x)))) <<  0)
 
 /* AD568X_CMD(x) options */
 #define AD568X_CMD_NOP                 0 // No operation.
@@ -147,7 +147,7 @@ void AD568X_PowerMode(UINT8 channel, UINT8 pwrMode);
 void AD568X_InternalVoltageReference(UINT8 vRefMode);
 
 /*!  Writes a 24-bit data-word to the Input Register of the device. */
-void AD568X_SetInputRegister(UINT64 registerValue);
+void AD568X_SetInputRegister(UINT32 registerValue);
 
 /*! Write data to the Input Register or to DAC Register of a channel. */
 void AD568X_WriteFunction(UINT8 writeCommand, 

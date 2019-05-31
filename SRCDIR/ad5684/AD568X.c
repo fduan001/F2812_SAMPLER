@@ -189,7 +189,7 @@ void AD568X_Reset(UINT8 resetOutput)
  *
  * @return none.
 *******************************************************************************/
-void AD568X_SetInputRegister(UINT64 registerValue)
+void AD568X_SetInputRegister(UINT32 registerValue)
 {
     UINT8 registerWord[3] = {0, 0, 0};
     UINT8* dataPointer    = (UINT8*)&registerValue;
@@ -267,7 +267,7 @@ UINT16 AD568X_ReadBack(UINT8 dacChannelAddr)
     unsigned long channelValue = 0;
     UINT8 shiftValue   = 0;
     UINT8 rxBuffer[3]  = {0, 0, 0};
-    UINT64 val = 0;
+    UINT32 val = 0;
     val = AD568X_CMD(AD568X_CMD_SET_READBACK);
     val |= AD568X_ADDR(dacChannelAddr);
     
