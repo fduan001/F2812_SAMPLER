@@ -90,14 +90,6 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 	UINT16 val = 0;
 
 	if( spi_msg->tx_len > 0 ) {
-		#if 0
-		/* Setup the TX FIFO and RX FIFO */
-		if( spi_msg->tx_len < HOST_SPI_MAX_XFER_BYTES ) {
-			SpiaRegs.SPIFFTX.all |= spi_msg->tx_len;
-		} else {
-			SpiaRegs.SPIFFTX.all |= 0xF; /* 16 words */
-		}
-		#endif
 		spi_msg->tx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->tx_len; ++i ) {
 			while( SpiaRegs.SPISTS.bit.BUFFULL_FLAG != 0 ) {
@@ -121,7 +113,6 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 			}
 
 			val = SpiaRegs.SPIRXBUF;
-			PlatformDelay(1);
 			PRINTF("%d: 0x%02x\n", i, spi_msg->tx_buf[i]);
 		}
 	}
