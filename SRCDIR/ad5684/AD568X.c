@@ -199,6 +199,7 @@ void AD568X_SetInputRegister(UINT32 registerValue)
     registerWord[2] = dataPointer[0];
     
     PRINTF("0x%02x 0x%02x 0x%02x 0x%02x\n", registerWord[0], registerWord[1], registerWord[2], registerWord[3]);
+    PRINTF("0x%02x 0x%02x 0x%02x 0x%02x\n", dataPointer[0], dataPointer[1], dataPointer[2], dataPointer[3]);
     SPI_Write(AD568X_SLAVE_ID, registerWord, 3);
 }
 
