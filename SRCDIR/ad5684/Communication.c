@@ -49,7 +49,7 @@
 #include "fpga_spi.h"
 
 #define AD568X_SPI_CHANNEL    0
-#define AD568X_SPI_CLK (4)
+#define AD568X_SPI_CLK (8000)
 #define AD568X_DELAY  (10)
 
 #define AD568X_SPI_CSSELECT(ch)        FpgaSpiCs(ch,1)
