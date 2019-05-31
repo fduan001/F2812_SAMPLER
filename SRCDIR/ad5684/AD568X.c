@@ -268,8 +268,8 @@ UINT16 AD568X_ReadBack(UINT8 dacChannelAddr)
     UINT8 shiftValue   = 0;
     UINT8 rxBuffer[3]  = {0, 0, 0};
     UINT32 val = 0;
-    val = AD568X_CMD(AD568X_CMD_SET_READBACK);
-    val |= AD568X_ADDR(dacChannelAddr);
+    val = (UINT32)AD568X_CMD((UINT32)AD568X_CMD_SET_READBACK);
+    val |= (UINT32)AD568X_ADDR((UINT32)dacChannelAddr);
     
     /* Different types of devices have different data bits positions. */
     shiftValue = 16 - deviceBitsNumber;
