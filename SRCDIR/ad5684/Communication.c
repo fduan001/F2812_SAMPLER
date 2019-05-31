@@ -166,7 +166,15 @@ UINT8 SPI_Read(UINT8 slaveDeviceId,
  UINT8* data,
  UINT8 bytesNumber)
 {
-    // Add your code here.
+    // Add your code here. 
+    AD568X_SPI_CSSELECT(AD568X_SPI_CHANNEL);
+    PlatformDelay(1);
+
+    FpgaSpiRead(AD568X_SPI_CHANNEL, data, bytesNumber);
+
+    AD568X_SPI_CSDESELECT(AD568X_SPI_CHANNEL);
+    /* deassert CS */
+    PlatformDelay(1);
 }
 
 /***************************************************************************//**
