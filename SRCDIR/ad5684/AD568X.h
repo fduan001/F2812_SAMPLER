@@ -147,7 +147,7 @@ void AD568X_PowerMode(UINT8 channel, UINT8 pwrMode);
 void AD568X_InternalVoltageReference(UINT8 vRefMode);
 
 /*!  Writes a 24-bit data-word to the Input Register of the device. */
-void AD568X_SetInputRegister(UINT32 registerValue);
+void AD568X_SetInputRegister(UINT8 cmd, UINT8 chan, UINT16 data);
 
 /*! Write data to the Input Register or to DAC Register of a channel. */
 void AD568X_WriteFunction(UINT8 writeCommand, 

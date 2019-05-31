@@ -51,7 +51,7 @@ INT32 do_ad568x ( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 
 	if( strcmp(ops, "ireg") == 0 ) {
 		val = simple_strtoul(argv[2], NULL, 10);
-		AD568X_SetInputRegister(val);
+		// AD568X_SetInputRegister(val);
 		return 0;
 	} 
 

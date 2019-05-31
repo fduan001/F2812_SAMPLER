@@ -161,8 +161,7 @@ void AD568X_PowerMode(UINT8 channel, UINT8 pwrMode)
             currentPowerRegValue |= AD568X_PWR_PDD(pwrMode);
             break;
     }
-    AD568X_SetInputRegister(AD568X_CMD(AD568X_CMD_POWERMODE) | 
-                             currentPowerRegValue);
+    AD568X_SetInputRegister(AD568X_CMD_POWERMODE, channel, AD568X_PWR_PDD(pwrMode));
 }
 
 /***************************************************************************//**
@@ -179,7 +178,7 @@ void AD568X_PowerMode(UINT8 channel, UINT8 pwrMode)
 void AD568X_Reset(UINT8 resetOutput)
 {
 	AD568X_HWReset();
-    AD568X_SetInputRegister(AD568X_CMD(AD568X_CMD_SOFT_RESET));
+    AD568X_SetInputRegister(AD568X_CMD_SOFT_RESET, 0, 0);
 }
 
 /***************************************************************************//**
@@ -189,17 +188,14 @@ void AD568X_Reset(UINT8 resetOutput)
  *
  * @return none.
 *******************************************************************************/
-void AD568X_SetInputRegister(UINT32 registerValue)
+void AD568X_SetInputRegister(UINT8 cmd, UINT8 chan, UINT16 data)
 {
     UINT8 registerWord[3] = {0, 0, 0};
-    UINT8* dataPointer    = (UINT8*)&registerValue;
 
-    registerWord[0] = dataPointer[1];
-    registerWord[1] = dataPointer[2];
-    registerWord[2] = dataPointer[3];
+    registerWord[0] = (cmd << 4) | chan;
+    registerWord[1] = (data >> 8) & 0xFF;
+    registerWord[2] = data & 0xFF;
     
-    PRINTF("0x%02x 0x%02x 0x%02x 0x%02x\n", registerWord[0], registerWord[1], registerWord[2], registerWord[3]);
-    PRINTF("0x%02x 0x%02x 0x%02x 0x%02x\n", dataPointer[0], dataPointer[1], dataPointer[2], dataPointer[3]);
     SPI_Write(AD568X_SLAVE_ID, registerWord, 3);
 }
 
@@ -214,8 +210,7 @@ void AD568X_SetInputRegister(UINT32 registerValue)
 *******************************************************************************/
 void AD568X_InternalVoltageReference(UINT8 vRefMode)
 {
-    AD568X_SetInputRegister(AD568X_CMD(AD568X_CMD_INT_REF_SETUP) | 
-                            vRefMode);
+    AD568X_SetInputRegister(AD568X_CMD_INT_REF_SETUP, 0, vRefMode);
 }
 
 /***************************************************************************//**
@@ -242,9 +237,7 @@ void AD568X_WriteFunction(UINT8 writeCommand,
     
     /* Different types of devices have different data bits positions. */
     shiftValue = 16 - deviceBitsNumber;
-    AD568X_SetInputRegister(AD568X_CMD(writeCommand) |
-                            AD568X_ADDR(channel) | 
-                            ((long)AD568X_DATA_BITS(data) << shiftValue));
+    AD568X_SetInputRegister(writeCommand, channel, ((UINT16)AD568X_DATA_BITS(data) << shiftValue));
 }
 
 /***************************************************************************//**
@@ -269,9 +262,10 @@ UINT16 AD568X_ReadBack(UINT8 dacChannelAddr)
     
     /* Different types of devices have different data bits positions. */
     shiftValue = 16 - deviceBitsNumber;
-    AD568X_SetInputRegister(val);
+    AD568X_SetInputRegister(AD568X_CMD_SET_READBACK, dacChannelAddr, 0);
     
     SPI_Read(AD568X_SLAVE_ID, rxBuffer, 3);
+    PRINTF("rdbk: 0x%02x 0x%02x 0x%02x\n", rxBuffer[0], rxBuffer[1], rxBuffer[2]);
     
     channelValue = ((long)rxBuffer[0] << 8) | rxBuffer[1];
     channelValue >>= shiftValue;
