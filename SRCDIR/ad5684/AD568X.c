@@ -267,11 +267,13 @@ UINT16 AD568X_ReadBack(UINT8 dacChannelAddr)
     unsigned long channelValue = 0;
     UINT8 shiftValue   = 0;
     UINT8 rxBuffer[3]  = {0, 0, 0};
+    UINT32 val = 0;
+    val = AD568X_CMD(AD568X_CMD_SET_READBACK);
+    val |= AD568X_ADDR(dacChannelAddr);
     
     /* Different types of devices have different data bits positions. */
     shiftValue = 16 - deviceBitsNumber;
-    AD568X_SetInputRegister(AD568X_CMD(AD568X_CMD_SET_READBACK) | 
-                             AD568X_ADDR(dacChannelAddr));
+    AD568X_SetInputRegister(val);
     
     SPI_Read(AD568X_SLAVE_ID, rxBuffer, 3);
     
