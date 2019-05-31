@@ -179,7 +179,7 @@ INT32 FpgaSpiWrite(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen)
     {
         //send one byte
         FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, sendbuffer[index]);
-        PRINTF("DIN0x%08x: 0x%02x\n", g_fpga_spi_cfg[chan].trx, sendbuffer[index]);
+        PRINTF("DIN: 0x%02x\n", sendbuffer[index]);
         regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
         regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
         FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
