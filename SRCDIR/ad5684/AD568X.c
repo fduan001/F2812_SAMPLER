@@ -44,6 +44,7 @@
 /***************************** Include Files **********************************/
 /******************************************************************************/
 #include "F2812_datatype.h"
+#include "shellconsole.h"
 #include "AD568X.h"		// AD568X definitions.
 #include "fpga.h"
 
@@ -206,6 +207,7 @@ void AD568X_SetInputRegister(unsigned long registerValue)
     registerWord[1] = dataPointer[1];
     registerWord[2] = dataPointer[0];
     
+    PRINTF("0x%02x 0x%02x 0x%02x\n", registerWord[0], registerWord[1], registerWord[2]);
     SPI_Write(AD568X_SLAVE_ID, registerWord, 3);
 }
 
