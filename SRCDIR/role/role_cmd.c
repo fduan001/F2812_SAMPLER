@@ -20,12 +20,12 @@ INT32 do_role_cmd(cmd_tbl_t * cmdtp, INT32 flag, INT32 argc, char * const argv[]
 
 	ops = argv[1];
 	if( strcmp(ops, "switch") == 0 ) {
-		SetMyRole(I_AM_MASTER); // force myself to be master
+		RoleSwitch(); // force myself to be slave
 		if( GetMyRole() == I_AM_MASTER ) {
-			PRINTF("I AM MASTER NOW\n");
+			PRINTF("I AM SLAVE NOW\n");
 		} else {
 			PRINTF("ROLE SWITCH OOPS\n");
-			PRINTF("I AM STILL SLAVE\n");
+			PRINTF("I AM STILL MASTER\n");
 		}
 	}
 

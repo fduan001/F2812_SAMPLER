@@ -16,5 +16,6 @@ int GetMyRole(void);
 int GetMateRole(void);
 int PutMeOnline(void);
 int SetMyRole(int role);
+int RoleSwitch(void);
 
 #endif

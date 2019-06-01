@@ -103,7 +103,17 @@ void ResetMateCard(void) {
 }
 
 void MateIsrHandler(void* args) {
+	SetMyRole(I_AM_MASTER);
+}
 
+int RoleSwitch(void) {
+	if( GetMyRole() != I_AM_MASTER ) {
+		PRINTF("I AM NOT MASTER, ABORT THIS REQUEST\n");
+		return 0;
+	}
+
+	SetMyRole(I_AM_SLAVE);
+	return 0;
 }
 
 
