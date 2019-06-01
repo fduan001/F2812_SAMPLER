@@ -97,10 +97,9 @@ INT32 IsMasterIdle(UINT8 chan, UINT32 timeout);
  *****************************************************************************/
 INT32 FpgaSpiConfig(UINT8 chan , S_SPI_CFG_TYPE spicfg)
 {
-    UINT16 regdata, bitvalue;
-    UINT16 timeout = FPGA_SPI_TIMEOUT;
     UINT32 ref_clk = 150000;
     UINT16 val = 0;
+    UINT16 regdata;
 
     FpgaSpiMasterReset(chan);
     if( IsMasterIdle(chan, FPGA_SPI_TIMEOUT) == 0 ) {
@@ -160,7 +159,7 @@ INT32 IsMasterIdle(UINT8 chan, UINT32 timeout) {
 }
 
 void FpgaSpiTransChar(UINT8 chan, UINT8 obj) {
-    UINT16 regdata, bitvalue;
+    UINT16 regdata;
     FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, obj);
     //PRINTF("DIN: 0x%02x\n", obj);
     regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);

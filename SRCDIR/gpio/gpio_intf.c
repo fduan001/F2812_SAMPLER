@@ -70,3 +70,46 @@ void GpioSpiAssertCS(void) {
 void GpioSpiDeassertCS(void) {
 	GpioDataRegs.GPFSET.bit.GPIOF3 = 1;
 }
+
+void GpioMateCardSet(UINT8 pin, UINT8 ops) {
+	switch(pin) {
+		case 0:
+		if( ops ) {
+			GpioDataRegs.GPFSET.bit.GPIOF10 = 1;
+		} else {
+			GpioDataRegs.GPFCLEAR.bit.GPIOF10 = 1;
+		}
+		break;
+		case 1:
+		if( ops ) {
+			GpioDataRegs.GPFSET.bit.GPIOF11 = 1;
+		} else {
+			GpioDataRegs.GPFCLEAR.bit.GPIOF11 = 1;
+		}
+		break;
+		case 2:
+		if( ops ) {
+			GpioDataRegs.GPFSET.bit.GPIOF12 = 1;
+		} else {
+			GpioDataRegs.GPFCLEAR.bit.GPIOF12 = 1;
+		}
+		break;
+	}
+	return ;
+}
+
+UINT8 GpioMateCardGet(UINT8 pin) {
+	switch(pin) {
+		case 0:
+		return GpioDataRegs.GPBDAT.bit.GPIOB0;
+		break;
+		case 1:
+		return GpioDataRegs.GPBDAT.bit.GPIOB1;
+		break;
+		case 2:
+		return GpioDataRegs.GPBDAT.bit.GPIOB2;
+		break;
+	}
+
+	return 0;
+}

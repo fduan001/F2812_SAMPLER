@@ -76,8 +76,6 @@ int IsMasterRXReady(UINT32 timeout) {
 
 int HostSpiXferWrite(spi_msg_t *spi_msg) {
 	int  i = 0;
-	UINT32 count = 0;
-	UINT32 limit = 2000;
 	UINT16 val = 0;
 
 	if( spi_msg->tx_len > 0 ) {
@@ -103,8 +101,6 @@ int HostSpiXferWrite(spi_msg_t *spi_msg) {
 
 int HostSpiXferRead(spi_msg_t *spi_msg) {
 	int i = 0;
-	UINT32 count = 0;
-	UINT32 limit = 5000;
 	if( spi_msg->rx_len > 0 ) {
 		spi_msg->rx_done = HOST_SPI_MSG_INP;
 		for( i = 0; i < spi_msg->rx_len; ++i ) {

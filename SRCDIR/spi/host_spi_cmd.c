@@ -19,7 +19,6 @@
 
 INT32 do_host_spi_cs(cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, char * const argv[])
 {
-	int channel;
 	UINT32 option;
 
 	if (argc != 2)

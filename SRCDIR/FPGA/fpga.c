@@ -70,6 +70,8 @@ typedef struct isr_info_t {
 
 static isr_info_t g_isr_info[MAX_IRQ_NUM];
 
+static isr_info_t g_role_isr_info[1];
+
 INT8 RegisterIsr(UINT8 bit_pos, ISR_HANDLER isr) {
     if(bit_pos >= MAX_IRQ_NUM) {
         return 1;
@@ -77,6 +79,12 @@ INT8 RegisterIsr(UINT8 bit_pos, ISR_HANDLER isr) {
 
     g_isr_info[bit_pos].isr_handler = isr;
     g_isr_info[bit_pos].counter = 0;
+    return 0;
+}
+
+INT8 RegisterRoleIsr(ISR_HANDLER isr) {
+    g_role_isr_info[0].isr_handler = isr;
+    g_role_isr_info[0].counter = 0;
     return 0;
 }
 
@@ -172,6 +180,17 @@ void XINT_Isr1(void) {
 
 void XINT_Isr2(void) {
     // used for master/slave role switch
+    UINT8 args = 0x0;
+    UINT16 isr_sts = FPGA_REG16_R(FPGA_XINT2_STATUS_REG);
+    FPGA_REG16_W(FPGA_XINT2_MASK_REG, 0x0);
+    if( isr_sts != 0 ) {
+        if( g_role_isr_info[0].isr_handler ) {
+            (g_isr_info[7].isr_handler)(&args);
+        }
+    }
+    g_role_isr_info[0].counter++;
+    FPGA_REG16_W(FPGA_XINT2_STATUS_REG, 0x1); /* w1c */
+    FPGA_REG16_W(FPGA_XINT2_MASK_REG, 0x1);
 }
 
 /* delay for some us timeout = 1000, 1ms delay */

@@ -29,7 +29,7 @@ int TempMeasInit(void) {
 }
 
 int TempMeasStart(UINT8 chan) {
-	UINT16 val = 0;
+
 	if( chan > MAX_TEMP_CHANLLE ) {
 		return 1;
 	}

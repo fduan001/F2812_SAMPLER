@@ -23,7 +23,10 @@
 //#define  TEST_CPUCNT
 //#define TEST_HARDTIMER
 extern void GpioInit(void);
+extern int GpioCmdInit(void);
 extern int RS422CmdInit(void);
+extern int RoleInit(void);
+extern int RoleCmdInit(void);
 extern void FpgaCmdInitialzie();
 extern int FpgaSpiCmdInit(void);
 extern int HostSpiCmdInit(void);
@@ -148,7 +151,9 @@ void ShellTask()
     WatchdogKick();
 
     InitFpgaSpiData();
+    RoleCmdInit();
     GpioInit();
+    GpioCmdInit();
     FRAMCmdInitialize();
     MidCmdInitialize();
     FpgaSpiCmdInit();
@@ -162,14 +167,15 @@ void ShellTask()
     WatchdogCmdInit();
     WatchdogKick();
 
-	Osal_InstallPIEIsr(XINT_Isr1, XINT_ISR1); /* register DDC interrupt for 1553B */
-	Osal_InstallPIEIsr(XINT_Isr2, XINT_ISR2); /* register MBI interrupt for HOST ACCESS DPRAM */
+	Osal_InstallPIEIsr(XINT_Isr1, XINT_ISR1); /* register XINT1 handler */
+	Osal_InstallPIEIsr(XINT_Isr2, XINT_ISR2); /* register XINT2 handler, special for role switch */
 
 	// enable the interrupts
 	Osal_EnableIsr(XINT_ISR2);
 	Osal_EnableIsr(XINT_ISR1);
 
 	WatchdogKick();
+	RoleInit();
 	shell_loop();
 }
 

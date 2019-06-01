@@ -149,6 +149,7 @@ UINT16 ReadFpgaRegister( UINT32 regaddr );
 void WriteFpgaRegisterBit(UINT32 regaddr, UINT8 bitpos, UINT8 bitvalue);
 UINT8 ReadFpgaRegisterBit(UINT32 regaddr, UINT8 bitpos, UINT8 bitvalue);
 INT8 RegisterIsr(UINT8 bit_pos, ISR_HANDLER isr);
+INT8 RegisterRoleIsr(ISR_HANDLER isr); /* register role switch handler */
 
 #ifdef __cplusplus
 }
