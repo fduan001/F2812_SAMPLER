@@ -157,6 +157,7 @@ void ShellTask()
     ADS124S08CmdInitialize();
     FuelCmdInitialzie();
     FlowCmdInitialzie();
+    RS422CmdInit();
     WatchdogKick();
     WatchdogCmdInit();
     WatchdogKick();
