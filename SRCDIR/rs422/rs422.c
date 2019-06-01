@@ -172,10 +172,12 @@ INT32 RS422Open(UINT8 chipNo, INT8 party, UINT8 stop, UINT8 data_bit, UINT32 bau
     if(chipNo >= RS422_NUM)
         return(ERROR);
 
+#ifdef RS422_USR_INTR_MODE
     if(pdevFd->isOpen == TRUE) {
     	PRINTF("is already open\n");
         return(ERROR);
     }
+#endif
 
     irqnum = gUartIntrBit[chipNo];
     RS422Init(chipNo);
@@ -194,9 +196,10 @@ INT32 RS422Open(UINT8 chipNo, INT8 party, UINT8 stop, UINT8 data_bit, UINT32 bau
     {
         return ERROR;
     }
-#endif
+
 
     pdevFd->isOpen = TRUE;
+#endif
 
     UART_REG(IER, pdevFd) = IER_RECV_VALID; //EN RECV DATA INT
 
@@ -236,9 +239,11 @@ INT32 RS422Close(UINT8 chipNo)
         return(ERROR);
     }
 
+#ifdef RS422_USR_INTR_MODE
     if(pdevFd->isOpen != TRUE) {
         return(ERROR);
     }
+#endif
 
     UART_REG(IER, pdevFd) = 0;
 
@@ -250,11 +255,11 @@ INT32 RS422Close(UINT8 chipNo)
 
     irq_num = gUartIntrBit[chipNo];
     FPGA_REG16_W(FPGA_XINT1_MASK_REG, (FPGA_REG16_R(FPGA_XINT1_MASK_REG) | (0x01 << irq_num)));
+
+    pdevFd->isOpen = FALSE;
 #endif
 
     memset(pdevFd, 0,  sizeof(UART_CTX_T));
-
-    pdevFd->isOpen = FALSE;
 
     return ret;
 }
@@ -268,11 +273,11 @@ INT32 RS422Read(UINT8 chipNo, INT8 * buf, UINT32 nBytes)
         return(ERROR);
     }
 
+#ifdef RS422_USR_INTR_MODE
     if(pdevFd->isOpen != TRUE) {
         return(ERROR);
     }
 
-#ifdef RS422_USR_INTR_MODE
     if(ERROR==Osal_SemPend(pdevFd->rxSemSync, ~(0))) {	
         return(ERROR);
     }
@@ -303,9 +308,11 @@ INT32 RS422Write(UINT8 chipNo, INT8 * buf, UINT32 nBytes)
         return (ERROR);
     }
 
+#ifdef RS422_USR_INTR_MODE
     if(pdevFd->isOpen != TRUE) {
         return ERROR;
     }    
+#endif
 
     uartTransBytes(pdevFd,buf,nBytes);	
 
@@ -492,7 +499,7 @@ INT32 uartTransBytes(UART_CTX_T *  pdevFd, INT8 *pBuf, INT32 nBytes)
 {
     INT32   index = 0;
     UINT32  count = 0;
-    UINT32  maxCount = 5000;
+    UINT32  maxCount = 10000;
     char    *ptr = pBuf;
     UINT8   data;
 
@@ -505,7 +512,7 @@ INT32 uartTransBytes(UART_CTX_T *  pdevFd, INT8 *pBuf, INT32 nBytes)
             PlatformDelay(1);
             ++count;
             if( count > maxCount ) {
-            	PRINTF("timeout to write\n");
+            	PRINTF("timeout to write %ld bytes\n", index);
             	return index;
             }
         }
