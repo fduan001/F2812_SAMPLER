@@ -34,6 +34,7 @@
  *
  */
 #include "F2812_datatype.h"
+#include "shellconsole.h"
 /* Also include device specific header */
 #include "ADS124S08.h"
 #include "spi.h"
@@ -170,11 +171,16 @@ UINT8 ADS124S08_ReadReg(UINT8 regnum)
 void ADS124S08_ReadRegs(UINT8 regnum, UINT8 *data, UINT8 count)
 {
 	int i;
+	INT32 rt = 0;
     UINT8 ulDataTx[2];
 	ulDataTx[0] = REGRD_OPCODE_MASK + (regnum & 0x1f);
 	ulDataTx[1] = count-1;
 	clearChipSelect();
-	FpgaSpiWriteRead(AD124S08_SPI_CHANNEL, ulDataTx, 2, data, count);
+	rt = FpgaSpiWriteRead(AD124S08_SPI_CHANNEL, ulDataTx, 2, data, count);
+	if( rt != 1 ) {
+		PRINTF("ADS124S08_ReadRegs failed\n");
+		return ;
+	}
 	for(i = 0; i < count; i++)
 	{
 		if(regnum+i < NUM_REGISTERS)
@@ -192,6 +198,7 @@ void ADS124S08_ReadRegs(UINT8 regnum, UINT8 *data, UINT8 count)
  */
 void ADS124S08_WriteReg(UINT8 regnum, UINT8 data)
 {
+	INT32 rt = 0;
 	UINT8 ulDataTx[3];
 	if( regnum >=  NUM_REGISTERS) {
 		return ;
@@ -200,7 +207,10 @@ void ADS124S08_WriteReg(UINT8 regnum, UINT8 data)
 	ulDataTx[1] = 0x00;
 	ulDataTx[2] = data;
 	clearChipSelect();
-	FpgaSpiWrite(AD124S08_SPI_CHANNEL, ulDataTx, 3);
+	rt = FpgaSpiWrite(AD124S08_SPI_CHANNEL, ulDataTx, 3);
+	if( rt != 1 ) {
+		PRINTF("FpgaSpiWrite failed\n");
+	}
 	setChipSelect();
 	return;
 }

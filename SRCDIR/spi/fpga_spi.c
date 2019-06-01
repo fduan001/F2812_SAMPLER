@@ -79,6 +79,8 @@ static inline void __msleep__(UINT32 ms)
 	PlatformDelay(ms * 1000);
 }
 
+INT32 IsMasterIdle(UINT8 chan, UINT32 timeout);
+
 /******************************************************************************
  *
  * Function:		FpgaSpiConfig
@@ -101,16 +103,10 @@ INT32 FpgaSpiConfig(UINT8 chan , S_SPI_CFG_TYPE spicfg)
     UINT16 val = 0;
 
     FpgaSpiMasterReset(chan);
-    do
-    {
-        regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-        bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
-        __msleep__(1);
-        timeout--;
-        if(0 == timeout) {
-            return BSP_DRV_FAIL;
-        }
-    } while(SPI_GO_START == bitvalue);
+    if( IsMasterIdle(chan, FPGA_SPI_TIMEOUT) == 0 ) {
+        return BSP_DRV_FAIL;
+    }
+
     //set the  clock  rate;
 
     val = (ref_clk / spicfg.spisclk) / 2 - 1;
@@ -146,26 +142,27 @@ INT32 IsMasterIdle(UINT8 chan, UINT32 timeout) {
     UINT16 regdata;
     UINT16 bitvalue;
 
-    regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
-    while(1) {       
+    while(1) {
+    	regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
         bitvalue = FPGA_READ_BITFIELD(regdata, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
         if( SPI_GO_START != bitvalue ) {
-            return 1; /* master is idle */
+        	return 1; /* master is idle */
         }
         PlatformDelay(1);
-        --timeout;
+        timeout--;
         if(0 == timeout) {
+        	PRINTF("master is not idle timeout check\n");
             return 0;
         }
     }
 
-    return 0;
+    return 1;
 }
 
 void FpgaSpiTransChar(UINT8 chan, UINT8 obj) {
     UINT16 regdata, bitvalue;
     FPGA_REG16_W(g_fpga_spi_cfg[chan].trx, obj);
-    PRINTF("DIN: 0x%02x\n", obj);
+    //PRINTF("DIN: 0x%02x\n", obj);
     regdata = FPGA_REG16_R(g_fpga_spi_cfg[chan].csr);
     regdata = FPGA_SET_BITFIELD(regdata, SPI_GO_START, FPGA_SPI_CTL_GO_BSY_BIT8, FPGA_SPI_CTL_GO_BSY_BIT8);
     FPGA_REG16_W(g_fpga_spi_cfg[chan].csr, regdata);
@@ -197,6 +194,7 @@ INT32 FpgaSpiWrite(UINT8 chan , UINT8 *sendbuffer, UINT8 sendlen)
         }
         //send one byte
         FpgaSpiTransChar(chan, sendbuffer[indx]);
+        //PRINTF("DIN %u: 0x%02x\n", indx, sendbuffer[indx]);
     }
     return BSP_DRV_OK;
 }
