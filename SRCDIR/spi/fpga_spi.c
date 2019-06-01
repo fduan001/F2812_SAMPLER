@@ -155,7 +155,6 @@ INT32 IsMasterIdle(UINT8 chan, UINT32 timeout) {
         }
     }
 
-    return 1;
 }
 
 void FpgaSpiTransChar(UINT8 chan, UINT8 obj) {

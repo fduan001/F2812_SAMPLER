@@ -101,14 +101,11 @@ void GpioMateCardSet(UINT8 pin, UINT8 ops) {
 UINT8 GpioMateCardGet(UINT8 pin) {
 	switch(pin) {
 		case 0:
-		return GpioDataRegs.GPBDAT.bit.GPIOB0;
-		break;
+			return GpioDataRegs.GPBDAT.bit.GPIOB0;
 		case 1:
-		return GpioDataRegs.GPBDAT.bit.GPIOB1;
-		break;
+			return GpioDataRegs.GPBDAT.bit.GPIOB1;
 		case 2:
-		return GpioDataRegs.GPBDAT.bit.GPIOB2;
-		break;
+			return GpioDataRegs.GPBDAT.bit.GPIOB2;
 	}
 
 	return 0;
