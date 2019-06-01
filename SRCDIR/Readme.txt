@@ -52,3 +52,39 @@ Driver Verification Command:
        > ads124 wr  #reg  #value
        ie: ads124 wr 0x3 0x22
        		Note: write 0x22 into register 0x3
+
+4. RS422
+	a). initialization
+	b). send data
+	c). read data
+
+5. ROLE
+	a). initialization
+	b). role switch
+	c). dump information
+
+6. WATCHDOG
+	a). initialization
+	b). disable
+	c). enable
+	d). reboot
+
+7. GPIO
+	a). initialization
+	b). set
+	c). dump
+
+8. FUEL
+	a). initialization
+	b). start
+	c). dump
+
+9. FLOW
+	a). initialization
+	b). start
+	c). dump
+
+10. TEMP
+	a). initialization
+	b). start
+	c). dump
