@@ -3,6 +3,7 @@
 #include "fpga.h"
 #include "fuel_measure.h"
 
+#define FUEL_USR_INTR_MODE 1
 typedef struct FUEL_MEAS_DATA_T
 {
 	UINT8 valid;
@@ -28,7 +29,9 @@ int FuelMeasInit(void) {
 	FPGA_REG16_W(FPGA_FUEL_SWITCH_REG, 0);
 	FPGA_REG16_W(FPGA_FUEL_MEAS_REG, 0);
 	FPGA_REG16_W(FPGA_FUEL_STATUS_REG, 0xFFFF);
+#ifdef FUEL_USR_INTR_MODE
 	RegisterIsr(FUEL_INTR_BIT_POS, FuelIntrHandler);
+#endif
 	return 0;
 }
 
@@ -48,23 +51,63 @@ int FuelMeasStart(UINT8 chan) {
 	return 0;
 }
 
+#ifndef FUEL_USR_INTR_MODE
+int IsFuelMeasReady(UINT8 chan) {
+	UINT32 i = 0;
+	UINT16 period = FPGA_REG16_R(FPGA_FUEL_MEAS_PERIOD_REG);
+	UINT32 limit = period * 1000;
+	UINT16 sts = 0;
+	if( chan > MAX_FUEL_CHANLLE ) {
+		return 0;
+	}
+
+	if( limit == 0 ) {
+		PRINTF("period register is not well set\n");
+		return 0;
+	}
+	while(1) {
+		sts = FPGA_REG16_R(FPGA_FUEL_STATUS_REG);
+		if( sts & (1 << chan) ) {
+			FPGA_REG16_W(FPGA_FUEL_STATUS_REG, (1 << chan)); /* w1c */
+			return 1;
+		}
+		++i;
+		if( i >= limit ) {
+			PRINTF("timeout for this measurement, chan=%u\n", chan);
+			return 0;
+		}
+		PlatformDelay(1000); /* delay 1 ms */
+	}
+	return 0;
+}
+#endif
+
 int FuelGetMeasData(UINT8 chan, UINT16 *data) {
 	if( chan > MAX_FUEL_CHANLLE ) {
 		return 1;
 	}
-
+#ifdef FUEL_USR_INTR_MODE
 	if( g_fuel_meas_data[chan].valid == 0 ) {
 		return 1;
 	}
+#else
+	if( IsFuelMeasReady(chan) != 1 ) {
+		PRINTF("measurement for chan %u not ready\n", chan);
+		return 1;
+	}
+#endif
 
 	data[0] = g_fuel_meas_data[chan].datah;
 	data[1] = g_fuel_meas_data[chan].datal;
 
+#ifdef FUEL_USR_INTR_MODE
 	/* clear the valid flag */
 	g_fuel_meas_data[chan].valid = 0;
+#endif
 	return 0;
 }
 
+#ifdef FUEL_USR_INTR_MODE
 void FuelIntrHandler(UINT8 bit_pos) {
 	UINT16 sts = FPGA_REG16_R(FPGA_FUEL_STATUS_REG);
 
@@ -96,6 +139,7 @@ void FuelIntrHandler(UINT8 bit_pos) {
 	FPGA_REG16_W(FPGA_FUEL_STATUS_REG, sts);
 	return ;
 }
+#endif
 
 int FuelMeasSelfTest(void) {
 	UINT8 i = 0;

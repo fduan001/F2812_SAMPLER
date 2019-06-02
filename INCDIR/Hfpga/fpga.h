@@ -44,6 +44,8 @@
 #define FPGA_FUEL_TUNNEL4_RESULT_H_REG              (FPGA_BASE_ADDR + 0x19)
 #define FPGA_FUEL_TUNNEL4_RESULT_L_REG              (FPGA_BASE_ADDR + 0x1A)
 
+#define FPGA_FUEL_MEAS_PERIOD_REG                          (FPGA_BASE_ADDR + 0x1B)
+
 /* flow measurment */
 #define FPGA_SPI_AS5684_TX_DATA_REG                    (FPGA_BASE_ADDR + 0x20)
 #define FPGA_SPI_AS5684_RX_DATA_REG                    (FPGA_BASE_ADDR + 0x20)
