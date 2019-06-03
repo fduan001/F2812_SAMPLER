@@ -2,10 +2,9 @@
 #define TEMP_MEASURE_H
 
 int TempMeasInit(void);
-int TempMeasStart(UINT8 chan);
-int TempGetMeasData(UINT8 chan, UINT16 *data);
-void TempIntrHandler(UINT8 bit_pos);
-int TempMeasSelfTest(void);
+int TempMeasStart(void);
+int TempMeasStop(void);
+UINT32 TempMeasCalibration(void);
 void TempMeasDump(void);
 
 #endif

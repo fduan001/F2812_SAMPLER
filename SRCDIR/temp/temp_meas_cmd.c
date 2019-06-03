@@ -8,6 +8,7 @@ INT32 do_temp( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 {
 	char *ops = NULL;
 	UINT8 chan = 0;
+	UINT32 diff = 0;
 
 	if( argc < 2 ) {
 		shellprintf ("Usage:\n%s\n", cmdtp->usage);
@@ -22,41 +23,35 @@ INT32 do_temp( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 	}
 
 	if( strcmp(ops, "start") == 0 ) {
-		chan = simple_strtoul(argv[2], NULL, 10);
-		TempMeasStart(chan);
+		TempMeasStart();
 		return 0;
 	}
 
-	if( strcmp(ops, "reset") == 0 ) {
+	if( strcmp(ops, "stop") == 0 ) {
+		TempMeasStart();
 		return 0;
 	}
 
-	if( strcmp(ops, "dump") == 0 ) {
-		TempMeasDump();
+	if( strcmp(ops, "cal") == 0 ) {
+		diff = TempMeasCalibration();
+		PRINTF("diff=%08lu\n", diff);
 		return 0;
 	}
 
-	if( strcmp(ops, "test") == 0 ) {
-		TempMeasSelfTest();
-		return 0;
-	}
 	return 1;
 }
 
 
 #pragma DATA_SECTION   (temp_cmd,"shell_lib");
-far cmd_tbl_t temp_cmd[] =
+cmd_tbl_t temp_cmd[] =
 {
-
 	{
 		"temp", CONFIG_SYS_MAXARGS, 1,	do_temp,
-		"temp init/start/reset/dump/test",
+		"temp init/start/stop/calc",
 		"init - initialize the temp measurement system\n"
-		"start chan - start specified channel temp measurement\n"
-		"reset -  reset the temp measurement system\n"
-		"dump - dump  the temp measurment result\n"
-		"test - temp measurement self test\n"
-		"example:  temp start 0 : start channel 0 temp measurement\n"
+		"start - start temp measurement\n"
+		"stop - stop temp measurement\n"
+		"cal -  calibration\n"
 	},
 };
 
