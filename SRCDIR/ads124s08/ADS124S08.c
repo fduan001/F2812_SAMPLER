@@ -91,6 +91,7 @@ void ADS124S08_HWReset(void) {
  */
 int ADS124S08_Init(void)
 {
+	FPGA_REG16_W(FPGA_FUEL_MEAS_REG, 0x0); /* tie to start/sycn to low */
 	ADS124S08_HWReset();
 	/* Default register settings */
 	registers[ID_ADDR_MASK] 	= 0x08;
