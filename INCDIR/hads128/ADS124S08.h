@@ -255,6 +255,8 @@
  *                    I2MUX[3:0]                 |                   I1MUX[3:0]
  *
  */
+
+#ifdef ADS124S08
 /* Define IDAC2 Output */
 #define ADS_IDAC2_A0			0x00
 #define ADS_IDAC2_A1			0x10
@@ -285,6 +287,38 @@
 #define ADS_IDAC1_A11			0x0B
 #define ADS_IDAC1_AINCOM		0x0C
 #define ADS_IDAC1_OFF			0x0F
+#else
+#define ADS_IDAC1_A0			0x00
+#define ADS_IDAC1_A1			0x10
+#define ADS_IDAC1_A2			0x20
+#define ADS_IDAC1_A3			0x30
+#define ADS_IDAC1_A4			0x40
+#define ADS_IDAC1_A5			0x50
+#define ADS_IDAC1_A6			0x60
+#define ADS_IDAC1_A7			0x70
+#define ADS_IDAC1_A8			0x80
+#define ADS_IDAC1_A9			0x90
+#define ADS_IDAC1_A10			0xA0
+#define ADS_IDAC1_A11			0xB0
+#define ADS_IDAC1_AINCOM		0xC0
+#define ADS_IDAC1_OFF			0xF0
+/* Define IDAC2 Output */
+#define ADS_IDAC2_A0			0x00
+#define ADS_IDAC2_A1			0x01
+#define ADS_IDAC2_A2			0x02
+#define ADS_IDAC2_A3			0x03
+#define ADS_IDAC2_A4			0x04
+#define ADS_IDAC2_A5			0x05
+#define ADS_IDAC2_A6			0x06
+#define ADS_IDAC2_A7			0x07
+#define ADS_IDAC2_A8			0x08
+#define ADS_IDAC2_A9			0x09
+#define ADS_IDAC2_A10			0x0A
+#define ADS_IDAC2_A11			0x0B
+#define ADS_IDAC2_AINCOM		0x0C
+#define ADS_IDAC2_OFF			0x0F
+#endif
+
 /* ADS124S08 Register 8 (VBIAS) Definition */
 /*   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
  *--------------------------------------------------------------------------------------------

@@ -13,9 +13,8 @@ int TempMeasInit(void) {
 	ADS1248_SetInputChan(ADS_P_AIN0, ADS_N_AIN1);
 	ADS1248_SetReference(0x20, 0x00);
 	PlatformDelay(10);
-	ADS148_SetIDAC(ADS_IDAC1_A0, 0x0, ADS_IDACMAG_1000);
+	ADS148_SetIDAC(ADS_IDAC1_A0, ADS_IDAC2_A1, ADS_IDACMAG_1000);
 	ADS1248_SetPGAGainAndDataRate(ADS1248_GAIN_8, ADS1248_DR_20);
-
 
 	return 0;
 }
