@@ -5,19 +5,30 @@
 #include "ADS124S08.h"
 
 int TempMeasInit(void) {
-	UINT8 cfg_val[9] = { 0x12, 0x0A, 0x14, 0x02, 0x07, 0xF0, 0x00, 0x10 };
+	TempMeasStop();
 	ADS124S08_Init();
-	ADS124S08_WriteRegs(0x2, cfg_val, sizeof(cfg_val));
+	TempMeasStart();
+	PlatformDelay(20);
+
+	ADS1248_SetInputChan(ADS_P_AIN0, ADS_N_AIN1);
+	ADS1248_SetReference(0x20, 0x00);
+	PlatformDelay(10);
+	ADS148_SetIDAC(ADS_IDAC1_A0, 0x0, ADS_IDACMAG_1000);
+	ADS1248_SetPGAGainAndDataRate(ADS1248_GAIN_8, ADS1248_DR_20);
+
+
 	return 0;
 }
 
 int TempMeasStart(void) {
-	ADS124S08_SendCmd(START_OPCODE_MASK); /* send the START cmd to start converting in continuous conversion mode */ 
+	// ADS124S08_SendCmd(START_OPCODE_MASK); /* send the START cmd to start converting in continuous conversion mode */ 
+	ADS124S08_DeassertStart();
 	return 0;
 }
 
 int TempMeasStop(void) {
-	ADS124S08_SendCmd(STOP_OPCODE_MASK); /* send the START cmd to start converting in continuous conversion mode */ 
+	// ADS124S08_SendCmd(STOP_OPCODE_MASK); /* send the START cmd to start converting in continuous conversion mode */ 
+	ADS124S08_DeassertStart();
 	return 0;
 }
 
@@ -28,6 +39,7 @@ int IsTempMeasReady(void) {
 	while(1) {
 		ready = FPGA_REG16_R(FPGA_TEMP_MEAS_STATUS_REG);
 		if( ready ) {
+			PRINTF("try %ld loops\n", i);
 			break;
 		}
 		++i;
@@ -59,10 +71,10 @@ UINT32 TempGetMeasData(void) {
 UINT32 TempMeasCalibration(void) {
 	UINT32 first = 0, second = 0;
 	TempMeasInit();
-	TempMeasStart();
-	ADS124S08_WriteReg(0x2, 0x12); /* select AINP = AIN1 and AINN = AIN2 */
+	// TempMeasStart();
+	// ADS124S08_WriteReg(0x2, 0x12); /* select AINP = AIN1 and AINN = AIN2 */
 	first = TempGetMeasData();
-	ADS124S08_WriteReg(0x2, 0x23); /* select AINP = AIN2 and AINN = AIN3 */
+	// ADS124S08_WriteReg(0x2, 0x23); /* select AINP = AIN2 and AINN = AIN3 */
 	second = TempGetMeasData();
 
 	TempMeasStop();

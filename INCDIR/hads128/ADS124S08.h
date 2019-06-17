@@ -164,6 +164,15 @@
 #define ADS_GAIN_32				0x05
 #define ADS_GAIN_64				0x06
 #define ADS_GAIN_128			0x07
+
+#define ADS1248_GAIN_1				0x00
+#define ADS1248_GAIN_2				0x10
+#define ADS1248_GAIN_4				0x20
+#define ADS1248_GAIN_8				0x30
+#define ADS1248_GAIN_16				0x40
+#define ADS1248_GAIN_32				0x50
+#define ADS1248_GAIN_64				0x60
+#define ADS1248_GAIN_128			0x70
 /* ADS124S08 Register 4 (DATARATE) Definition */
 /*   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
  *--------------------------------------------------------------------------------------------
@@ -189,6 +198,17 @@
 #define ADS_DR_1000				0x0B
 #define ADS_DR_2000				0x0C
 #define ADS_DR_4000				0x0D
+
+#define ADS1248_DR_5				0x00
+#define ADS1248_DR_10				0x01
+#define ADS1248_DR_20				0x02
+#define ADS1248_DR_40				0x03
+#define ADS1248_DR_80				0x04
+#define ADS1248_DR_160				0x05
+#define ADS1248_DR_320				0x06
+#define ADS1248_DR_640				0x07
+#define ADS1248_DR_1000				0x08
+#define ADS1248_DR_2000				0x09
 /* ADS124S08 Register 5 (REF) Definition */
 /*   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
  *--------------------------------------------------------------------------------------------
@@ -400,6 +420,11 @@ void ADS124S08_AssertStart(void);
 void ADS124S08_DeassertStart(void);
 void ADS124S08_AssertClock(void);
 void ADS124S08_DeassertClock(void);
+
+void ADS1248_SetInputChan(UINT8 pChan, UINT8 nChan);
+void ADS1248_SetPGAGainAndDataRate(UINT8 pgaGain, UINT8 dataRate);
+void ADS148_SetIDAC(UINT8 idac1, UINT8 idac2, UINT8 idacImage);
+void ADS1248_SetReference(UINT8 intRefOff, UINT8 refSel);
 
 #endif /* ADS124S08_H_ */
 

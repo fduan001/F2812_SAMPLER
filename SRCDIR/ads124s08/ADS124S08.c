@@ -93,6 +93,7 @@ int ADS124S08_Init(void)
 {
 	FPGA_REG16_W(FPGA_FUEL_MEAS_REG, 0x0); /* tie to start/sycn to low */
 	ADS124S08_HWReset();
+#if 0
 	/* Default register settings */
 	registers[ID_ADDR_MASK] 	= 0x08;
 	registers[STATUS_ADDR_MASK] = 0x80;
@@ -112,6 +113,7 @@ int ADS124S08_Init(void)
 	registers[FSCAL2_ADDR_MASK] 	= 0x40;
 	registers[GPIODAT_ADDR_MASK] 	= 0x00;
 	registers[GPIOCON_ADDR_MASK]= 0x00;
+#endif
 
 	setChipSelect();
 	
@@ -125,10 +127,11 @@ int ADS124S08_Init(void)
 	ADS124S08_SendCmd(RESET_OPCODE_MASK);
 
 	PlatformDelay(600); /* delay 0.6 ms */
-
+#if 0
 	ADS124S08_SendCmd(SYOCAL_OPCODE_MASK);
 
 	PlatformDelay(500); /* delay 0.6 ms */
+#endif
 
 	return 1;
 }
@@ -308,22 +311,45 @@ int ADS124S08_ReadDate(UINT8 *dStatus, UINT8 *dData, UINT8 *dCRC)
 
 	ADS124S08_SendCmd(RDATA_OPCODE_MASK);
 
+#if 0
 	if((registers[SYS_ADDR_MASK] & 0x01) == DATA_MODE_STATUS)
 	{
 		FpgaSpiWriteRead(AD124S08_SPI_CHANNEL, NULL, 0, &xstatus, 1);
 		dStatus[0] = (UINT8)xstatus;
 	}
+#endif
 
 	// get the conversion data
 	FpgaSpiWriteRead(AD124S08_SPI_CHANNEL, NULL, 0, &dData[0], 1);
 	FpgaSpiWriteRead(AD124S08_SPI_CHANNEL, NULL, 0, &dData[1], 1);
 	FpgaSpiWriteRead(AD124S08_SPI_CHANNEL, NULL, 0, &dData[2], 1);
 
+#if 0
 	if((registers[SYS_ADDR_MASK] & 0x02) == DATA_MODE_CRC)
 	{
 		FpgaSpiWriteRead(AD124S08_SPI_CHANNEL, NULL, 0, &xcrc, 1);
 		dCRC[0] = (UINT8)xcrc;
 	}
+#endif
+	
 	setChipSelect();
 	return 0;
+}
+
+
+void ADS1248_SetInputChan(UINT8 pChan, UINT8 nChan) {
+	ADS124S08_WriteReg(0x0, pChan | nChan);
+}
+
+void ADS1248_SetPGAGainAndDataRate(UINT8 pgaGain, UINT8 dataRate) {
+	ADS124S08_WriteReg(0x3, pgaGain | dataRate);
+}
+
+void ADS148_SetIDAC(UINT8 idac1, UINT8 idac2, UINT8 idacImage) {
+	UINT8 val[2] = { idacImage, idac1 | idac2 };
+	ADS124S08_WriteRegs(0xA, val, 2);
+}
+
+void ADS1248_SetReference(UINT8 intRefOff, UINT8 refSel) {
+	ADS124S08_WriteReg(0x2, intRefOff | refSel);
 }
