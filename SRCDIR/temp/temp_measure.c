@@ -66,6 +66,7 @@ UINT32 TempMeasCalibration(void) {
 	second = TempGetMeasData();
 
 	TempMeasStop();
+	PRINTF("%ld %ld\n", first, second);
 	return (second - first);
 }
 

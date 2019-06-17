@@ -28,7 +28,7 @@ INT32 do_temp( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 	}
 
 	if( strcmp(ops, "stop") == 0 ) {
-		TempMeasStart();
+		TempMeasStop();
 		return 0;
 	}
 
@@ -47,7 +47,7 @@ cmd_tbl_t temp_cmd[] =
 {
 	{
 		"temp", CONFIG_SYS_MAXARGS, 1,	do_temp,
-		"temp init/start/stop/calc",
+		"temp init/start/stop/cal",
 		"init - initialize the temp measurement system\n"
 		"start - start temp measurement\n"
 		"stop - stop temp measurement\n"
