@@ -36,6 +36,7 @@ extern void FuelCmdInitialzie();
 extern void FlowCmdInitialzie();
 extern void FRAMCmdInitialize();
 extern void InitFpgaSpiData(void);
+extern void TempCmdInitialzie();
 
 /******************************
    option 2
@@ -162,6 +163,7 @@ void ShellTask()
     ADS124S08CmdInitialize();
     FuelCmdInitialzie();
     FlowCmdInitialzie();
+    TempCmdInitialzie();
     RS422CmdInit();
     WatchdogKick();
     WatchdogCmdInit();
