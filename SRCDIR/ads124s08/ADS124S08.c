@@ -80,7 +80,7 @@ void ADS124S08_HWReset(void) {
     PlatformDelay(5);
 
     FPGA_REG16_W(FPGA_PERIPHERAL_RST_REG, FPGA_REG16_R(FPGA_PERIPHERAL_RST_REG) | (1 << 00)); // MR = HI;
-    PlatformDelay(5); 
+    PlatformDelay(800); 
 }
 
 /*
