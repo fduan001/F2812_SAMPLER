@@ -457,7 +457,7 @@ void ADS124S08_DeassertClock(void);
 
 void ADS1248_SetInputChan(UINT8 pChan, UINT8 nChan);
 void ADS1248_SetPGAGainAndDataRate(UINT8 pgaGain, UINT8 dataRate);
-void ADS148_SetIDAC(UINT8 idac1, UINT8 idac2, UINT8 idacImage);
+void ADS1248_SetIDAC(UINT8 idac1, UINT8 idac2, UINT8 idacImage);
 void ADS1248_SetReference(UINT8 intRefOff, UINT8 refSel);
 
 #endif /* ADS124S08_H_ */
