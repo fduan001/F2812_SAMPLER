@@ -110,6 +110,7 @@
  *
  */
 /* Define the ADC positive input channels (MUXP) */
+#ifdef ADS124S08
 #define ADS_P_AIN0				0x00
 #define ADS_P_AIN1				0x10
 #define ADS_P_AIN2				0x20
@@ -137,6 +138,25 @@
 #define ADS_N_AIN10				0x0A
 #define ADS_N_AIN11				0x0B
 #define ADS_N_AINCOM			0x0C
+#else
+#define ADS_P_AIN0				0x00
+#define ADS_P_AIN1				0x08
+#define ADS_P_AIN2				0x10
+#define ADS_P_AIN3				0x18
+#define ADS_P_AIN4				0x20
+#define ADS_P_AIN5				0x28
+#define ADS_P_AIN6				0x30
+#define ADS_P_AIN7				0x38
+/* Define the ADC negative input channels (MUXN)*/
+#define ADS_N_AIN0				0x00
+#define ADS_N_AIN1				0x01
+#define ADS_N_AIN2				0x02
+#define ADS_N_AIN3				0x03
+#define ADS_N_AIN4				0x04
+#define ADS_N_AIN5				0x05
+#define ADS_N_AIN6				0x06
+#define ADS_N_AIN7				0x07
+#endif
 /* ADS124S08 Register 3 (PGA) Definition */
 /*   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
  *--------------------------------------------------------------------------------------------
