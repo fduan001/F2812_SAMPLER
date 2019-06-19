@@ -7,15 +7,16 @@
 int TempMeasInit(void) {
 	TempMeasStop();
 	ADS124S08_Init();
-	TempMeasStart();
+
 	PlatformDelay(20);
 
 	ADS1248_SetInputChan(ADS_P_AIN0, ADS_N_AIN1);
 	ADS1248_SetReference(0x20, 0x10);
 	PlatformDelay(10);
 	ADS1248_SetIDAC(ADS_IDAC1_A0, ADS_IDAC2_A1, ADS_IDACMAG_1000);
-	ADS1248_SetPGAGainAndDataRate(ADS1248_GAIN_8, ADS1248_DR_20);
-
+	ADS1248_SetPGAGainAndDataRate(ADS1248_GAIN_4, ADS1248_DR_320);
+	TempMeasStart();
+	PlatformDelay(5000);
 	return 0;
 }
 

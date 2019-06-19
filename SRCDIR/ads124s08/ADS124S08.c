@@ -346,7 +346,7 @@ void ADS1248_SetPGAGainAndDataRate(UINT8 pgaGain, UINT8 dataRate) {
 }
 
 void ADS1248_SetIDAC(UINT8 idac1, UINT8 idac2, UINT8 idacImage) {
-	UINT8 val[2] = { idacImage | 0x8, idac1 | idac2 };
+	UINT8 val[2] = { idacImage, idac1 | idac2 };
 	ADS124S08_WriteRegs(0xA, val, 2);
 }
 
