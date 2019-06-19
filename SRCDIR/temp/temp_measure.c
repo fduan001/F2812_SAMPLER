@@ -82,10 +82,20 @@ UINT32 TempGetMeasData(void) {
 }
 
 UINT32 TempMeasCalibration(void) {
-	UINT32 first = 0;
+	UINT32 first = 0, second = 0;
 	TempMeasInit();
 	first = TempGetMeasData();
-	PRINTF("%ld\n", first);
+	
+	TempMeasStart();
+	ADS1248_SetInputChan(ADS_P_AIN1, ADS_N_AIN3);
+	TempMeasStop();
+	PlatformDelay(5000);
+	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	TempMeasStart();
+	PlatformDelay(1000);
+	TempMeasStop();
+	second = TempGetMeasData();
+	PRINTF("%ld %ld\n", first, second);
 	return first;
 }
 
