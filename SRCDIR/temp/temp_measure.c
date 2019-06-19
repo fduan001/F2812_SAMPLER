@@ -72,8 +72,11 @@ UINT32 TempGetMeasData(void) {
 	PRINTF("%02x %02x %02x\n", data[0], data[1], data[2]);
 	result = (((UINT32)data[0]) << 16) | (((UINT32)data[1]) << 8) | ((UINT32)data[2]);
 
-	tmp = ((INT32)result) << 8;
-	tmp >>= 8;
+	tmp = data[0];
+	tmp = tmp * 256 + data[1];
+	tmp = tmp * 256 + data[2];
+	tmp = tmp * 256;
+	tmp = tmp / 256;
 	PRINTF("tmp=%ld\n",tmp);
 	return result;
 }
