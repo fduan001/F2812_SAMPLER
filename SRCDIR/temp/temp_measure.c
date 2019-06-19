@@ -84,17 +84,12 @@ UINT32 TempGetMeasData(void) {
 }
 
 UINT32 TempMeasCalibration(void) {
-	UINT32 first = 0, second = 0;
+	UINT32 first = 0;
 	TempMeasInit();
-	// TempMeasStart();
-	// ADS124S08_WriteReg(0x2, 0x12); /* select AINP = AIN1 and AINN = AIN2 */
 	first = TempGetMeasData();
-	// ADS124S08_WriteReg(0x2, 0x23); /* select AINP = AIN2 and AINN = AIN3 */
-	second = TempGetMeasData();
-
-	// TempMeasStop();
-	PRINTF("%ld %ld\n", first, second);
-	return (second - first);
+	TempMeasStop();
+	PRINTF("%ld\n", first);
+	return first;
 }
 
 void TempMeasDump(void) {

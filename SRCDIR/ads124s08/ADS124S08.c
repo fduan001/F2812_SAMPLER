@@ -280,7 +280,7 @@ void ADS124S08_AssertStart(void)
  */
 void ADS124S08_DeassertStart(void)
 {
-	FPGA_REG16_W(FPGA_TEMP_MEAS_CTRL_REG, 0x0);
+	FPGA_REG16_W(FPGA_TEMP_MEAS_CTRL_REG, 0x2);
 }
 /*
  * Sets the GPIO hardware external oscillator enable pin high
