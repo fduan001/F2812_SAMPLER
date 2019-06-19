@@ -42,6 +42,7 @@ int IsTempMeasReady(void) {
 		ready = FPGA_REG16_R(FPGA_TEMP_MEAS_STATUS_REG);
 		if( ready ) {
 			PRINTF("ready to get data i=%ld\n", i);
+			FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
 			break;
 		}
 		++i;
