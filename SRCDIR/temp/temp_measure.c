@@ -36,10 +36,11 @@ int IsTempMeasReady(void) {
 	UINT32 i = 0;
 	UINT32 limit = 500;
 	UINT16 ready = 0;
+
 	while(1) {
 		ready = FPGA_REG16_R(FPGA_TEMP_MEAS_STATUS_REG);
-		if( ready ) {
-			PRINTF("try %ld loops, ready=%04x\n", i, ready);
+		if( ready == 0 ) {
+			PRINTF("ready to get data i=%ld\n", i);
 			break;
 		}
 		++i;
@@ -48,21 +49,6 @@ int IsTempMeasReady(void) {
 			return 0;
 		}
 		PlatformDelay(1000);
-	}
-
-	if( i == 0 ) {
-		while(1) {
-			ready = FPGA_REG16_R(FPGA_TEMP_MEAS_STATUS_REG);
-			if( ready == 0 ) {
-				break;
-			}
-			++i;
-			if( i >= limit ) {
-				PRINTF("Timeout to wait for measurment ready\n");
-				return 0;
-			}
-			PlatformDelay(1000);
-		}
 	}
 	return 1;
 }
