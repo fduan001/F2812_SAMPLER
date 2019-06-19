@@ -87,7 +87,7 @@ UINT32 TempMeasCalibration(void) {
 	first = TempGetMeasData();
 	
 	TempMeasStart();
-	ADS1248_SetInputChan(ADS_P_AIN1, ADS_N_AIN3);
+	ADS1248_SetInputChan(ADS_P_AIN2, ADS_N_AIN3);
 	TempMeasStop();
 	PlatformDelay(5000);
 	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
