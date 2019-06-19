@@ -259,6 +259,8 @@
 #define ADS_FLAG_RAIL_DISABLE	0x00
 #define ADS_PSW_OPEN			0x00
 #define ADS_PSW_CLOSED			0x40
+
+#ifdef ADS124S08
 #define ADS_IDACMAG_OFF			0x00
 #define ADS_IDACMAG_10			0x01
 #define ADS_IDACMAG_50			0x02
@@ -269,6 +271,16 @@
 #define ADS_IDACMAG_1000		0x07
 #define ADS_IDACMAG_1500		0x08
 #define ADS_IDACMAG_2000		0x09
+#else
+#define ADS_IDACMAG_OFF			0x00
+#define ADS_IDACMAG_50			0x01
+#define ADS_IDACMAG_100			0x02
+#define ADS_IDACMAG_250			0x03
+#define ADS_IDACMAG_500			0x04
+#define ADS_IDACMAG_750			0x05
+#define ADS_IDACMAG_1000		0x06
+#define ADS_IDACMAG_1500		0x07
+#endif
 /* ADS124S08 Register 7 (IDACMUX) Definition */
 /*   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
  *--------------------------------------------------------------------------------------------
