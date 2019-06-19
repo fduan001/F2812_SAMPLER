@@ -5,9 +5,9 @@
 #include "ADS124S08.h"
 
 int TempMeasInit(void) {
-	TempMeasStop();
-	ADS124S08_Init();
 
+	ADS124S08_Init();
+	TempMeasStart();
 	PlatformDelay(20);
 
 	ADS1248_SetInputChan(ADS_P_AIN0, ADS_N_AIN1);
@@ -15,7 +15,8 @@ int TempMeasInit(void) {
 	PlatformDelay(10);
 	ADS1248_SetIDAC(ADS_IDAC1_A0, ADS_IDAC2_A1, ADS_IDACMAG_1000);
 	ADS1248_SetPGAGainAndDataRate(ADS1248_GAIN_4, ADS1248_DR_320);
-	TempMeasStart();
+
+	TempMeasStop();
 	PlatformDelay(5000);
 	return 0;
 }
@@ -39,7 +40,7 @@ int IsTempMeasReady(void) {
 
 	while(1) {
 		ready = FPGA_REG16_R(FPGA_TEMP_MEAS_STATUS_REG);
-		if( ready == 0 ) {
+		if( ready ) {
 			PRINTF("ready to get data i=%ld\n", i);
 			break;
 		}
@@ -58,7 +59,10 @@ UINT32 TempGetMeasData(void) {
 	UINT8 status = 0;
 	UINT8 crc = 0;
 	UINT32 result = 0;
-
+	INT32 tmp = 0;
+	TempMeasStart();
+	PlatformDelay(5000);
+	TempMeasStop();
 	if( IsTempMeasReady() != 1 ) {
 		return 0;
 	}
@@ -67,6 +71,9 @@ UINT32 TempGetMeasData(void) {
 	PRINTF("%02x %02x %02x\n", data[0], data[1], data[2]);
 	result = (((UINT32)data[0]) << 16) | (((UINT32)data[1]) << 8) | ((UINT32)data[2]);
 
+	tmp = ((INT32)result) << 8;
+	tmp >>= 8;
+	PRINTF("tmp=%ld\n",tmp);
 	return result;
 }
 
@@ -74,7 +81,6 @@ UINT32 TempMeasCalibration(void) {
 	UINT32 first = 0;
 	TempMeasInit();
 	first = TempGetMeasData();
-	TempMeasStop();
 	PRINTF("%ld\n", first);
 	return first;
 }
