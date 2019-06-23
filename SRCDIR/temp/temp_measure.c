@@ -15,6 +15,7 @@ int TempMeasInit(void) {
 	PlatformDelay(10);
 	ADS1248_SetIDAC(ADS_IDAC1_A0, ADS_IDAC2_OFF, ADS_IDACMAG_1000);
 	ADS1248_SetPGAGainAndDataRate(ADS1248_GAIN_4, ADS1248_DR_20);
+	ADS1248_SetMuxCal(ADS_NORMAL_OP);
 
 	TempMeasStop();
 	PlatformDelay(5000);
@@ -81,15 +82,28 @@ UINT32 TempGetMeasData(void) {
 	return result;
 }
 
-UINT32 TempMeasCalibration(void) {
+float TempMeasCalibration(void) {
 	UINT32 dacVRTD;
 	UINT32 dacVREF1st;
 	UINT32 dacVRLead;
 	UINT32 dacVREF2nd;
+	float rRTD = 0;
+	float rLead3 = 0;
+	float rREF = 1620.0; /* 1.62K */
 
 	TempMeasInit();
-	dacVRTD = TempGetMeasData();
+	
 	TempMeasStart();
+	ADS1248_SetMuxCal(ADS_NORMAL_OP);
+	PlatformDelay(5000);
+	TempMeasStop();
+	PlatformDelay(5000);
+	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	TempMeasStart();
+	PlatformDelay(5000);
+	TempMeasStop();
+	dacVRTD = TempGetMeasData();
+
 	/* test vref */
 	ADS1248_SetMuxCal(ADS_REF0_MON);
 	TempMeasStop();
@@ -121,7 +135,11 @@ UINT32 TempMeasCalibration(void) {
 	TempMeasStop();
 	dacVREF2nd = TempGetMeasData();
 	PRINTF("%ld %ld\n", dacVRLead, dacVREF2nd);
-	return dacVRTD;
+
+	rRTD = (float)rREF / ((float)dacVREF1st/(float)dacVRTD * 16);
+	rLead3 = (float)rREF / ((float)dacVREF2nd/(float)dacVRLead * 16);
+	PRINTF("Rrtd=%f Rlead3=%f\n", rRTD, rLead3);
+	return (rRTD - rLead3);
 }
 
 void TempMeasDump(void) {

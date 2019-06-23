@@ -4,7 +4,7 @@
 int TempMeasInit(void);
 int TempMeasStart(void);
 int TempMeasStop(void);
-UINT32 TempMeasCalibration(void);
+float TempMeasCalibration(void);
 void TempMeasDump(void);
 
 #endif
