@@ -82,6 +82,8 @@ int TempMeasInit(void) {
 
 	TempMeasStop();
 	PlatformDelay(5000);
+
+	TempSelfCalibration();
 	return 0;
 }
 
@@ -153,9 +155,6 @@ float TempMeasCalibration(void) {
 	float rRTD = 0;
 	float rLead3 = 0;
 	float rREF = 1620.0; /* 1.62K */
-
-	TempMeasInit();
-	TempSelfCalibration();
 	
 	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_NORMAL_OP);
