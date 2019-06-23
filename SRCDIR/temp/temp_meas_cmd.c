@@ -8,7 +8,7 @@ INT32 do_temp( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 {
 	char *ops = NULL;
 	UINT8 chan = 0;
-	UINT32 diff = 0;
+	float diff = 0;
 
 	if( argc < 2 ) {
 		shellprintf ("Usage:\n%s\n", cmdtp->usage);
@@ -34,7 +34,7 @@ INT32 do_temp( cmd_tbl_t *cmdtp, INT32 flag, INT32 argc, INT8 *const argv[])
 
 	if( strcmp(ops, "cal") == 0 ) {
 		diff = TempMeasCalibration();
-		PRINTF("diff=%08lu\n", diff);
+		PRINTF("diff=%f\n", diff);
 		return 0;
 	}
 
