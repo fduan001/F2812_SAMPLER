@@ -127,14 +127,31 @@ UINT32 TempGetMeasData(void) {
 	UINT8 crc = 0;
 	UINT32 result = 0;
 	INT32 tmp = 0;
+	UINT8 maxTry = 3;
+	UINT8 i = 0;
 
-	if( IsTempMeasReady() != 1 ) {
-		return 0;
+	while(i < maxTry ) {
+		FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+		TempMeasStart();
+		PlatformDelay(5000);
+		TempMeasStop();
+		PlatformDelay(5000);
+		if( IsTempMeasReady() != 1 ) {
+			++i;
+			continue;
+		}
+
+		ADS124S08_ReadDate(&status, data, &crc);
+		PRINTF("%02x %02x %02x\n", data[0], data[1], data[2]);
+		result = (((UINT32)data[0]) << 16) | (((UINT32)data[1]) << 8) | ((UINT32)data[2]);
+		if( result != 0 ) {
+			break;
+		}
 	}
 
-	ADS124S08_ReadDate(&status, data, &crc);
-	PRINTF("%02x %02x %02x\n", data[0], data[1], data[2]);
-	result = (((UINT32)data[0]) << 16) | (((UINT32)data[1]) << 8) | ((UINT32)data[2]);
+	if( result == 0 ) {
+		return 0;
+	}
 
 	tmp = data[0];
 	tmp = tmp * 256 + data[1];
@@ -142,7 +159,7 @@ UINT32 TempGetMeasData(void) {
 	tmp = tmp * 256;
 	tmp = tmp / 256;
 	PRINTF("tmp=%ld\n",tmp);
-	return result;
+	return tmp;
 }
 
 float TempMeasCalibration(void) {
@@ -162,27 +179,11 @@ float TempMeasCalibration(void) {
 	PlatformDelay(5000);
 	TempMeasStop();
 	PlatformDelay(5000);
-	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
-	TempMeasStart();
-	PlatformDelay(5000);
-	TempMeasStop();
-	PlatformDelay(5000);
-	dacVRTD = TempGetMeasData();
-	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
-	TempMeasStart();
-	PlatformDelay(5000);
-	TempMeasStop();
-	PlatformDelay(5000);
 	dacVRTD = TempGetMeasData();
 
 	/* test vref */
 	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_REF0_MON);
-	TempMeasStop();
-	PlatformDelay(5000);
-	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
-	TempMeasStart();
-	PlatformDelay(5000);
 	TempMeasStop();
 	PlatformDelay(5000);
 	dacVREF1st = TempGetMeasData();
@@ -193,20 +194,11 @@ float TempMeasCalibration(void) {
 	ADS1248_SetMuxCal(ADS_NORMAL_OP);
 	TempMeasStop();
 	PlatformDelay(5000);
-	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
-	TempMeasStart();
-	PlatformDelay(1000);
-	TempMeasStop();
-	PlatformDelay(5000);
 	dacVRLead = TempGetMeasData();
 
 	/* test vref again */
 	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_REF0_MON);
-	TempMeasStop();
-	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
-	TempMeasStart();
-	PlatformDelay(5000);
 	TempMeasStop();
 	PlatformDelay(5000);
 	dacVREF2nd = TempGetMeasData();
