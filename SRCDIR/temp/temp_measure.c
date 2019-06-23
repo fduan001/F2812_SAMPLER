@@ -105,6 +105,7 @@ float TempMeasCalibration(void) {
 	dacVRTD = TempGetMeasData();
 
 	/* test vref */
+	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_REF0_MON);
 	TempMeasStop();
 	PlatformDelay(5000);
