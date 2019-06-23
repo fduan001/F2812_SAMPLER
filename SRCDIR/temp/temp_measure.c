@@ -107,6 +107,7 @@ float TempMeasCalibration(void) {
 	/* test vref */
 	ADS1248_SetMuxCal(ADS_REF0_MON);
 	TempMeasStop();
+	PlatformDelay(5000);
 	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
 	TempMeasStart();
 	PlatformDelay(5000);
