@@ -36,7 +36,7 @@ int TempMeasStop(void) {
 
 int IsTempMeasReady(void) {
 	UINT32 i = 0;
-	UINT32 limit = 500;
+	UINT32 limit = 800;
 	UINT16 ready = 0;
 
 	while(1) {
@@ -102,6 +102,7 @@ float TempMeasCalibration(void) {
 	TempMeasStart();
 	PlatformDelay(5000);
 	TempMeasStop();
+	PlatformDelay(5000);
 	dacVRTD = TempGetMeasData();
 
 	/* test vref */
@@ -113,6 +114,7 @@ float TempMeasCalibration(void) {
 	TempMeasStart();
 	PlatformDelay(5000);
 	TempMeasStop();
+	PlatformDelay(5000);
 	dacVREF1st = TempGetMeasData();
 	PRINTF("%ld %ld\n", dacVRTD, dacVREF1st);
 
@@ -125,6 +127,7 @@ float TempMeasCalibration(void) {
 	TempMeasStart();
 	PlatformDelay(1000);
 	TempMeasStop();
+	PlatformDelay(5000);
 	dacVRLead = TempGetMeasData();
 
 	/* test vref again */
@@ -135,6 +138,7 @@ float TempMeasCalibration(void) {
 	TempMeasStart();
 	PlatformDelay(5000);
 	TempMeasStop();
+	PlatformDelay(5000);
 	dacVREF2nd = TempGetMeasData();
 	PRINTF("%ld %ld\n", dacVRLead, dacVREF2nd);
 
