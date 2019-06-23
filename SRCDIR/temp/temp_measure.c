@@ -58,6 +58,12 @@ UINT8 TempSelfCalibration(void) {
 		return 1;
 	}
 
+	TempMeasStart();
+	ADS1248_SetMuxCal(ADS_NORMAL_OP);
+	TempMeasStop();
+	PlatformDelay(5000);
+	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+
 	return 0;
 }
 
