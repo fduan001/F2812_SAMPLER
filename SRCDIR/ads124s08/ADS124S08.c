@@ -353,3 +353,10 @@ void ADS1248_SetIDAC(UINT8 idac1, UINT8 idac2, UINT8 idacImage) {
 void ADS1248_SetReference(UINT8 intRefOff, UINT8 refSel) {
 	ADS124S08_WriteReg(0x2, intRefOff | refSel);
 }
+
+void ADS1248_SetMuxCal(UINT8 val) {
+	UINT8 regVal = ADS124S08_ReadReg(0x2);
+	regVal &= ~0x7;
+	regVal |= val;
+	ADS124S08_WriteReg(0x2, regVal);
+}

@@ -157,6 +157,18 @@
 #define ADS_N_AIN6				0x06
 #define ADS_N_AIN7				0x07
 #endif
+
+/* register 0x2 mux cal */
+#define ADS_NORMAL_OP  0x0
+#define ADS_OFFSET_CAL  0x1
+#define ADS_GAIN_CAL    0x2
+#define ADS_TEMP_CAL    0x3
+#define ADS_REF1_MON    0x4
+#define ADS_REF0_MON    0x5
+#define ADS_ANA_SUP_MON   0x6
+#define ADS_DIG_SUP_MON   0x7
+
+
 /* ADS124S08 Register 3 (PGA) Definition */
 /*   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
  *--------------------------------------------------------------------------------------------
@@ -491,6 +503,7 @@ void ADS1248_SetInputChan(UINT8 pChan, UINT8 nChan);
 void ADS1248_SetPGAGainAndDataRate(UINT8 pgaGain, UINT8 dataRate);
 void ADS1248_SetIDAC(UINT8 idac1, UINT8 idac2, UINT8 idacImage);
 void ADS1248_SetReference(UINT8 intRefOff, UINT8 refSel);
+void ADS1248_SetMuxCal(UINT8 val);
 
 #endif /* ADS124S08_H_ */
 
