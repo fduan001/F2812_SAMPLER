@@ -168,6 +168,12 @@ float TempMeasCalibration(void) {
 	TempMeasStop();
 	PlatformDelay(5000);
 	dacVRTD = TempGetMeasData();
+	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	TempMeasStart();
+	PlatformDelay(5000);
+	TempMeasStop();
+	PlatformDelay(5000);
+	dacVRTD = TempGetMeasData();
 
 	/* test vref */
 	TempMeasStart();
