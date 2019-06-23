@@ -4,6 +4,63 @@
 #include "temp_measure.h"
 #include "ADS124S08.h"
 
+UINT8 TempSelfCalibration(void) {
+	TempMeasStop();
+	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	TempMeasStart();
+	ADS1248_SetMuxCal(ADS_NORMAL_OP);
+	TempMeasStop();
+	PlatformDelay(5000);
+	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	
+	TempMeasStart();
+	PlatformDelay(5000);
+	TempMeasStop();
+	ADS124S08_SendCmd(ADS_SYSOCAL_CMD);
+	if( IsTempMeasReady() != 1 ) {
+		PRINTF("Do SYSOCAL timeout\n");
+		return 1;
+	}
+
+	TempMeasStop();
+	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	TempMeasStart();
+	ADS1248_SetMuxCal(ADS_OFFSET_CAL);
+	TempMeasStop();
+	PlatformDelay(5000);
+	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	
+	TempMeasStart();
+	PlatformDelay(5000);
+	TempMeasStop();
+	ADS124S08_SendCmd(ADS_SYSGCAL_CMD);
+	PlatformDelay(5000);
+	if( IsTempMeasReady() != 1 ) {
+		PRINTF("Do SYSGCAL timeout\n");
+		return 1;
+	}
+
+	TempMeasStop();
+	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	TempMeasStart();
+	ADS1248_SetMuxCal(ADS_GAIN_CAL);
+	TempMeasStop();
+	PlatformDelay(5000);
+	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	
+	TempMeasStart();
+	PlatformDelay(5000);
+	TempMeasStop();
+	ADS124S08_SendCmd(ADS_SELFOCAL_CMD);
+	PlatformDelay(5000);
+	if( IsTempMeasReady() != 1 ) {
+		PRINTF("Do SELFOCAL timeout\n");
+		return 1;
+	}
+
+	return 0;
+}
+
 int TempMeasInit(void) {
 
 	ADS124S08_Init();
@@ -92,6 +149,7 @@ float TempMeasCalibration(void) {
 	float rREF = 1620.0; /* 1.62K */
 
 	TempMeasInit();
+	TempSelfCalibration();
 	
 	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_NORMAL_OP);

@@ -360,3 +360,4 @@ void ADS1248_SetMuxCal(UINT8 val) {
 	regVal |= val;
 	ADS124S08_WriteReg(0x2, regVal);
 }
+

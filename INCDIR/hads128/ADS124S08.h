@@ -74,6 +74,11 @@
 #define RDATA_OPCODE_MASK	0x12
 #define REGRD_OPCODE_MASK	0x20
 #define REGWR_OPCODE_MASK	0x40
+
+#define ADS_SYSOCAL_CMD     0x60
+#define ADS_SYSGCAL_CMD     0x61
+#define ADS_SELFOCAL_CMD    0x62
+
 /* Register sub masks */
 /* ADS124S08 Register 0 (ID) Definition
  *   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
