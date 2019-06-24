@@ -97,11 +97,6 @@ int TempMeasInit(void) {
 
 	TempMeasStart();
 	PlatformDelay(20);
-	ADS1248_SetPGAGainAndDataRate(ADS1248_GAIN_4, ADS1248_DR_320);
-	TempSelfCalibration();
-
-	TempMeasStart();
-	PlatformDelay(20);
 	ADS1248_SetInputChan(ADS_P_AIN1, ADS_N_AIN2);
 	ADS1248_SetReference(0x20, 0x10);
 	PlatformDelay(10);
@@ -112,6 +107,7 @@ int TempMeasInit(void) {
 	TempMeasStop();
 	PlatformDelay(50000);
 
+	TempSelfCalibration();
 
 	return 0;
 }
