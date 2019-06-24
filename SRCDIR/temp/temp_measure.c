@@ -14,8 +14,8 @@ UINT8 TempSelfCalibration(void) {
 	TempMeasStart();
 	PlatformDelay(5000);
 	TempMeasStop();
-	PlatformDelay(5000);
 	ADS124S08_SendCmd(ADS_SYSOCAL_CMD);
+	PlatformDelay(50000);
 	if( IsTempMeasReady() != 1 ) {
 		PRINTF("Do SYSOCAL timeout\n");
 		return 1;
@@ -29,8 +29,8 @@ UINT8 TempSelfCalibration(void) {
 	TempMeasStart();
 	PlatformDelay(5000);
 	TempMeasStop();
-	PlatformDelay(5000);
 	ADS124S08_SendCmd(ADS_SYSGCAL_CMD);
+	PlatformDelay(50000);
 	if( IsTempMeasReady() != 1 ) {
 		PRINTF("Do SYSGCAL timeout\n");
 		return 1;
@@ -45,6 +45,7 @@ UINT8 TempSelfCalibration(void) {
 	PlatformDelay(5000);
 	TempMeasStop();
 	ADS124S08_SendCmd(ADS_SELFOCAL_CMD);
+	PlatformDelay(50000);
 	if( IsTempMeasReady() != 1 ) {
 		PRINTF("Do SELFOCAL timeout\n");
 		return 1;
