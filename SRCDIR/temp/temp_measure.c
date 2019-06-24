@@ -89,6 +89,8 @@ UINT8 TempSelfCalibration(void) {
 int TempMeasInit(void) {
 
 	ADS124S08_Init();
+	TempMeasStart();
+	ADS1248_SetPGAGainAndDataRate(ADS1248_GAIN_4, ADS1248_DR_320);
 	TempSelfCalibration();
 
 	TempMeasStart();
