@@ -7,61 +7,46 @@
 UINT8 TempSelfCalibration(void) {
 	TempMeasStop();
 	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
-	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_NORMAL_OP);
-	TempMeasStop();
-	PlatformDelay(5000);
-	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	PlatformDelay(50000);
 	
 	TempMeasStart();
 	PlatformDelay(5000);
 	TempMeasStop();
+	PlatformDelay(5000);
 	ADS124S08_SendCmd(ADS_SYSOCAL_CMD);
 	if( IsTempMeasReady() != 1 ) {
 		PRINTF("Do SYSOCAL timeout\n");
 		return 1;
 	}
 
-	TempMeasStop();
-	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
-	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_OFFSET_CAL);
-	TempMeasStop();
-	PlatformDelay(5000);
-	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	PlatformDelay(50000);
 	
 	TempMeasStart();
 	PlatformDelay(5000);
 	TempMeasStop();
-	ADS124S08_SendCmd(ADS_SYSGCAL_CMD);
 	PlatformDelay(5000);
+	ADS124S08_SendCmd(ADS_SYSGCAL_CMD);
 	if( IsTempMeasReady() != 1 ) {
 		PRINTF("Do SYSGCAL timeout\n");
 		return 1;
 	}
 
-	TempMeasStop();
-	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
-	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_GAIN_CAL);
-	TempMeasStop();
-	PlatformDelay(5000);
-	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
+	PlatformDelay(50000);
 	
 	TempMeasStart();
 	PlatformDelay(5000);
 	TempMeasStop();
 	ADS124S08_SendCmd(ADS_SELFOCAL_CMD);
-	PlatformDelay(5000);
 	if( IsTempMeasReady() != 1 ) {
 		PRINTF("Do SELFOCAL timeout\n");
 		return 1;
 	}
 
-	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_NORMAL_OP);
-	TempMeasStop();
-	PlatformDelay(5000);
+	PlatformDelay(50000);
 	FPGA_REG16_W(FPGA_TEMP_MEAS_STATUS_REG, 0);
 
 	return 0;
@@ -174,33 +159,24 @@ float TempMeasCalibration(void) {
 	TempMeasInit();
 	TempSelfCalibration();
 	
-	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_NORMAL_OP);
-	PlatformDelay(5000);
-	TempMeasStop();
-	PlatformDelay(5000);
+	PlatformDelay(50000);
 	dacVRTD = TempGetMeasData();
 
 	/* test vref */
-	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_REF0_MON);
-	TempMeasStop();
-	PlatformDelay(5000);
+	PlatformDelay(50000);
 	dacVREF1st = TempGetMeasData();
 	PRINTF("%ld %ld\n", dacVRTD, dacVREF1st);
 
-	TempMeasStart();
 	ADS1248_SetInputChan(ADS_P_AIN2, ADS_N_AIN3);
 	ADS1248_SetMuxCal(ADS_NORMAL_OP);
-	TempMeasStop();
-	PlatformDelay(5000);
+	PlatformDelay(50000);
 	dacVRLead = TempGetMeasData();
 
 	/* test vref again */
-	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_REF0_MON);
-	TempMeasStop();
-	PlatformDelay(5000);
+	PlatformDelay(50000);
 	dacVREF2nd = TempGetMeasData();
 	PRINTF("%ld %ld\n", dacVRLead, dacVREF2nd);
 
