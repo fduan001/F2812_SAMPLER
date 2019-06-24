@@ -5,18 +5,30 @@
 #include "ADS124S08.h"
 
 UINT8 TempSelfCalibration(void) {
+	UINT8 i = 0;
+	UINT8 maxTry = 3;
+
 	TempMeasStop();
 	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_NORMAL_OP);
 	TempMeasStop();
 	PlatformDelay(50000);
 	
-	TempMeasStart();
-	PlatformDelay(5000);
-	TempMeasStop();
-	ADS124S08_SendCmd(ADS_SYSOCAL_CMD);
-	PlatformDelay(50000);
-	if( IsTempMeasReady() != 1 ) {
+	while(i++ < maxTry) {
+		TempMeasStart();
+		PlatformDelay(5000);
+		TempMeasStop();
+		ADS124S08_SendCmd(ADS_SYSOCAL_CMD);
+		PlatformDelay(50000);
+		if( IsTempMeasReady() != 1 ) {
+			
+			continue;
+		} else {
+			break;
+		}
+	}
+
+	if( i >= maxTry ) {
 		PRINTF("Do SYSOCAL timeout\n");
 		return 1;
 	}
@@ -26,12 +38,20 @@ UINT8 TempSelfCalibration(void) {
 	TempMeasStop();
 	PlatformDelay(50000);
 
-	TempMeasStart();
-	PlatformDelay(5000);
-	TempMeasStop();
-	ADS124S08_SendCmd(ADS_SYSGCAL_CMD);
-	PlatformDelay(50000);
-	if( IsTempMeasReady() != 1 ) {
+	i = 0;
+	while(i++ < maxTry) {
+		TempMeasStart();
+		PlatformDelay(5000);
+		TempMeasStop();
+		ADS124S08_SendCmd(ADS_SYSGCAL_CMD);
+		PlatformDelay(50000);
+		if( IsTempMeasReady() != 1 ) {
+			
+			continue;
+		}
+	}
+
+	if( i >= maxTry ) {
 		PRINTF("Do SYSGCAL timeout\n");
 		return 1;
 	}
@@ -41,12 +61,19 @@ UINT8 TempSelfCalibration(void) {
 	TempMeasStop();
 	PlatformDelay(50000);
 	
-	TempMeasStart();
-	PlatformDelay(5000);
-	TempMeasStop();
-	ADS124S08_SendCmd(ADS_SELFOCAL_CMD);
-	PlatformDelay(50000);
-	if( IsTempMeasReady() != 1 ) {
+	i = 0;
+	while(i++ < maxTry) {
+		TempMeasStart();
+		PlatformDelay(5000);
+		TempMeasStop();
+		ADS124S08_SendCmd(ADS_SELFOCAL_CMD);
+		PlatformDelay(50000);
+		if( IsTempMeasReady() != 1 ) {			
+			continue;
+		}
+	}
+
+	if( i >= maxTry ) {
 		PRINTF("Do SELFOCAL timeout\n");
 		return 1;
 	}
@@ -62,9 +89,10 @@ UINT8 TempSelfCalibration(void) {
 int TempMeasInit(void) {
 
 	ADS124S08_Init();
+	TempSelfCalibration();
+
 	TempMeasStart();
 	PlatformDelay(20);
-
 	ADS1248_SetInputChan(ADS_P_AIN1, ADS_N_AIN2);
 	ADS1248_SetReference(0x20, 0x10);
 	PlatformDelay(10);
@@ -74,8 +102,6 @@ int TempMeasInit(void) {
 
 	TempMeasStop();
 	PlatformDelay(5000);
-
-
 	return 0;
 }
 
@@ -166,7 +192,6 @@ float TempMeasCalibration(void) {
 	float rREF = 1620.0; /* 1.62K */
 
 	TempMeasInit();
-	TempSelfCalibration();
 	
 	TempMeasStart();
 	ADS1248_SetMuxCal(ADS_NORMAL_OP);
