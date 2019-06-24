@@ -6,7 +6,7 @@
 
 UINT8 TempSelfCalibration(void) {
 	UINT8 i = 0;
-	UINT8 maxTry = 3;
+	UINT8 maxTry = 8;
 
 	TempMeasStop();
 	TempMeasStart();
@@ -107,7 +107,7 @@ int TempMeasInit(void) {
 	TempMeasStop();
 	PlatformDelay(50000);
 
-	TempSelfCalibration();
+	// TempSelfCalibration();
 
 	return 0;
 }
