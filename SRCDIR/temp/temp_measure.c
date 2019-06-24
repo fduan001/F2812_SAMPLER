@@ -48,6 +48,8 @@ UINT8 TempSelfCalibration(void) {
 		if( IsTempMeasReady() != 1 ) {
 			PRINTF("Do SYSGCAL timeout %u\n", i);
 			continue;
+		} else {
+			break;
 		}
 	}
 
@@ -71,6 +73,8 @@ UINT8 TempSelfCalibration(void) {
 		if( IsTempMeasReady() != 1 ) {		
 			PRINTF("Do SELFOCAL timeout %u\n", i);	
 			continue;
+		} else {
+			break;
 		}
 	}
 
