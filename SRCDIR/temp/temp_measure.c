@@ -100,9 +100,9 @@ int TempMeasInit(void) {
 	ADS1248_SetMuxCal(ADS_NORMAL_OP);
 
 	TempMeasStop();
-	PlatformDelay(5000);
+	PlatformDelay(50000);
 	TempSelfCalibration();
-	
+
 	return 0;
 }
 
