@@ -117,7 +117,6 @@ void InitXintf(void)
     XintfRegs.XTIMING2.bit.USEREADY = 0;
 
 
-    // Zone 6 for 1553B 64843
     // Ignore XREADY for Zone 6 accesses
     // Change read access lead/active/trail timing
     XintfRegs.XTIMING6.bit.USEREADY = 0;
